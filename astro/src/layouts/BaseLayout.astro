@@ -2,8 +2,7 @@
 import '../styles/global.css';
 // Main components 
 import PfpComponent from '../components/PfpComponent.astro';
-import LogsComponent from '../components/LogsComponent.astro';
-import WebmasterComponent from '../components/WebmasterComponent.astro';
+
 // Aside components
 import NavbarComponent from '../components/NavbarComponent.astro';
 ---
@@ -25,12 +24,13 @@ import NavbarComponent from '../components/NavbarComponent.astro';
     <div class="l-layout-grid">
         <main class="l-content">
             <PfpComponent />
-            <LogsComponent />
-            <WebmasterComponent />
+            <slot name="logs-component" />
+            <slot name="webmaster-component" />
         </main>
 
         <aside class="l-sidebar">
             <NavbarComponent />
+
             <!-- <section class="c-card c-card--sidebar">
                 <div class="c-card__header">add my button!</div>
                 <div class="c-card__body u-text-center">
