@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import { Image } from 'astro:assets';
+import pfp from '../images/pfp_avatar.jpg';
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +24,7 @@ import '../styles/global.css';
                 <div class="c-card__header">welcome to my site!</div>
                 <div class="c-card__body u-flex">
                     <div class="c-pfp">
-                        <img src="./images/pfp_avatar.jpg" alt="Buni">
+                        <Image src={pfp} alt="pfp-image" />
                     </div>
                     <div class="c-intro">
                         <p>hello there! my name is <b>buni</b> and this is my safe place. i spend my time studying algorithms and watching 2000s anime.</p>
