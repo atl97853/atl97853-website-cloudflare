@@ -1,5 +1,5 @@
 ---
-date: 2026-01-10
+pubDate: 2026-01-10
 title: Breathing New Life into an Old MacBook Pro with Linux
 summary: How installing Linux transformed an aging MacBook Pro into a fast, usable machine again.
 slug: upgrading-old-macbook-pro-with-linux

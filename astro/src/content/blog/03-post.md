@@ -1,5 +1,5 @@
 ---
-date: 2025-12-03
+pubDate: 2025-12-03
 title: Understanding Recursion Through Simple Examples
 summary: A practical look at recursion, how it works, and when it makes problems easier to solve.
 slug: understanding-recursion

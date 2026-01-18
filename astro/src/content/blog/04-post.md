@@ -1,5 +1,5 @@
 ---
-date: 2026-01-20
+pubDate: 2026-01-20
 title: Getting Started with Web Scraping Using Python
 summary: An introduction to web scraping with Python and how it can be used to collect and analyze data from websites.
 slug: web-scraping-with-python
