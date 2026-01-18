@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<style>
+    .card-error-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: var(--space-md);
+    }
+
+    .error-code {
+        font-size: var(--fs-lg);
+        font-weight: bold;
+        color: var(--clr-accent);
+        margin-bottom: var(--space-sm);
+    }
+
+    .c-error-message {
+        /* text-align: justify; */
+        /* hyphens: auto; */
+        line-height: 1.6;
+        color: var(--clr-text-main);
+        font-size: var(--fs-sm);
+        max-width: 100%;
+    }
+</style>
+
+<BaseLayout>
+    <section class="c-card" slot="custom-cards">
+        <div class="c-card__header">...</div>
+        <div class="c-card__body card-error-body">
+            <span class="error-code">404</span>
+            <div class="c-error-message">
+                <p><strong>HTTP 404: Not Found</strong></p>
+                <p>
+                    Sorry we couldn't find the page you were looking for. Please check the address and try again.</p>
+            </div>
+        </div>
+    </section> 
+</BaseLayout>
