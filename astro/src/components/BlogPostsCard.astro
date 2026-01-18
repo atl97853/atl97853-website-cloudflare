@@ -1,4 +1,11 @@
 ---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
+import {formatDate} from '../utils';
+
+const allBlogPosts: CollectionEntry<'blog'>[] = (await getCollection('blog'))
+    .sort((a:CollectionEntry<'blog'>, b:CollectionEntry<'blog'>) => b.data.
+    pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <style>
@@ -54,26 +61,13 @@
     <div class="c-card__header">Recent Posts</div>
     <div class="c-card__body">
         <ul class="c-log">
-            <li class="c-log__item">
-                <div class="blog-date">Jan 04, 2026</div>
-                <a href="#" class="blog-title">2025 Retrospective & 2026 Goals</a>
-                <span class="blog-summary">Looking back at my first year of college and setting new coding targets.</span>
-            </li>
-            <li class="c-log__item">
-                <div class="blog-date">Dec 25, 2025</div>
-                <a href="#" class="blog-title">A Cozy Coding Christmas</a>
-                <span class="blog-summary">Spent the day eating rabanada and fixing some bugs in my guestbook script.</span>
-            </li>
-            <li class="c-log__item">
-                <div class="blog-date">Nov 19, 2025</div>
-                <a href="#" class="blog-title">100 Questions for Webmasters</a>
-                <span class="blog-summary">Answering a fun questionnaire about why I love the old web aesthetic.</span>
-            </li>
-            <li class="c-log__item">
-                <div class="blog-date">Oct 31, 2025</div>
-                <a href="#" class="blog-title">Halloween Anime Marathon</a>
-                <span class="blog-summary">Re-watching Serial Experiments Lain tonight. Stay safe everyone!</span>
-            </li>
+            {allBlogPosts.map(post => (
+                <li class="c-log__item">
+                    <div class="blog-date">{formatDate(post.data.pubDate)}</div>
+                    <a href={'/blog/' + post.slug} class="blog-title">{post.data.title}</a>
+                    <span class="blog-summary">{post.data.summary}</span>
+                </li>
+            ))}
         </ul>
     </div>
 </section>
