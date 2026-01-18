@@ -1,5 +1,5 @@
 ---
-date: 2026-01-18
+date: 2026-01-28
 title: Building a Terminal-Based Video Game with Python
 summary: Exploring how Python can be used to create a fun and interactive video game entirely inside the terminal.
 slug: terminal-video-game-python

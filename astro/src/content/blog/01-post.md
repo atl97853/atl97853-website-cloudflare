@@ -1,7 +1,7 @@
 ---
 title: How to Turn an Old Laptop into a Streaming Home Server with Debian
 summary: A step-by-step guide to repurposing an old laptop into a reliable home media streaming server using Debian Linux and Jellyfin.
-date: 2026-01-18
+date: 2026-01-11
 slug: debian-laptop-streaming-server
 tags: [HomeLab, Debian, Jellyfin, Linux, Streaming, DIY]
 ---
