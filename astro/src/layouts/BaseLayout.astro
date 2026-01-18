@@ -24,8 +24,11 @@ import NavbarComponent from '../components/NavbarComponent.astro';
     <div class="l-layout-grid">
         <main class="l-content">
             <PfpComponent />
+            <!-- / components -->
             <slot name="logs-component" />
             <slot name="webmaster-component" />
+            <!-- /blog components -->
+            <slot name="blog-posts-card"/>
         </main>
 
         <aside class="l-sidebar">
