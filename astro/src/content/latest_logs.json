@@ -1,22 +1,4 @@
 [
-  { "text": "welcome to the site! i opened today", "time": "09.12.24" },
-  { "text": "added the first blog post to test formatting", "time": "09.12.24" },
-  { "text": "set up basic navigation and homepage layout", "time": "09.12.24" },
-  { "text": "fixed a small typo on the landing page", "time": "09.12.24" },
-  { "text": "configured the database connection", "time": "09.12.24" },
-  { "text": "enabled user registration feature", "time": "09.12.24" },
-  { "text": "added a temporary logo to the header", "time": "09.12.24" },
-  { "text": "tested site responsiveness on mobile", "time": "09.12.24" },
-  { "text": "updated the footer with contact information", "time": "09.12.24" },
-  { "text": "deployed the site to the production server", "time": "09.12.24" },
-  { "text": "verified ssl certificate is working", "time": "09.12.24" },
-  { "text": "added basic analytics tracking", "time": "09.12.24" },
-  { "text": "created an about page draft", "time": "09.12.24" },
-  { "text": "cleaned up unused css styles", "time": "09.12.24" },
-  { "text": "tested login and logout flow", "time": "09.12.24" },
-  { "text": "improved page load performance slightly", "time": "09.12.24" },
-  { "text": "added error handling for missing pages", "time": "09.12.24" },
-  { "text": "reviewed content for clarity and tone", "time": "09.12.24" },
-  { "text": "made the site live for public access", "time": "09.12.24" },
-  { "text": "celebrated the official launch", "time": "09.12.24" }
+  { "text": "i think i'll publish the website today; i like how it looks so far", "time": "11:26 am"},
+  { "text": "today i'm starting my classes again, and i'm a little excited and nervous about it", "time": "19.12.26" }
 ]
