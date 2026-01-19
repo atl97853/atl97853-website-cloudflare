@@ -35,6 +35,11 @@
    ========================================= */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Root List Reset */
+ul, ol {
+    list-style: none;
+}
+
 body {
     background-color: var(--clr-bg-page);
     background-image: radial-gradient(var(--clr-border) 1px, transparent 1px);
