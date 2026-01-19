@@ -5,13 +5,15 @@ import PfpComponent from '../components/PfpComponent.astro';
 
 // Aside components
 import NavbarComponent from '../components/NavbarComponent.astro';
+
+const { tabTitle = '' } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>bunicore.exe // 2004_archive</title>
+    <title>{"atl97853 - " + tabTitle}</title>
     <!-- <link rel="stylesheet" href="./style.css"> -->
 </head>
 <body>

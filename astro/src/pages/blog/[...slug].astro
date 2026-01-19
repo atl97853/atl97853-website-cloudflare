@@ -116,7 +116,7 @@ const { Content } = await entry.render();
     }
 </style>
 
-<BaseLayout>
+<BaseLayout tabTitle={entry.slug}>
     <article class="c-card c-blog-post" slot="custom-cards">
         <header class="c-card__header">
             ➹ POST: {entry.data.title}
