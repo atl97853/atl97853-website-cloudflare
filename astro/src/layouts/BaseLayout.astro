@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 // Main components 
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
 import PfpComponent from '../components/PfpComponent.astro';
 
 // Aside components
@@ -19,14 +21,12 @@ const { tabTitle = 'atl97853' } = Astro.props;
 <body>
 
 <div class="l-main-wrapper">
-    <header class="c-site-header">
-        <h1 class="c-site-header__title">あなたのことをわすれません</h1>
-    </header>
+    <Header />
 
     <div class="l-layout-grid">
         <main class="l-content">
             <PfpComponent />
-            <!-- homepage components -->
+            <!-- default components -->
             <slot name="logs-component" />
             <slot name="webmaster-component" />
             <!-- custom cards -->
@@ -34,21 +34,14 @@ const { tabTitle = 'atl97853' } = Astro.props;
         </main>
 
         <aside class="l-sidebar">
+            <!-- default components -->
             <NavbarComponent />
-
-            <!-- <section class="c-card c-card--sidebar">
-                <div class="c-card__header">add my button!</div>
-                <div class="c-card__body u-text-center">
-                    <div class="c-badge">bunicore</div>
-                    <textarea class="c-input--readonly" readonly><a href="bunicore.neocities.org">...</a></textarea>
-                </div>
-            </section> -->
+            <!-- custom cards -->
+            <slot name="custom-cards-aside"/>
         </aside>
     </div>
 
-    <footer class="c-site-footer">
-        atl97853 2025 © All rights reserved !!!
-    </footer>
+    <Footer />
 </div>
 
 </body>
