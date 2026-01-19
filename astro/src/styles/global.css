@@ -119,6 +119,7 @@ body {
 }
 
 .c-pfp {
+    flex-shrink: 0;
     width: 100px;
     height: 100px;
     border: var(--bw-frame) solid var(--clr-bg-card);
@@ -178,7 +179,8 @@ body {
     }
 
     .c-pfp {
-        width: 200px;
+        flex-shrink: 0;
+        width: 100px;
         height: 100px;
         margin-bottom: 0; 
         margin-right: var(--space-lg); 
