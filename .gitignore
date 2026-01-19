@@ -23,5 +23,6 @@ pnpm-debug.log*
 .vscode/
 
 # misc
-unused_layouts
+unused_layouts/
+reference_layouts/
 notes.md
