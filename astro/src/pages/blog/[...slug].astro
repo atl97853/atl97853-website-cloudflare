@@ -1,0 +1,140 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+// Instead of importing getCollection, we use getEntry, which is use for getting a single post (object)
+import { getEntry } from "astro:content";
+import { formatDate } from "../../utils";
+
+const { slug } = Astro.params;
+
+if (slug === undefined) {
+    throw new Error('Slug is required');
+}
+
+const entry = await getEntry('blog', slug);
+
+if (entry === undefined) {
+    return Astro.redirect('/404');
+}
+// Content component that gives us the actual markdown of the entry 
+const { Content } = await entry.render();
+---
+
+<style is:global>
+    /* Container Stability */
+    .l-content { min-width: 0; }
+
+    /* Post Header / Meta */
+    .c-blog-post__meta {
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-sm);
+        border-bottom: 1px dotted var(--clr-border);
+    }
+
+    .c-blog-post__date {
+        font-size: var(--fs-xs);
+        color: var(--clr-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .c-blog-post__summary {
+        font-style: italic;
+        font-size: var(--fs-sm);
+        color: var(--clr-text-main);
+        margin-top: var(--space-xs);
+        line-height: 1.5;
+        border-left: 3px solid var(--clr-accent);
+        padding-left: var(--space-sm);
+    }
+
+    /* Typography Hierarchy inside the post */
+    .c-blog-post-body {
+        line-height: 1.7; /* Increased for better readability */
+        color: var(--clr-text-main);
+    }
+
+    .c-blog-post-body h1, 
+    .c-blog-post-body h2, 
+    .c-blog-post-body h3 {
+        color: var(--clr-text-main);
+        margin: var(--space-lg) 0 var(--space-sm) 0;
+        line-height: 1.2;
+    }
+
+    .c-blog-post-body h2 { font-size: var(--fs-md); border-bottom: 1px solid var(--clr-bg-page); }
+    .c-blog-post-body p { margin-bottom: var(--space-md); }
+
+    /* List Handling - Restoring bullets for content */
+    .c-blog-post-body ul, 
+    .c-blog-post-body ol { 
+        margin-bottom: var(--space-md); 
+        padding-left: var(--space-lg); 
+    }
+    
+    .c-blog-post-body ul { list-style: disc; }
+    .c-blog-post-body ol { list-style: decimal; }
+    .c-blog-post-body li { margin-bottom: var(--space-xs); }
+
+    /* Blockquotes */
+    .c-blog-post-body blockquote {
+        margin: var(--space-md) 0;
+        padding: var(--space-sm) var(--space-md);
+        background: var(--clr-bg-container);
+        border-left: var(--bw-frame) solid var(--clr-text-main);
+        font-style: italic;
+    }
+
+    /* Media Handling */
+    .c-blog-post-body img {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid var(--clr-border);
+        margin: var(--space-lg) auto;
+        border-radius: var(--br-sm);
+    }
+
+    /* Code & ASCII Art Blocks */
+    .c-blog-post-body pre {
+        background: #2d2d2d; 
+        color: #f8f8f2;
+        padding: var(--space-md);
+        border-radius: var(--br-sm);
+        font-size: var(--fs-sm);
+        overflow-x: auto;
+        white-space: pre;
+        margin: var(--space-md) 0;
+        border-left: var(--bw-frame) solid var(--clr-accent);
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .c-blog-post-body code:not(pre code) {
+        background: var(--clr-bg-container);
+        color: var(--clr-text-main);
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-family: monospace;
+    }
+</style>
+
+<BaseLayout>
+    <article class="c-card c-blog-post" slot="custom-cards">
+        <header class="c-card__header">
+            ➹ POST: {entry.data.title}
+        </header>
+        
+        <div class="c-card__body">
+            <div class="c-blog-post__meta">
+                <time datetime={entry.data.pubDate.toISOString()} class="c-blog-post__date">
+                    {formatDate(entry.data.pubDate)}
+                </time>
+                {entry.data.summary && (
+                    <p class="c-blog-post__summary">{entry.data.summary}</p>
+                )}
+            </div>
+
+            <div class="c-blog-post-body">
+                <Content />
+            </div>
+        </div>
+    </article>
+</BaseLayout>
