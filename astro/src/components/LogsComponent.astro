@@ -3,9 +3,15 @@ import latest_logs from '../content/latest_logs.json';
 // Limit to the latest n logs
 const limited_logs = latest_logs.slice(0,5);
 ---
+<style>
+    #log_tab_title {
+        all: unset;
+        cursor: pointer;
+    }
+</style>
 
 <section class="c-card">
-    <div class="c-card__header">update log</div>
+    <div class="c-card__header"><a id="log_tab_title" href="https://nownownow.com/about" target="blank">update log</a></div>
     <div class="c-card__body">
         <ul class="c-log">
             {limited_logs.map((log) => ( 
