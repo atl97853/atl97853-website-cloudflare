@@ -1,11 +1,16 @@
 ---
+import latest_logs from '../content/latest_logs.json';
+// Limit to the latest n logs
+const limited_logs = latest_logs.slice(0,5);
 ---
 
 <section class="c-card">
     <div class="c-card__header">update log</div>
     <div class="c-card__body">
         <ul class="c-log">
-            <li class="c-log__item"><b>09.12.24:</b> welcome to the site! i opened today.</li>
+            {limited_logs.map((log) => ( 
+                <li class="c-log__item"><b>{log.time}: </b>{log.text}</li>
+            ))}
         </ul>
     </div>
 </section>
