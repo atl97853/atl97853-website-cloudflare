@@ -1,4 +1,7 @@
 [
-  { "text": "i think i'll publish the website today; i like how it looks so far", "time": "11:26 am"},
-  { "text": "today i'm starting my classes again, and i'm a little excited and nervous about it", "time": "19.12.26" }
+  {"text": "i wasn’t sure what name to use for the domain, so i went with my name and a number i like. it feels right", "time": "19:36 pm"},
+  { "text": "i finally got a new domain for this website!!! and git is a huge life saver, i think this website will stay static for now. i tried moving it to ssr, broke things a few times, and even when it worked, the results didn’t feel right. keeping it static makes more sense", 
+    "time": "20.01.26" },
+  { "text": "i think i'll publish the website today; i like how it looks so far", "time": "11:26 am" },
+  { "text": "today i'm starting my classes again, and i'm a little excited and nervous about it", "time": "19.01.26" }
 ]
