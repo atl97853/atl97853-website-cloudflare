@@ -25,3 +25,6 @@ pnpm-debug.log*
 # misc
 unused_layouts/
 notes.md
+
+# credentials
+.neocities
