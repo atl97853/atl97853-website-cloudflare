@@ -1,22 +1,20 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-// Instead of importing getCollection, we use getEntry, which is use for getting a single post (object)
-import { getEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import { formatDate } from "../../utils";
 
-const { slug } = Astro.params;
+export async function getStaticPaths() {
+    const allBlogPosts: CollectionEntry<'blog'>[] = await getCollection('blog');
 
-if (slug === undefined) {
-    throw new Error('Slug is required');
+    return allBlogPosts.map(entry => ({
+        params: {slug: entry.slug},
+        props: {entry}
+    }))
 }
 
-const entry = await getEntry('blog', slug);
-
-if (entry === undefined) {
-    return Astro.redirect('/404');
-}
-// Content component that gives us the actual markdown of the entry 
-const { Content } = await entry.render();
+const { entry } = Astro.props;
+const { Content } = await render(entry);
 ---
 
 <style is:global>
