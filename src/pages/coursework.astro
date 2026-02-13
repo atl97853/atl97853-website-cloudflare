@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProgressBar from '../components/ProgressBarComponent.astro';
+import coursework from '../content/coursework.json';
+---
+
+<style>
+    .c-season-group {
+        margin-bottom: var(--space-lg);
+    }
+
+    .c-season-title {
+        color: var(--clr-accent);
+        padding-bottom: 2px;
+        border-bottom: solid 1px;
+    }
+
+    /* THE COURSE ITEM */
+    .c-course-item {
+        margin-bottom: 2px;
+    }
+
+    .c-course-summary {
+        list-style: none;
+        padding: 6px 8px;
+        cursor: pointer;
+        /* font-size: var(--fs-xs); */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.1s ease;
+        border-radius: var(--br-sm);
+    }
+
+    /* Hide default arrow */
+    .c-course-summary::-webkit-details-marker { display: none; }
+
+    .c-course-summary:hover {
+        background: var(--clr-bg-container);
+    }
+
+    .c-course-main {
+        display: flex;
+        /* It changes the way the course code and name are organized. */
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .c-course-name {
+        font-weight: bold;
+        color: var(--clr-text-main);
+    }
+
+    .c-code {
+        color: var(--clr-text-muted);
+    }
+
+    /* The Plus Icon */
+    .c-plus-icon {
+        font-size: var(--fs-lg);
+        color: var(--clr-text-main);
+        font-weight: lighter;
+        transition: transform 0.3s ease;
+        user-select: none;
+    }
+
+    /* Rotate plus into an 'x' when open */
+    .c-course-item[open] .c-plus-icon {
+        transform: rotate(45deg);
+    }
+
+    /* THE REVEAL (NOTES) */
+    .c-course-details {
+        margin: 0 0 8px 0;
+        padding: var(--space-sm) var(--space-md);
+        /* font-size: 11px; */
+        line-height: 1.5;
+        background: white;
+        border: 1px dashed var(--clr-border);
+        border-top: none; /* Merges it visually with the summary above */
+        color: var(--clr-text-main);
+    }
+
+    .c-course-item[open] .c-course-summary {
+        background: var(--clr-bg-container);
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+</style>
+
+<BaseLayout tabTitle="coursework">
+    
+    <article class="c-card" slot="custom-cards">
+        <header class="c-card__header">
+            coursework
+        </header>
+        
+        <div class="c-card__body">
+            {coursework.map((season) => (
+                <section class="c-season-group">
+                    <h2 class="c-season-title">{season.season}</h2>
+                    
+                    {season.courses.map((course) => (
+                        <details class="c-course-item">
+                            <summary class="c-course-summary">
+                                <div class="c-course-main">
+                                    <span class="c-course-name">{course.title}</span>
+                                    <span class="c-code">{course.code}</span>
+                                </div>
+                                <span class="c-plus-icon">+</span>
+                            </summary>
+                            
+                            <div class="c-course-details">
+                                <p>{"Notes: " + course.notes}</p>
+                            </div>
+                        </details>
+                    ))}
+                </section>
+            ))}
+        </div>
+    </article>
+
+    <ProgressBar slot="custom-cards-aside"/>
+
+</BaseLayout>

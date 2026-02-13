@@ -1,0 +1,32 @@
+[
+  {
+    "season": "2026 winter/spring",
+    "courses": [
+      {
+        "code": "uvm",
+        "title": "physics",
+        "notes": ""
+      },
+      {
+        "code": "uvm",
+        "title": "chemistry",
+        "notes": ""
+      },
+      {
+        "code": "self-taught",
+        "title": "composing programs",
+        "notes": ""
+      },
+      {
+        "code": "self-taught",
+        "title": "100 days of code by angela yu",
+        "notes": ""
+      },
+      {
+        "code": "self-taught",
+        "title": "calculus made easy",
+        "notes": ""
+      }
+    ]
+  }
+]
