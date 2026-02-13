@@ -1,0 +1,75 @@
+---
+const skills = [
+  { name: "BSc in Mathematical Engineering", level: 16.67 },
+  { name: "english proficiency (B2)", level: 66 },
+];
+---
+
+<section class="c-card">
+    <div class="c-card__header">progress bar</div>
+    <div class="c-card__body">
+        <div class="c-level-stack">
+            {skills.map((skill) => (
+                <div class="c-level-item">
+                    <div class="c-level-meta">
+                        <span class="c-level-name">{skill.name}</span>
+                        <span class="c-level-value">{skill.level}%</span>
+                    </div>
+                    
+                    <div class="c-progress-track">
+                        <div 
+                            class="c-progress-fill" 
+                            style={`width: ${skill.level}%`}
+                        ></div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
+
+<style>
+    .c-level-stack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+
+    .c-level-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 4px;
+    }
+
+    .c-level-name {
+        font-size: var(--fs-sm);
+        font-weight: bold;
+        color: var(--clr-text-main);
+    }
+
+    .c-level-value {
+        font-family: monospace;
+        font-size: 10px;
+        color: var(--clr-accent);
+    }
+
+    /* Progress Track: Matches the card and input borders */
+    .c-progress-track {
+        width: 100%;
+        height: 8px;
+        background-color: var(--clr-bg-container);
+        border: 1px solid var(--clr-border);
+        border-radius: var(--br-sm);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* The Fill: Simple solid color to match the UI */
+    .c-progress-fill {
+        height: 100%;
+        background-color: var(--clr-accent);
+        /* Cubic-bezier makes the transition feel mechanical and precise */
+        transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+</style>
