@@ -1,6 +1,141 @@
 ---
 ---
 
-<header class="c-site-header">
+<header class="c-site-header" role="banner">
     <h1 class="c-site-header__title"></h1>
+
+    <div class="theme-switcher" role="group" aria-label="Theme selection">
+        <button type="button" theme-btn="dark" aria-label="Dark Mode">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                class="icon">
+                <path
+                    d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2">
+                </path>
+            </svg>
+        </button>
+
+        <button type="button" theme-btn="light" aria-label="Light Mode">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                class="icon">
+                <circle
+                    cx="12"
+                    cy="12"
+                    r="5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2">
+                </circle>
+                <path
+                    d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"
+                    stroke="currentColor"
+                    stroke-width="2">
+                </path>
+            </svg>
+        </button>
+
+        <button type="button" theme-btn="special" aria-label="Special Mode">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" opacity="0.3" />
+                <circle cx="12" cy="12" r="5" fill="currentColor">
+                    <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />
+                </circle>
+            </svg>
+        </button>
+    </div>
 </header>
+
+<style>
+    .c-site-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: clamp(0.3rem, 1vw, 0.5rem) clamp(1rem, 5vw, 2rem);        /* border-bottom: 2px  var(--clr-border); */
+        background-color: var(--clr-bg-container);
+    }
+
+    .c-site-header__title {
+        font-family: var(--font-header, monospace);
+        font-size: 1.1rem;
+        color: var(--clr-accent);
+        margin: 0;
+    }
+
+    .theme-switcher {
+        display: flex;
+        gap: 6px;
+        background: var(--clr-bg-page);
+        padding: 4px;
+        border-radius: 8px;
+        border: 1px solid var(--clr-border);
+    }
+
+    .theme-switcher button {
+        background: none;
+        border: none;
+        padding: 6px;
+        cursor: pointer;
+        color: var(--clr-text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .theme-switcher button:hover {
+        color: var(--clr-text-main);
+        background-color: rgba(250, 189, 47, 0.1);
+    }
+
+    .theme-switcher button.is-active {
+        color: #1d1a16;
+        background-color: #fabd2f;
+        box-shadow: 0 0 12px rgba(250, 189, 47, 0.25);
+    }
+
+    @media (forced-colors: active) {
+        .theme-switcher button.is-active {
+            outline: 2px solid SelectedItem;
+        }
+    }
+</style>
+
+<script is:inline>
+    (function() {
+        const root = document.documentElement;
+        const buttons = document.querySelectorAll('[theme-btn]');
+        const storageKey = "selected-theme";
+
+        function applyTheme(theme) {
+            root.setAttribute("theme", theme);
+            localStorage.setItem(storageKey, theme);
+            
+            buttons.forEach((btn) => {
+                const isActive = btn.getAttribute('theme-btn') === theme;
+                btn.classList.toggle("is-active", isActive);
+                btn.setAttribute("aria-pressed", isActive);
+            });
+        }
+
+        buttons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                applyTheme(btn.getAttribute('theme-btn'));
+            });
+        });
+
+        const saved = localStorage.getItem(storageKey) || "dark";
+        applyTheme(saved);
+    })();
+</script>
