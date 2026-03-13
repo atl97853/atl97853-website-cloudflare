@@ -5,27 +5,33 @@
       {
         "code": "uvm",
         "title": "physics",
-        "notes": ""
+        "notes": "physics isn't really my thing. i mean, it's great and interesting, but it's not something i enjoy much; at least not right now. i like robotics, and i might like to do a master's degree in robotics in the future, if i have the chance. and at that point, i might have to pay more attention to my physics classes, but for now, well, i got a near-perfect grade, so that's more than enough for now. my degree doesn't go into much depth in physics either, so anyway, see you later, physics."
       },
       {
         "code": "uvm",
         "title": "chemistry",
-        "notes": ""
+        "notes": "i did an essay where i had to research a bit about advanced lithography machines; it was fun. the rest was really pretty average, the same as with physics. i got a near-perfect grade, so i'm satisfied."
+      },
+      {
+        "code": "uvm",
+        "title": "history and didactics of mathematics",
+        "notes": "i'm fascinated by history, especially the history of mathematics. it's inspiring to see how humanity's knowledge has accumulated and to learn about the people who have paved the way for us all. i definitely think i'm going to enjoy this course."
+      },
+      {
+        "code": "uvm",
+        "title": "discrete mathematics",
+        "notes": 
+        "i'm really excited to be taking this course. i haven't had the chance to use latex until now, so i'm looking forward to using it with the assignments in this class. wow, discrete mathematics; i've been reading the book *discrete mathematics with applications* by Susanna Epp, and i think this book has had a big influence on me. honestly, it also terrifies me a little. i still don't know how to handle the complexity and abstraction. when i see recursive functions, my brain short-circuits because it's just too much. everything is based on discrete mathematics, everything! i have to learn to control myself, breathe, and not go down new rabbit holes. i've also been reading the website that berkeley has for the course cs70. i'm genuinely excited about this subject. i need to learn graph theory; it's the only thing i haven't had time to study in depth yet." 
       },
       {
         "code": "self-taught",
         "title": "composing programs",
-        "notes": ""
+        "notes": "i learned to program first by learning html, then css, then by doing *the odin project* course. after that, i tried to complete the *ossu* curriculum [https://github.com/ossu/computer-science] by studying on coursera: *programming languages ​​parts a, b, and c*. you know, i don't regret learning this way because it broadened my perspective. but this course has everything, at least all the theory. learning web development is completely different, but if you want to learn the basics without any prior knowledge, this is the course. i have the book *sicp*, the javascript version (because at the time i wanted to learn more javascript and it seemed like a good idea). i'll write more when i finish this course. it's not something to be taken lightly; it's very comprehensive. again, thanks, berkeley, for making these resources easily accessible to all of us! [https://www.composingprograms.com/]"
       },
       {
         "code": "self-taught",
         "title": "100 days of code by angela yu",
-        "notes": ""
-      },
-      {
-        "code": "self-taught",
-        "title": "calculus made easy",
-        "notes": ""
+        "notes": "Dr. Angela Yu, thank you so much for this course, it's literally everything i need to take my mind off so much theory, thank you so much!!! (ㅅ´ ˘ `)"
       }
     ]
   }
