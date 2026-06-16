@@ -1,72 +1,203 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import {formatDate} from '../utils';
+import { formatDate } from "../utils";
 
-const allBlogPosts: CollectionEntry<'blog'>[] = (await getCollection('blog'))
-    .sort((a:CollectionEntry<'blog'>, b:CollectionEntry<'blog'>) => b.data.
-    pubDate.valueOf() - a.data.pubDate.valueOf());
+const allBlogPosts: CollectionEntry<"blog">[] = (await getCollection("blog")).sort(
+    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
 ---
 
+<section class="c-card c-posts-card" aria-labelledby="recent-posts-title">
+    <h2 id="recent-posts-title" class="c-card__header c-posts-card__title">
+        recent posts
+    </h2>
+
+    <div class="c-card__body c-posts-card__body">
+        {
+            allBlogPosts.length > 0 ? (
+                <ul class="c-log">
+                    {allBlogPosts.map((post) => (
+                        <li class="c-log__item">
+                            <a href={`/blog/${post.slug}/`} class="c-log__link">
+                                <time
+                                    datetime={post.data.pubDate.toISOString()}
+                                    class="blog-date"
+                                >
+                                    {formatDate(post.data.pubDate)}
+                                </time>
+
+                                <span class="blog-title">
+                                    {post.data.title}
+                                </span>
+
+                                <span class="blog-summary">
+                                    {post.data.summary}
+                                </span>
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p class="c-posts-card__empty">No posts yet.</p>
+            )
+        }
+    </div>
+</section>
+
 <style>
-    .c-card__body {
-        padding-top: var(--space-xs); /* new, this overrides its global style */
+    .c-posts-card {
+        --posts-accent: var(--clr-accent, currentColor);
+        --posts-text: var(--clr-text-main, currentColor);
+        --posts-muted: var(--clr-text-muted, currentColor);
+        --posts-border: var(--clr-border, rgba(0, 0, 0, 0.16));
+        --posts-hover-bg: rgba(0, 0, 0, 0.035);
+        --posts-focus: var(--clr-accent, currentColor);
     }
 
-    .c-log {
-        padding: 0;
+    :global([theme="dark"]) .c-posts-card {
+        --posts-hover-bg: rgba(255, 255, 255, 0.055);
+        --posts-border: rgba(255, 255, 255, 0.16);
+        --posts-focus: #ffffff;
+    }
+
+    :global([theme="light"]) .c-posts-card {
+        --posts-hover-bg: rgba(0, 0, 0, 0.035);
+        --posts-border: rgba(0, 0, 0, 0.16);
+        --posts-focus: #000000;
+    }
+
+    .c-posts-card__title {
         margin: 0;
     }
 
-    .c-log__item {
-        padding: 12px 5px;
-        border-bottom: 1px dotted var(--clr-border);
+    .c-posts-card__body {
+        padding-top: var(--space-xs, 4px);
     }
 
-    .c-log__item:last-child {
-        border-bottom: none;
+    .c-log {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .c-log__item {
+        min-width: 0;
+    }
+
+    .c-log__item + .c-log__item {
+        margin-top: var(--space-sm, 8px);
+    }
+
+    .c-log__link {
+        position: relative;
+        display: block;
+        min-width: 0;
+        padding: 0.65rem 0.7rem 0.7rem 0.85rem;
+        overflow: hidden;
+        color: var(--posts-text);
+        text-decoration: none;
+        border-left: 2px solid transparent;
+        border-radius: 0;
+        transform: translateX(0);
+        transition:
+            background-color 160ms ease,
+            border-color 160ms ease,
+            transform 160ms ease;
+    }
+
+    .c-log__link::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, var(--posts-hover-bg), transparent 70%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 160ms ease;
+    }
+
+    .c-log__link:hover,
+    .c-log__link:focus-visible {
+        color: var(--posts-text);
+        background: var(--posts-hover-bg);
+        border-left-color: var(--posts-accent);
+        transform: translateX(3px);
+    }
+
+    .c-log__link:hover::before,
+    .c-log__link:focus-visible::before {
+        opacity: 1;
+    }
+
+    .c-log__link:focus-visible {
+        outline: 2px solid var(--posts-focus);
+        outline-offset: 2px;
+    }
+
+    .blog-date,
+    .blog-title,
+    .blog-summary {
+        position: relative;
+        z-index: 1;
     }
 
     .blog-date {
-        font-size: var(--fs-sm);
-        color: var(--text-main);
+        display: block;
+        margin-bottom: 2px;
+        color: var(--posts-muted);
+        font-size: var(--fs-xs, 0.875rem);
+        line-height: 1.4;
     }
 
     .blog-title {
-        display: block;
-        font-size: var(--fs-sm); 
-        font-weight: bold;
-        color: var(--text-main);
-        text-decoration: none;
-        margin-bottom: var(--space-xs);
+        display: inline;
+        color: var(--posts-text);
+        font-size: var(--fs-sm, 1rem);
+        font-weight: 700;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+        background-image: linear-gradient(currentColor, currentColor);
+        background-repeat: no-repeat;
+        background-position: 0 100%;
+        background-size: 0% 1px;
+        transition:
+            color 160ms ease,
+            background-size 180ms ease;
     }
 
-    .blog-title:hover {
-        color: var(--clr-accent);
-        padding-left: var(--space-sm);
-        text-decoration: underline;
+    .c-log__link:hover .blog-title,
+    .c-log__link:focus-visible .blog-title {
+        color: var(--posts-accent);
+        background-size: 100% 1px;
     }
 
     .blog-summary {
-        font-size: var(--fs-sm);
-        color: var(--text-main);
-        font-style: italic;
         display: block;
-        line-height: 1.3;
+        margin-top: var(--space-xs, 4px);
+        color: var(--posts-text);
+        font-size: var(--fs-sm, 1rem);
+        font-style: italic;
+        line-height: 1.35;
+        overflow-wrap: break-word;
+    }
+
+    .c-posts-card__empty {
+        margin: 0;
+        color: var(--posts-muted);
+        font-size: var(--fs-sm, 1rem);
+        font-style: italic;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .c-log__link,
+        .c-log__link::before,
+        .blog-title {
+            transition: none;
+        }
+
+        .c-log__link:hover,
+        .c-log__link:focus-visible {
+            transform: none;
+        }
     }
 </style>
-
-<section class="c-card">
-    <div class="c-card__header">recent posts</div>
-    <div class="c-card__body">
-        <ul class="c-log">
-            {allBlogPosts.map(post => (
-                <li class="c-log__item">
-                    <div class="blog-date">{formatDate(post.data.pubDate)}</div>
-                    <a href={'/blog/' + post.slug} class="blog-title">{post.data.title}</a>
-                    <span class="blog-summary">{post.data.summary}</span>
-                </li>
-            ))}
-        </ul>
-    </div>
-</section>
