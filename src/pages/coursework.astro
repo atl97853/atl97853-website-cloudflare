@@ -1,124 +1,287 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import ProgressBar from '../components/ProgressBarComponent.astro';
-import coursework from '../content/coursework.json';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ProgressBar from "../components/ProgressBarComponent.astro";
+import coursework from "../content/coursework.json";
+
+function getSeasonId(season: string): string {
+    return `season-${season
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")}`;
+}
 ---
 
+<BaseLayout tabTitle="coursework">
+    <article class="c-card c-coursework-card" slot="custom-cards" aria-labelledby="coursework-title">
+        <header id="coursework-title" class="c-card__header c-coursework-card__title">
+            coursework
+        </header>
+
+        <div class="c-card__body c-coursework-card__body">
+            {coursework.map((season) => {
+                const seasonId = getSeasonId(season.season);
+
+                return (
+                    <section class="c-season-group" aria-labelledby={seasonId}>
+                        <h2 id={seasonId} class="c-season-title">
+                            {season.season}
+                        </h2>
+
+                        <div class="c-course-list">
+                            {season.courses.map((course) => (
+                                <details class="c-course-item">
+                                    <summary class="c-course-summary">
+                                        <span class="c-course-main">
+                                            <span class="c-course-name">{course.title}</span>
+                                            <span class="c-course-code">{course.code}</span>
+                                        </span>
+
+                                        <span class="c-course-action" aria-hidden="true">
+                                            <span class="c-course-action__closed">view notes</span>
+                                            <span class="c-course-action__open">hide notes</span>
+                                        </span>
+                                    </summary>
+
+                                    <div class="c-course-details">
+                                        <p>{course.notes || "No notes yet."}</p>
+                                    </div>
+                                </details>
+                            ))}
+                        </div>
+                    </section>
+                );
+            })}
+        </div>
+    </article>
+
+    <ProgressBar slot="custom-cards-aside" />
+</BaseLayout>
+
 <style>
-    .c-season-group {
-        margin-bottom: var(--space-lg);
+    .c-coursework-card {
+        --course-text: var(--clr-text-main, currentColor);
+        --course-muted: var(--clr-text-muted, currentColor);
+        --course-accent: var(--clr-accent, currentColor);
+        --course-border: rgba(0, 0, 0, 0.16);
+        --course-hover-bg: rgba(0, 0, 0, 0.035);
+        --course-focus: var(--clr-text-main, currentColor);
+    }
+
+    :global([theme="dark"]) .c-coursework-card {
+        --course-border: rgba(255, 255, 255, 0.16);
+        --course-hover-bg: rgba(255, 255, 255, 0.055);
+        --course-focus: #ffffff;
+    }
+
+    :global([theme="light"]) .c-coursework-card {
+        --course-border: rgba(0, 0, 0, 0.16);
+        --course-hover-bg: rgba(0, 0, 0, 0.035);
+        --course-focus: #000000;
+    }
+
+    .c-coursework-card__title {
+        margin: 0;
+    }
+
+    .c-coursework-card__body {
+        padding-top: var(--space-xs, 4px);
+        font-size: var(--fs-sm, 1rem);
+        line-height: 1.5;
+    }
+
+    .c-season-group + .c-season-group {
+        margin-top: var(--space-lg, 24px);
     }
 
     .c-season-title {
-        color: var(--clr-accent);
-        padding-bottom: 2px;
-        border-bottom: solid 1px;
+        margin: 0 0 var(--space-sm, 8px);
+        color: var(--course-text);
+        font-size: var(--fs-sm, 1rem);
+        line-height: 1.35;
+        font-weight: 700;
+        overflow-wrap: break-word;
     }
 
-    /* THE COURSE ITEM */
+    .c-course-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm, 8px);
+    }
+
     .c-course-item {
-        margin-bottom: 2px;
+        min-width: 0;
     }
 
     .c-course-summary {
-        list-style: none;
-        padding: 6px 8px;
-        cursor: pointer;
-        /* font-size: var(--fs-xs); */
+        position: relative;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        transition: all 0.1s ease;
-        border-radius: var(--br-sm);
+        justify-content: space-between;
+        gap: var(--space-md, 16px);
+        min-width: 0;
+        padding: 0.65rem 0.7rem 0.7rem 0.85rem;
+        overflow: hidden;
+        color: var(--course-text);
+        background: transparent;
+        border-left: 2px solid transparent;
+        border-radius: var(--br-sm, 0);
+        cursor: pointer;
+        list-style: none;
+        transform: translateX(0);
+        transition:
+            background-color 160ms ease,
+            border-color 160ms ease,
+            transform 160ms ease;
     }
 
-    /* Hide default arrow */
-    .c-course-summary::-webkit-details-marker { display: none; }
+    .c-course-summary::-webkit-details-marker {
+        display: none;
+    }
 
-    .c-course-summary:hover {
-        background: var(--clr-bg-container);
+    .c-course-summary::marker {
+        content: "";
+    }
+
+    .c-course-summary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, var(--course-hover-bg), transparent 70%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 160ms ease;
+    }
+
+    .c-course-summary:hover,
+    .c-course-summary:focus-visible,
+    .c-course-item[open] .c-course-summary {
+        color: var(--course-text);
+        background: var(--course-hover-bg);
+        border-left-color: var(--course-accent);
+        transform: translateX(3px);
+    }
+
+    .c-course-summary:hover::before,
+    .c-course-summary:focus-visible::before,
+    .c-course-item[open] .c-course-summary::before {
+        opacity: 1;
+    }
+
+    .c-course-summary:focus-visible {
+        outline: 2px solid var(--course-focus);
+        outline-offset: 2px;
+    }
+
+    .c-course-main,
+    .c-course-name,
+    .c-course-code,
+    .c-course-action {
+        position: relative;
+        z-index: 1;
     }
 
     .c-course-main {
         display: flex;
-        /* It changes the way the course code and name are organized. */
         flex-direction: column;
         gap: 2px;
+        min-width: 0;
     }
 
     .c-course-name {
-        font-weight: bold;
-        color: var(--clr-text-main);
+        color: var(--course-text);
+        font-size: var(--fs-sm, 1rem);
+        font-weight: 700;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+        background-image: linear-gradient(currentColor, currentColor);
+        background-repeat: no-repeat;
+        background-position: 0 100%;
+        background-size: 0% 1px;
+        transition:
+            color 160ms ease,
+            background-size 180ms ease;
     }
 
-    .c-code {
-        color: var(--clr-text-muted);
+    .c-course-summary:hover .c-course-name,
+    .c-course-summary:focus-visible .c-course-name,
+    .c-course-item[open] .c-course-name {
+        color: var(--course-accent);
+        background-size: 100% 1px;
     }
 
-    /* The Plus Icon */
-    .c-plus-icon {
-        font-size: var(--fs-lg);
-        color: var(--clr-text-main);
-        font-weight: lighter;
-        transition: transform 0.3s ease;
+    .c-course-code {
+        color: var(--course-muted);
+        font-size: var(--fs-sm, 1rem);
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    .c-course-action {
+        flex: 0 0 auto;
+        padding: 0.15rem 0.45rem;
+        color: var(--course-muted);
+        border: 1px solid var(--course-border);
+        font-size: var(--fs-xs, 0.875rem);
+        line-height: 1.25;
+        white-space: nowrap;
+        opacity: 0.78;
         user-select: none;
+        transition:
+            color 160ms ease,
+            background-color 160ms ease,
+            border-color 160ms ease,
+            opacity 160ms ease;
     }
 
-    /* Rotate plus into an 'x' when open */
-    .c-course-item[open] .c-plus-icon {
-        transform: rotate(45deg);
+    .c-course-summary:hover .c-course-action,
+    .c-course-summary:focus-visible .c-course-action,
+    .c-course-item[open] .c-course-action {
+        color: var(--course-text);
+        background: var(--course-hover-bg);
+        border-color: var(--course-accent);
+        opacity: 1;
+    }
+
+    .c-course-action__open {
+        display: none;
+    }
+
+    .c-course-item[open] .c-course-action__closed {
+        display: none;
+    }
+
+    .c-course-item[open] .c-course-action__open {
+        display: inline;
     }
 
     .c-course-details {
-        margin: 0 0 8px 0;
-        padding: var(--space-sm) var(--space-md);
-        /* font-size: 11px; */
+        margin: 0;
+        padding: var(--space-sm, 8px) 0.7rem var(--space-md, 16px) 0.85rem;
+        color: var(--course-text);
+        font-size: var(--fs-sm, 1rem);
         line-height: 1.5;
         background: transparent;
-        border: 1px dashed var(--clr-border);
-        border-top: none; /* Merges it visually with the summary above */
-        color: var(--clr-text-main);
+        border-left: 2px solid var(--course-border);
     }
 
-    .c-course-item[open] .c-course-summary {
-        background: var(--clr-bg-container);
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
+    .c-course-details p {
+        margin: 0;
+        font-size: inherit;
+        line-height: inherit;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .c-course-summary,
+        .c-course-summary::before,
+        .c-course-name,
+        .c-course-action {
+            transition: none;
+        }
+
+        .c-course-summary:hover,
+        .c-course-summary:focus-visible,
+        .c-course-item[open] .c-course-summary {
+            transform: none;
+        }
     }
 </style>
-
-<BaseLayout tabTitle="coursework">
-    
-    <article class="c-card" slot="custom-cards">
-        <header class="c-card__header">
-            coursework
-        </header>
-        
-        <div class="c-card__body">
-            {coursework.map((season) => (
-                <section class="c-season-group">
-                    <h2 class="c-season-title">{season.season}</h2>
-                    
-                    {season.courses.map((course) => (
-                        <details class="c-course-item">
-                            <summary class="c-course-summary">
-                                <div class="c-course-main">
-                                    <span class="c-course-name">{course.title}</span>
-                                    <span class="c-code">{course.code}</span>
-                                </div>
-                                <span class="c-plus-icon">+</span>
-                            </summary>
-                            
-                            <div class="c-course-details">
-                                <p>{"Notes: " + course.notes}</p>
-                            </div>
-                        </details>
-                    ))}
-                </section>
-            ))}
-        </div>
-    </article>
-
-    <ProgressBar slot="custom-cards-aside"/>
-
-</BaseLayout>
