@@ -1,0 +1,22 @@
+[
+    {
+        "season": "Semester I",
+        "courses": [
+            {
+                "code": "ACF-2301",
+                "title": "Differential Calculus",
+                "status": "incomplete"
+            },
+            {
+                "code": "AED-1285",
+                "title": "Fundamentals of Programming",
+                "status": "in-progress"
+            },
+            {
+                "code": "ACH-2307",
+                "title": "Ethics Workshop",
+                "status": "completed"
+            }
+        ]
+    }
+]
