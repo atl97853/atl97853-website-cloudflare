@@ -3,54 +3,135 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ProgressBar from "../components/ProgressBarComponent.astro";
 import coursework from "../content/coursework.json";
 
-function getSeasonId(season: string): string {
-    return `season-${season
+type CourseStatus = "incomplete" | "in-progress" | "completed";
+
+interface Course {
+    code?: string;
+    title?: string;
+    status?: string;
+}
+
+interface SeasonGroup {
+    season?: string;
+    courses?: Course[];
+}
+
+const visibleStatuses = new Set<CourseStatus>(["in-progress", "completed"]);
+const validStatuses = new Set<CourseStatus>([
+    "incomplete",
+    "in-progress",
+    "completed",
+]);
+
+function normalizeText(value?: string): string {
+    return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeStatus(status?: string): CourseStatus {
+    const normalized = normalizeText(status).toLowerCase().replace(/\s+/g, "-");
+
+    return validStatuses.has(normalized as CourseStatus)
+        ? (normalized as CourseStatus)
+        : "incomplete";
+}
+
+function getSeasonId(season: string, index: number): string {
+    const slug = season
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "")}`;
+        .replace(/^-|-$/g, "");
+
+    return `season-${slug || index}`;
 }
+
+const seasonGroups = (coursework as SeasonGroup[])
+    .map((group) => {
+        const courses = Array.isArray(group.courses)
+            ? group.courses
+                  .map((course) => {
+                      const code = normalizeText(course.code);
+                      const title = normalizeText(course.title);
+                      const status = normalizeStatus(course.status);
+
+                      return { code, title, status };
+                  })
+                  .filter(
+                      (course) =>
+                          course.title.length > 0 &&
+                          visibleStatuses.has(course.status)
+                  )
+            : [];
+
+        return {
+            season: normalizeText(group.season),
+            courses,
+        };
+    })
+    .filter((group) => group.season.length > 0 && group.courses.length > 0);
+
+const hasCoursework = seasonGroups.length > 0;
 ---
 
 <BaseLayout tabTitle="coursework">
-    <article class="c-card c-coursework-card" slot="custom-cards" aria-labelledby="coursework-title">
-        <header id="coursework-title" class="c-card__header c-coursework-card__title">
-            coursework
+    <article
+        class="c-card c-coursework-card"
+        slot="custom-cards"
+        aria-labelledby="coursework-title"
+    >
+        <header class="c-coursework-card__header">
+            <h1 id="coursework-title" class="c-card__header c-coursework-card__title">
+                coursework
+            </h1>
         </header>
 
         <div class="c-card__body c-coursework-card__body">
-            {coursework.map((season) => {
-                const seasonId = getSeasonId(season.season);
+            {
+                hasCoursework ? (
+                    seasonGroups.map((season, index) => {
+                        const seasonId = getSeasonId(season.season, index);
 
-                return (
-                    <section class="c-season-group" aria-labelledby={seasonId}>
-                        <h2 id={seasonId} class="c-season-title">
-                            {season.season}
-                        </h2>
+                        return (
+                            <section class="c-season-group" aria-labelledby={seasonId}>
+                                <h2 id={seasonId} class="c-season-title">
+                                    {season.season}
+                                </h2>
 
-                        <div class="c-course-list">
-                            {season.courses.map((course) => (
-                                <details class="c-course-item">
-                                    <summary class="c-course-summary">
-                                        <span class="c-course-main">
-                                            <span class="c-course-name">{course.title}</span>
-                                            <span class="c-course-code">{course.code}</span>
-                                        </span>
+                                <ul
+                                    class="c-course-list"
+                                    aria-label={`${season.season} coursework`}
+                                >
+                                    {season.courses.map((course) => (
+                                        <li
+                                            class="c-course-item"
+                                            data-status={course.status}
+                                        >
+                                            <span class="c-course-name">
+                                                {course.code && (
+                                                    <span class="c-course-code">
+                                                        {course.code}:{" "}
+                                                    </span>
+                                                )}
 
-                                        <span class="c-course-action" aria-hidden="true">
-                                            <span class="c-course-action__closed">view notes</span>
-                                            <span class="c-course-action__open">hide notes</span>
-                                        </span>
-                                    </summary>
+                                                <span>{course.title}</span>
+                                            </span>
 
-                                    <div class="c-course-details">
-                                        <p>{course.notes || "No notes yet."}</p>
-                                    </div>
-                                </details>
-                            ))}
-                        </div>
-                    </section>
-                );
-            })}
+                                            {course.status === "completed" && (
+                                                <span class="u-sr-only">
+                                                    completed
+                                                </span>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </section>
+                        );
+                    })
+                ) : (
+                    <p class="c-coursework-empty">
+                        I'm currently in the process of transitioning between universities and organizing my credits, so there's nothing available here at the moment.
+                    </p>
+                )
+            }
         </div>
     </article>
 
@@ -59,34 +140,17 @@ function getSeasonId(season: string): string {
 
 <style>
     .c-coursework-card {
-        --course-text: var(--clr-text-main, currentColor);
-        --course-muted: var(--clr-text-muted, currentColor);
-        --course-accent: var(--clr-accent, currentColor);
-        --course-border: rgba(0, 0, 0, 0.16);
-        --course-hover-bg: rgba(0, 0, 0, 0.035);
-        --course-focus: var(--clr-text-main, currentColor);
+        --course-completed: var(--clr-text-muted, currentColor);
     }
 
     :global([theme="dark"]) .c-coursework-card {
-        --course-border: rgba(255, 255, 255, 0.16);
-        --course-hover-bg: rgba(255, 255, 255, 0.055);
-        --course-focus: #ffffff;
-    }
-
-    :global([theme="light"]) .c-coursework-card {
-        --course-border: rgba(0, 0, 0, 0.16);
-        --course-hover-bg: rgba(0, 0, 0, 0.035);
-        --course-focus: #000000;
-    }
-
-    .c-coursework-card__title {
-        margin: 0;
+        --course-completed: rgba(255, 255, 255, 0.72);
     }
 
     .c-coursework-card__body {
-        padding-top: var(--space-xs, 4px);
-        font-size: var(--fs-sm, 1rem);
-        line-height: 1.5;
+        max-width: 48rem;
+        padding-top: var(--space-md, 16px);
+        line-height: 1.45;
     }
 
     .c-season-group + .c-season-group {
@@ -95,193 +159,62 @@ function getSeasonId(season: string): string {
 
     .c-season-title {
         margin: 0 0 var(--space-sm, 8px);
-        color: var(--course-text);
+        color: var(--clr-text-main, currentColor);
         font-size: var(--fs-sm, 1rem);
-        line-height: 1.35;
+        font-style: italic;
         font-weight: 700;
+        line-height: 1.35;
         overflow-wrap: break-word;
     }
 
     .c-course-list {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-sm, 8px);
+        margin: 0;
+        padding-left: 1.35rem;
+        list-style: disc;
     }
 
     .c-course-item {
-        min-width: 0;
+        padding-left: 0.15rem;
+        color: var(--clr-text-main, currentColor);
     }
 
-    .c-course-summary {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--space-md, 16px);
-        min-width: 0;
-        padding: 0.65rem 0.7rem 0.7rem 0.85rem;
-        overflow: hidden;
-        color: var(--course-text);
-        background: transparent;
-        border-left: 2px solid transparent;
-        border-radius: var(--br-sm, 0);
-        cursor: pointer;
-        list-style: none;
-        transform: translateX(0);
-        transition:
-            background-color 160ms ease,
-            border-color 160ms ease,
-            transform 160ms ease;
-    }
-
-    .c-course-summary::-webkit-details-marker {
-        display: none;
-    }
-
-    .c-course-summary::marker {
-        content: "";
-    }
-
-    .c-course-summary::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, var(--course-hover-bg), transparent 70%);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 160ms ease;
-    }
-
-    .c-course-summary:hover,
-    .c-course-summary:focus-visible,
-    .c-course-item[open] .c-course-summary {
-        color: var(--course-text);
-        background: var(--course-hover-bg);
-        border-left-color: var(--course-accent);
-        transform: translateX(3px);
-    }
-
-    .c-course-summary:hover::before,
-    .c-course-summary:focus-visible::before,
-    .c-course-item[open] .c-course-summary::before {
-        opacity: 1;
-    }
-
-    .c-course-summary:focus-visible {
-        outline: 2px solid var(--course-focus);
-        outline-offset: 2px;
-    }
-
-    .c-course-main,
-    .c-course-name,
-    .c-course-code,
-    .c-course-action {
-        position: relative;
-        z-index: 1;
-    }
-
-    .c-course-main {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        min-width: 0;
+    .c-course-item + .c-course-item {
+        margin-top: 0.4rem;
     }
 
     .c-course-name {
-        color: var(--course-text);
-        font-size: var(--fs-sm, 1rem);
-        font-weight: 700;
-        line-height: 1.35;
         overflow-wrap: anywhere;
-        background-image: linear-gradient(currentColor, currentColor);
-        background-repeat: no-repeat;
-        background-position: 0 100%;
-        background-size: 0% 1px;
-        transition:
-            color 160ms ease,
-            background-size 180ms ease;
-    }
-
-    .c-course-summary:hover .c-course-name,
-    .c-course-summary:focus-visible .c-course-name,
-    .c-course-item[open] .c-course-name {
-        color: var(--course-accent);
-        background-size: 100% 1px;
     }
 
     .c-course-code {
-        color: var(--course-muted);
-        font-size: var(--fs-sm, 1rem);
-        line-height: 1.35;
-        overflow-wrap: anywhere;
+        font-weight: 700;
     }
 
-    .c-course-action {
-        flex: 0 0 auto;
-        padding: 0.15rem 0.45rem;
-        color: var(--course-muted);
-        border: 1px solid var(--course-border);
-        font-size: var(--fs-xs, 0.875rem);
-        line-height: 1.25;
+    .c-course-item[data-status="completed"] {
+        color: var(--course-completed);
+    }
+
+    .c-course-item[data-status="completed"] .c-course-name {
+        text-decoration: line-through;
+        text-decoration-thickness: 1px;
+        text-decoration-color: currentColor;
+    }
+
+    .c-coursework-empty {
+        margin: 0;
+        color: var(--clr-text-muted, currentColor);
+        overflow-wrap: break-word;
+    }
+
+    .u-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
         white-space: nowrap;
-        opacity: 0.78;
-        user-select: none;
-        transition:
-            color 160ms ease,
-            background-color 160ms ease,
-            border-color 160ms ease,
-            opacity 160ms ease;
-    }
-
-    .c-course-summary:hover .c-course-action,
-    .c-course-summary:focus-visible .c-course-action,
-    .c-course-item[open] .c-course-action {
-        color: var(--course-text);
-        background: var(--course-hover-bg);
-        border-color: var(--course-accent);
-        opacity: 1;
-    }
-
-    .c-course-action__open {
-        display: none;
-    }
-
-    .c-course-item[open] .c-course-action__closed {
-        display: none;
-    }
-
-    .c-course-item[open] .c-course-action__open {
-        display: inline;
-    }
-
-    .c-course-details {
-        margin: 0;
-        padding: var(--space-sm, 8px) 0.7rem var(--space-md, 16px) 0.85rem;
-        color: var(--course-text);
-        font-size: var(--fs-sm, 1rem);
-        line-height: 1.5;
-        background: transparent;
-        border-left: 2px solid var(--course-border);
-    }
-
-    .c-course-details p {
-        margin: 0;
-        font-size: inherit;
-        line-height: inherit;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .c-course-summary,
-        .c-course-summary::before,
-        .c-course-name,
-        .c-course-action {
-            transition: none;
-        }
-
-        .c-course-summary:hover,
-        .c-course-summary:focus-visible,
-        .c-course-item[open] .c-course-summary {
-            transform: none;
-        }
+        border: 0;
     }
 </style>
