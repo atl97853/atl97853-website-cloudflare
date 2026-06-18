@@ -1,88 +1,111 @@
 ---
-const skills = [
-    { name: "BSc in Mathematical Engineering", level: 16.67 },
-    { name: "english proficiency (B2)", level: 66 },
-].map((skill) => ({
-    ...skill,
-    level: Math.min(100, Math.max(0, Number(skill.level) || 0)),
-}));
+interface Skill {
+    name: string;
+    level: number;
+}
+
+const rawSkills: Skill[] = [
+    { name: "B.S. in Computer Systems Engineering", level: 0 },
+    { name: "English proficiency (B2)", level: 40 },
+];
+
+function clampLevel(level: number): number {
+    return Number.isFinite(level) ? Math.min(100, Math.max(0, level)) : 0;
+}
 
 function formatLevel(level: number): string {
     return Number.isInteger(level) ? `${level}%` : `${level.toFixed(2)}%`;
 }
+
+function getProgressId(name: string, index: number): string {
+    const slug = name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+    return `progress-${slug || index}`;
+}
+
+const skills = rawSkills.map((skill) => ({
+    ...skill,
+    level: clampLevel(skill.level),
+}));
 ---
 
 <section class="c-card c-progress-card" aria-labelledby="progress-title">
-    <header id="progress-title" class="c-card__header c-progress-card__title">
-        progress bar
-    </header>
+    <h2 id="progress-title" class="c-card__header c-progress-card__title">
+        progress
+    </h2>
 
     <div class="c-card__body c-progress-card__body">
-        <div class="c-level-stack">
-            {skills.map((skill) => (
-                <div class="c-level-item">
-                    <div class="c-level-meta">
-                        <span class="c-level-name">{skill.name}</span>
-                        <span class="c-level-value">{formatLevel(skill.level)}</span>
-                    </div>
+        <div class="c-progress-list">
+            {
+                skills.map((skill, index) => {
+                    const progressId = getProgressId(skill.name, index);
+                    const nameId = `${progressId}-name`;
+                    const valueId = `${progressId}-value`;
+                    const formattedLevel = formatLevel(skill.level);
 
-                    <div
-                        class="c-progress-track"
-                        role="progressbar"
-                        aria-label={skill.name}
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                        aria-valuenow={skill.level}
-                        aria-valuetext={formatLevel(skill.level)}
-                    >
-                        <div
-                            class="c-progress-fill"
-                            style={`--progress-value: ${skill.level}%;`}
-                        ></div>
-                    </div>
-                </div>
-            ))}
+                    return (
+                        <div class="c-progress-item">
+                            <div class="c-progress-meta">
+                                <span id={nameId} class="c-progress-name">
+                                    {skill.name}
+                                </span>
+
+                                <span id={valueId} class="c-progress-value">
+                                    {formattedLevel}
+                                </span>
+                            </div>
+
+                            <div
+                                class="c-progress-track"
+                                role="progressbar"
+                                aria-labelledby={`${nameId} ${valueId}`}
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-valuenow={skill.level}
+                                aria-valuetext={formattedLevel}
+                            >
+                                <div
+                                    class="c-progress-fill"
+                                    style={`--progress-value: ${skill.level}%;`}
+                                />
+                            </div>
+                        </div>
+                    );
+                })
+            }
         </div>
     </div>
 </section>
 
 <style>
     .c-progress-card {
-        --progress-label: var(--clr-text-main, currentColor);
-        --progress-muted: var(--clr-text-muted, currentColor);
         --progress-track: rgba(0, 0, 0, 0.14);
         --progress-fill: var(--clr-accent, currentColor);
     }
 
     :global([theme="dark"]) .c-progress-card {
         --progress-track: rgba(255, 255, 255, 0.18);
-        --progress-fill: var(--clr-text-main, currentColor);
-    }
-
-    :global([theme="light"]) .c-progress-card {
-        --progress-track: rgba(0, 0, 0, 0.14);
-        --progress-fill: var(--clr-accent, currentColor);
-    }
-
-    .c-progress-card__title {
-        margin: 0;
+        --progress-fill: #ffffff;
     }
 
     .c-progress-card__body {
         padding-top: var(--space-xs, 4px);
     }
 
-    .c-level-stack {
+    .c-progress-list {
         display: flex;
         flex-direction: column;
         gap: var(--space-md, 16px);
     }
 
-    .c-level-item {
+    .c-progress-item {
         min-width: 0;
     }
 
-    .c-level-meta {
+    .c-progress-meta {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         align-items: baseline;
@@ -90,22 +113,14 @@ function formatLevel(level: number): string {
         margin-bottom: var(--space-xs, 4px);
     }
 
-    .c-level-name {
+    .c-progress-name {
         min-width: 0;
-        color: var(--progress-label);
-        font-size: var(--fs-sm, 1rem);
-        font-weight: 400;
-        line-height: 1.4;
         overflow-wrap: break-word;
     }
 
-    .c-level-value {
-        flex: 0 0 auto;
-        color: var(--progress-muted);
-        font-family: var(--ff-main, Arial, Helvetica, sans-serif);
+    .c-progress-value {
+        color: var(--clr-text-muted, currentColor);
         font-size: var(--fs-xs, 0.875rem);
-        font-weight: 400;
-        line-height: 1.4;
         white-space: nowrap;
     }
 
@@ -114,21 +129,11 @@ function formatLevel(level: number): string {
         height: 3px;
         overflow: hidden;
         background: var(--progress-track);
-        border: none;
-        border-radius: 999px;
     }
 
     .c-progress-fill {
         width: var(--progress-value);
         height: 100%;
         background: var(--progress-fill);
-        border-radius: inherit;
-        transition: width 500ms ease;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .c-progress-fill {
-            transition: none;
-        }
     }
 </style>
