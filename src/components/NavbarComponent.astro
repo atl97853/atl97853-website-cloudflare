@@ -1,15 +1,125 @@
 ---
+interface Props {
+    variant?: "mobile" | "desktop";
+}
+
+interface NavLink {
+    href: string;
+    label: string;
+    icon: string;
+}
+
+const variant = Astro.props.variant === "mobile" ? "mobile" : "desktop";
+
+const navLinks: NavLink[] = [
+    { href: "/", label: "homepage", icon: "📁" },
+    { href: "/blog", label: "blog", icon: "📁" },
+    { href: "/coursework", label: "coursework", icon: "📄" },
+    { href: "/library", label: "library", icon: "📖" },
+    { href: "/anime", label: "anime", icon: "🐱" },
+    { href: "/guestbook", label: "guestbook", icon: "📝" },
+    { href: "/projects", label: "projects", icon: "⚙️" },
+];
+
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+function isCurrentPage(href: string): boolean {
+    if (href === "/") {
+        return currentPath === "/";
+    }
+
+    return currentPath === href || currentPath.startsWith(`${href}/`);
+}
 ---
 
-<nav class="c-card c-card--sidebar">
-    <div class="c-card__header">navigation</div>
-    <ul class="c-nav-list">
-        <li><a href="/" class="c-nav-list__link">📁 homepage</a></li>
-        <li><a href="/blog" class="c-nav-list__link">📁 blog</a></li>
-        <li><a href="/coursework" class="c-nav-list__link">📄 coursework</a></li>
-        <li><a href="/library" class="c-nav-list__link">📖 library</a></li>
-        <li><a href="/anime" class="c-nav-list__link">🐱 anime</a></li>
-        <li><a href="/guestbook" class="c-nav-list__link">📝 guestbook</a></li>
-        <li><a href="/projects" class="c-nav-list__link">⚙️ projects</a></li>
+<nav
+    class:list={[
+        "c-card",
+        "c-card--sidebar",
+        "c-navbar-card",
+        `c-navbar-card--${variant}`,
+    ]}
+    data-variant={variant}
+    aria-label="Primary navigation"
+>
+    <h2 class="c-card__header c-navbar-card__title">
+        navigation
+    </h2>
+
+    <ul class="c-nav-list c-navbar-card__list">
+        {
+            navLinks.map((link) => {
+                const isCurrent = isCurrentPage(link.href);
+
+                return (
+                    <li class="c-navbar-card__item">
+                        <a
+                            href={link.href}
+                            class="c-nav-list__link c-navbar-card__link"
+                            aria-current={isCurrent ? "page" : undefined}
+                        >
+                            <span aria-hidden="true">{link.icon}</span>{" "}
+                            <span>{link.label}</span>
+                        </a>
+                    </li>
+                );
+            })
+        }
     </ul>
 </nav>
+
+<style>
+    .c-navbar-card[data-variant="desktop"] {
+        display: none;
+    }
+
+    .c-navbar-card__title {
+        margin: 0;
+    }
+
+    .c-navbar-card[data-variant="mobile"] {
+        text-align: center;
+    }
+
+    .c-navbar-card[data-variant="mobile"] .c-navbar-card__list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: baseline;
+        gap: var(--space-xs, 4px) var(--space-md, 16px);
+        max-width: 100%;
+        padding: 0;
+        overflow: visible;
+    }
+
+    .c-navbar-card[data-variant="mobile"] .c-navbar-card__item {
+        flex: 0 0 auto;
+        min-width: 0;
+    }
+
+    .c-navbar-card[data-variant="mobile"] .c-navbar-card__link {
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .c-navbar-card__link[aria-current="page"] {
+        font-weight: 700;
+    }
+
+    @media (max-width: 360px) {
+        .c-navbar-card[data-variant="mobile"] .c-navbar-card__link {
+            white-space: normal;
+        }
+    }
+
+    @media (min-width: 48em) {
+        .c-navbar-card[data-variant="mobile"] {
+            display: none;
+        }
+
+        .c-navbar-card[data-variant="desktop"] {
+            display: block;
+        }
+    }
+</style>

@@ -1,48 +1,51 @@
 ---
-import '../styles/global.css';
-// Main components 
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import PfpComponent from '../components/PfpComponent.astro';
+import "../styles/global.css";
+// Main components
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import PfpComponent from "../components/PfpComponent.astro";
 
 // Aside components
-import NavbarComponent from '../components/NavbarComponent.astro';
+import NavbarComponent from "../components/NavbarComponent.astro";
 
-const { tabTitle = 'atl97853' } = Astro.props;
+const { tabTitle = "atl97853" } = Astro.props;
 ---
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{tabTitle}</title>
-    <!-- <link rel="stylesheet" href="./style.css"> -->
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{tabTitle}</title>
+    </head>
+    <body>
+        <div class="l-main-wrapper">
+            <Header />
 
-<div class="l-main-wrapper">
-    <Header />
+            <div class="l-layout-grid">
+                <main class="l-content">
+                    <PfpComponent />
 
-    <div class="l-layout-grid">
-        <main class="l-content">
-            <PfpComponent />
-            <!-- default components -->
-            <slot name="logs-component" />
-            <slot name="webmaster-component" />
-            <!-- custom cards -->
-            <slot name="custom-cards"/>
-        </main>
+                    <NavbarComponent variant="mobile" />
 
-        <aside class="l-sidebar">
-            <!-- default components -->
-            <NavbarComponent />
-            <!-- custom cards -->
-            <slot name="custom-cards-aside"/>
-        </aside>
-    </div>
+                    <!-- default components -->
+                    <slot name="logs-component" />
+                    <slot name="webmaster-component" />
 
-    <Footer />
-</div>
+                    <!-- custom cards -->
+                    <slot name="custom-cards" />
+                </main>
 
-</body>
+                <aside class="l-sidebar">
+                    <!-- default components -->
+                    <NavbarComponent variant="desktop" />
+
+                    <!-- custom cards -->
+                    <slot name="custom-cards-aside" />
+                </aside>
+            </div>
+
+            <Footer />
+        </div>
+    </body>
 </html>
