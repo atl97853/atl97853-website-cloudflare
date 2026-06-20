@@ -34,6 +34,10 @@ import pfp from "../images/pfp_avatar.jpg";
         align-items: center;
     }
 
+    .c-card--welcome .c-pfp {
+        flex: 0 0 auto;
+    }
+
     .c-card--welcome .c-intro {
         flex: 1;
         min-width: 0;
@@ -49,7 +53,18 @@ import pfp from "../images/pfp_avatar.jpg";
 
     @media (max-width: 560px) {
         .c-card--welcome .c-card__body {
-            align-items: flex-start;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .c-card--welcome .c-pfp {
+            margin-inline: auto;
+        }
+
+        .c-card--welcome .c-intro {
+            width: 100%;
+            align-self: center;
         }
     }
 </style>
