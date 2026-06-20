@@ -21,11 +21,35 @@ import pfp from "../images/pfp_avatar.jpg";
 
         <div class="c-intro">
             <p>
-                Hi, my name is <b>Atl</b>, and this is my personal website. I
-                use this space to write about what I’m studying, share things I
-                like, and keep notes on books, courses, code, and projects. Feel
-                free to wander around. ⸜(｡˃ ᵕ ˂ )⸝♡
+                Hi, my name is <b>Atl</b>, and this is my personal website. Here I
+                write about my studies, technology, books I’ve read, and other
+                things I find interesting. Feel free to wander around.
             </p>
         </div>
     </div>
 </section>
+
+<style>
+    .c-card--welcome .c-card__body {
+        align-items: center;
+    }
+
+    .c-card--welcome .c-intro {
+        flex: 1;
+        min-width: 0;
+        align-self: center;
+    }
+
+    .c-card--welcome .c-intro p {
+        max-width: 42rem;
+        margin: 0;
+        line-height: 1.5;
+        overflow-wrap: break-word;
+    }
+
+    @media (max-width: 560px) {
+        .c-card--welcome .c-card__body {
+            align-items: flex-start;
+        }
+    }
+</style>
