@@ -119,15 +119,21 @@ const hasLogs = logs.length > 0;
         margin: 0;
     }
 
-    .c-logs-card__title-link {
+    .c-logs-card__title-link,
+    .c-logs-card__title-link:visited,
+    .c-logs-card__title-link:hover,
+    .c-logs-card__title-link:active {
         color: inherit;
         text-decoration: none;
     }
 
-    .c-logs-card__title-link:hover,
+    .c-logs-card__title-link {
+        cursor: pointer;
+    }
+
     .c-logs-card__title-link:focus-visible {
-        text-decoration: underline;
-        text-underline-offset: 0.14em;
+        outline: 1px dotted currentColor;
+        outline-offset: 2px;
     }
 
     .c-logs-card__body {
