@@ -1,22 +1,121 @@
 ---
-import latest_logs from '../content/latest_logs.json';
-// Limit to the latest n logs
-const limited_logs = latest_logs.slice(0,5);
----
-<style>
-    #log_tab_title {
-        all: unset;
-        cursor: pointer;
-    }
-</style>
+import latestLogs from "../content/latest_logs.json";
 
-<section class="c-card">
-    <div class="c-card__header"><a id="log_tab_title" href="https://nownownow.com/about" target="blank">update log</a></div>
-    <div class="c-card__body">
-        <ul class="c-log">
-            {limited_logs.map((log) => ( 
-                <li class="c-log__item"><b>{log.time}: </b>{log.text}</li>
-            ))}
-        </ul>
+interface LogEntry {
+    time?: string;
+    text?: string;
+}
+
+const LOG_LIMIT = 5;
+
+function normalizeText(value?: string): string {
+    return typeof value === "string" ? value.trim() : "";
+}
+
+const logs = Array.isArray(latestLogs)
+    ? (latestLogs as LogEntry[])
+          .map((log) => ({
+              time: normalizeText(log.time),
+              text: normalizeText(log.text),
+          }))
+          .filter((log) => log.time.length > 0 || log.text.length > 0)
+          .slice(0, LOG_LIMIT)
+    : [];
+
+const hasLogs = logs.length > 0;
+---
+
+<section class="c-card c-logs-card" aria-labelledby="logs-title">
+    <h2 id="logs-title" class="c-card__header c-logs-card__title">
+        <a
+            class="c-logs-card__title-link"
+            href="https://nownownow.com/about"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Read about now pages. Opens in a new tab."
+        >
+            update log
+        </a>
+    </h2>
+
+    <div class="c-card__body c-logs-card__body">
+        {
+            hasLogs ? (
+                <ul class="c-log" aria-label="latest updates">
+                    {logs.map((log) => (
+                        <li class="c-log__item">
+                            {log.time && (
+                                <span class="c-log__time">{log.time}: </span>
+                            )}
+
+                            {log.text && (
+                                <span class="c-log__text">{log.text}</span>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            ) : (
+                <p class="c-log__empty">No updates available at the moment.</p>
+            )
+        }
     </div>
 </section>
+
+<style>
+    .c-logs-card__title {
+        margin: 0;
+    }
+
+    .c-logs-card__title-link {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .c-logs-card__title-link:hover,
+    .c-logs-card__title-link:focus-visible {
+        text-decoration: underline;
+        text-underline-offset: 0.14em;
+    }
+
+    .c-logs-card__body {
+        padding-top: var(--space-xs, 4px);
+    }
+
+    .c-log {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .c-log__item {
+        margin: 0;
+        color: var(--clr-text-main, currentColor);
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+    .c-log__item + .c-log__item {
+        margin-top: var(--space-xs, 4px);
+    }
+
+    .c-log__time {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .c-log__text {
+        color: inherit;
+    }
+
+    .c-log__empty {
+        margin: 0;
+        color: var(--clr-text-muted, currentColor);
+        overflow-wrap: break-word;
+    }
+
+    @media (max-width: 560px) {
+        .c-log__time {
+            white-space: normal;
+        }
+    }
+</style>
