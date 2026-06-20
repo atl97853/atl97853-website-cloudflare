@@ -1,0 +1,11 @@
+[
+    {
+        "date": "2026-03-03",
+        "time": "19:36",
+        "text": "example log with date and time"
+    },
+    {
+        "time": "11:26 am",
+        "text": "I think I'll publish the website today; I like how it looks so far"
+    }
+]

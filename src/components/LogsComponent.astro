@@ -1,9 +1,19 @@
 ---
-import latestLogs from "../content/latest_logs.json";
+import latestLogs from "../content/data/logs/latest_logs.json";
 
 interface LogEntry {
+    date?: string;
     time?: string;
     text?: string;
+}
+
+interface NormalizedLogEntry {
+    date: string;
+    time: string;
+    text: string;
+    marker: string;
+    dateTime: string;
+    hasDate: boolean;
 }
 
 const LOG_LIMIT = 5;
@@ -12,13 +22,43 @@ function normalizeText(value?: string): string {
     return typeof value === "string" ? value.trim() : "";
 }
 
-const logs = Array.isArray(latestLogs)
+function formatDate(date: string): string {
+    const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+
+    if (!match) {
+        return date;
+    }
+
+    const [, year, month, day] = match;
+    return `${day}.${month}.${year.slice(2)}`;
+}
+
+function getDateTimeValue(date: string, time: string): string {
+    if (date && time) {
+        return `${date}T${time}`;
+    }
+
+    return date || time;
+}
+
+const logs: NormalizedLogEntry[] = Array.isArray(latestLogs)
     ? (latestLogs as LogEntry[])
-          .map((log) => ({
-              time: normalizeText(log.time),
-              text: normalizeText(log.text),
-          }))
-          .filter((log) => log.time.length > 0 || log.text.length > 0)
+          .map((log) => {
+              const date = normalizeText(log.date);
+              const time = normalizeText(log.time);
+              const text = normalizeText(log.text);
+              const hasDate = date.length > 0;
+
+              return {
+                  date,
+                  time,
+                  text,
+                  hasDate,
+                  marker: hasDate ? formatDate(date) : time,
+                  dateTime: getDateTimeValue(date, time),
+              };
+          })
+          .filter((log) => log.marker.length > 0 && log.text.length > 0)
           .slice(0, LOG_LIMIT)
     : [];
 
@@ -44,12 +84,25 @@ const hasLogs = logs.length > 0;
                 <ul class="c-log" aria-label="latest updates">
                     {logs.map((log) => (
                         <li class="c-log__item">
-                            {log.time && (
-                                <span class="c-log__time">{log.time}: </span>
-                            )}
+                            <time
+                                class="c-log__marker"
+                                datetime={log.dateTime}
+                            >
+                                {log.marker}:
+                            </time>{" "}
 
-                            {log.text && (
-                                <span class="c-log__text">{log.text}</span>
+                            <span class="c-log__text">{log.text}</span>
+
+                            {log.hasDate && log.time && (
+                                <>
+                                    {" "}
+                                    <time
+                                        class="c-log__time"
+                                        datetime={log.dateTime}
+                                    >
+                                        {log.time}
+                                    </time>
+                                </>
                             )}
                         </li>
                     ))}
@@ -89,8 +142,8 @@ const hasLogs = logs.length > 0;
 
     .c-log__item {
         margin: 0;
-        color: var(--clr-text-main, currentColor);
         line-height: 1.45;
+        text-wrap: pretty;
         overflow-wrap: anywhere;
     }
 
@@ -98,13 +151,15 @@ const hasLogs = logs.length > 0;
         margin-top: var(--space-xs, 4px);
     }
 
-    .c-log__time {
+    .c-log__marker {
         font-weight: 700;
         white-space: nowrap;
     }
 
-    .c-log__text {
-        color: inherit;
+    .c-log__time {
+        color: var(--clr-text-muted, currentColor);
+        font-size: var(--fs-xs, 0.875rem);
+        white-space: nowrap;
     }
 
     .c-log__empty {
@@ -114,6 +169,7 @@ const hasLogs = logs.length > 0;
     }
 
     @media (max-width: 560px) {
+        .c-log__marker,
         .c-log__time {
             white-space: normal;
         }
