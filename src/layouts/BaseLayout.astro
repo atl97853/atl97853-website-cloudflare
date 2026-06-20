@@ -1,14 +1,20 @@
 ---
 import "../styles/global.css";
-// Main components
+
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
+import NavbarComponent from "../components/NavbarComponent.astro";
 import PfpComponent from "../components/PfpComponent.astro";
 
-// Aside components
-import NavbarComponent from "../components/NavbarComponent.astro";
+interface Props {
+    tabTitle?: string;
+    description?: string;
+}
 
-const { tabTitle = "atl97853" } = Astro.props;
+const {
+    tabTitle = "atl97853",
+    description = "Hi, my name is Atl, and this is my personal website. Here I write about my studies, technology, books I have read, and other things I find interesting. Feel free to wander around.",
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -16,31 +22,28 @@ const { tabTitle = "atl97853" } = Astro.props;
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content={description} />
         <title>{tabTitle}</title>
     </head>
+
     <body>
         <div class="l-main-wrapper">
             <Header />
 
             <div class="l-layout-grid">
-                <main class="l-content">
+                <main id="main-content" class="l-content">
                     <PfpComponent />
 
                     <NavbarComponent variant="mobile" />
 
-                    <!-- default components -->
                     <slot name="logs-component" />
                     <slot name="webmaster-component" />
-
-                    <!-- custom cards -->
                     <slot name="custom-cards" />
                 </main>
 
-                <aside class="l-sidebar">
-                    <!-- default components -->
+                <aside class="l-sidebar" aria-label="Site sidebar">
                     <NavbarComponent variant="desktop" />
 
-                    <!-- custom cards -->
                     <slot name="custom-cards-aside" />
                 </aside>
             </div>
