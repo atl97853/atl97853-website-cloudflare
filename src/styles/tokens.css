@@ -1,0 +1,81 @@
+/*
+ * Design tokens
+ * CSS variables: colors, fonts, spacing, sizes, borders.
+ * Values that may change.
+ * 
+ * This file stores the reusable CSS variables that define the visual
+ * foundation of the site: colors, fonts, font sizes, spacing, borders,
+ * border radius, and other values shared across pages and components.
+ *
+ * Keep theme-level values here instead of hard-coding them inside
+ * component or layout styles. This makes it easier to change the overall
+ * look of the site later without editing many separate selectors.
+ *
+ * Use this file for values, not for actual styling rules.
+ * Example: define --clr-accent here, then use var(--clr-accent)
+ * in base.css, layout.css, component styles, or page-specific styles.
+ */
+
+:root {
+    --clr-bg-page: #ffffff;
+    --clr-bg-container: #ffffff;
+    --clr-bg-card: transparent;
+    --clr-accent: #0000ee;
+    --clr-text-main: #000000;
+    --clr-text-muted: #444444;
+    --clr-border: transparent;
+
+    --ff-main: Arial, Helvetica, sans-serif;
+
+    --fs-xs: 0.875rem;
+    --fs-sm: 1rem;
+    --fs-md: 1.35rem;
+    --fs-lg: 1.75rem;
+
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+    
+    --br-sm: 0;
+    --bw-frame: 0;
+}
+
+/* This is where the configuration of the dark theme style begins. */
+
+[theme="dark"] {
+    --clr-bg-page: #0a0a0a;
+    --clr-bg-container: #0a0a0a;
+    --clr-bg-card: transparent;
+    --clr-text-main: #e0e0e0;
+    --clr-text-muted: #888888;
+    --clr-accent: #ffffff;
+    --clr-link-hover: #ffffff;
+    --clr-link-visited: #d0d0d0;
+    --clr-border: transparent;
+
+    --ff-main: Arial, Helvetica, sans-serif;
+
+    --bw-frame: 0;
+    --br-sm: 0;
+}
+
+/* This is where the configuration of the dark theme style begins. */
+
+[theme="light"] {
+    --clr-bg-page: #ffffff;
+    --clr-bg-container: #ffffff;
+    --clr-bg-card: transparent;
+    --clr-text-main: #000000;
+    --clr-text-muted: #444444;
+    --clr-accent: #0000ee;
+    --clr-link-hover: #0000ee;
+    --clr-link-visited: #551a8b;
+    --clr-border: transparent;
+
+    --ff-main: Arial, Helvetica, sans-serif;
+
+    --bw-frame: 0;
+    --br-sm: 0;
+}
