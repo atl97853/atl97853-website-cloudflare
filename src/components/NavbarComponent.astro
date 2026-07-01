@@ -1,15 +1,9 @@
 ---
-interface Props {
-    variant?: "mobile" | "desktop";
-}
-
 interface NavLink {
     href: string;
     label: string;
     icon: string;
 }
-
-const variant = Astro.props.variant === "mobile" ? "mobile" : "desktop";
 
 const navLinks: NavLink[] = [
     { href: "/", label: "homepage", icon: "📁" },
@@ -37,10 +31,7 @@ function isCurrentPage(href: string): boolean {
         "c-card",
         "c-card--sidebar",
         "c-navbar-card",
-        `c-navbar-card--${variant}`,
     ]}
-    data-variant={variant}
-    aria-label="Primary navigation"
 >
     <h2 class="c-card__header c-navbar-card__title">
         navigation
@@ -55,10 +46,13 @@ function isCurrentPage(href: string): boolean {
                     <li class="c-navbar-card__item">
                         <a
                             href={link.href}
-                            class="c-nav-list__link c-navbar-card__link"
-                            aria-current={isCurrent ? "page" : undefined}
+                            class:list={[
+                                "c-nav-list__link",
+                                "c-navbar-card__link",
+                                isCurrent && "is-current",
+                            ]}
                         >
-                            <span aria-hidden="true">{link.icon}</span>{" "}
+                            <span>{link.icon}</span>{" "}
                             <span>{link.label}</span>
                         </a>
                     </li>
@@ -67,59 +61,3 @@ function isCurrentPage(href: string): boolean {
         }
     </ul>
 </nav>
-
-<style>
-    .c-navbar-card[data-variant="desktop"] {
-        display: none;
-    }
-
-    .c-navbar-card__title {
-        margin: 0;
-    }
-
-    .c-navbar-card[data-variant="mobile"] {
-        text-align: center;
-    }
-
-    .c-navbar-card[data-variant="mobile"] .c-navbar-card__list {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: baseline;
-        gap: var(--space-xs, 4px) var(--space-md, 16px);
-        max-width: 100%;
-        padding: 0;
-        overflow: visible;
-    }
-
-    .c-navbar-card[data-variant="mobile"] .c-navbar-card__item {
-        flex: 0 0 auto;
-        min-width: 0;
-    }
-
-    .c-navbar-card[data-variant="mobile"] .c-navbar-card__link {
-        display: inline-block;
-        white-space: nowrap;
-    }
-
-    .c-navbar-card__link[aria-current="page"] {
-        font-weight: 700;
-    }
-
-    @media (max-width: 360px) {
-        .c-navbar-card[data-variant="mobile"] .c-navbar-card__link {
-            white-space: normal;
-        }
-    }
-
-    @media (min-width: 48em) {
-        .c-navbar-card[data-variant="mobile"] {
-            display: none;
-        }
-
-        .c-navbar-card[data-variant="desktop"] {
-            display: block;
-        }
-    }
-</style>

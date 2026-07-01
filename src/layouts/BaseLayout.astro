@@ -16,8 +16,7 @@ const {
     description = "Hi, my name is Atl, and this is my personal website. Here I write about my studies, technology, books I have read, and other things I find interesting. Feel free to wander around.",
 } = Astro.props;
 ---
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -34,15 +33,13 @@ const {
                 <main id="main-content" class="l-content">
                     <PfpComponent />
 
-                    <NavbarComponent variant="mobile" />
-
                     <slot name="logs-component" />
                     <slot name="webmaster-component" />
                     <slot name="custom-cards" />
                 </main>
 
-                <aside class="l-sidebar" aria-label="Site sidebar">
-                    <NavbarComponent variant="desktop" />
+                <aside class="l-sidebar">
+                    <NavbarComponent />
 
                     <slot name="custom-cards-aside" />
                 </aside>
