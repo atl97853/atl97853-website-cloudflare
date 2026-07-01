@@ -7,12 +7,12 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
     { href: "/", label: "homepage", icon: "📁" },
+    { href: "/about", label: "about", icon: "👤" },
     { href: "/blog", label: "blog", icon: "📁" },
     { href: "/coursework", label: "coursework", icon: "📄" },
     { href: "/library", label: "library", icon: "📖" },
-    { href: "/anime", label: "anime", icon: "🐱" },
-    { href: "/guestbook", label: "guestbook", icon: "📝" },
-    { href: "/projects", label: "projects", icon: "⚙️" },
+    // { href: "/guestbook", label: "guestbook", icon: "📝" },
+    // { href: "/projects", label: "projects", icon: "⚙️" },
 ];
 
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
