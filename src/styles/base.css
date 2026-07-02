@@ -3,7 +3,7 @@
  * Reset styles, html, body, links, paragraphs, images, forms.
  * Browser/default element behavior.
  */
- 
+
 *,
 *::before,
 *::after {
@@ -23,14 +23,12 @@ body {
     padding: var(--space-sm);
 
     background-color: var(--clr-bg-page);
-    background-image: none;
     color: var(--clr-text-main);
-    
+
     font-family: var(--ff-main);
     font-size: 16px;
-    
     line-height: 1.45;
-    
+
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
@@ -61,17 +59,17 @@ select {
 }
 
 a {
-    color: var(--clr-accent);
+    color: var(--clr-link-main);
     text-decoration: underline;
 }
 
 a:visited {
-    color: var(--clr-link-visited, var(--clr-accent));
+    color: var(--clr-link-visited);
 }
 
 a:hover,
 a:focus-visible {
-    color: var(--clr-link-hover, var(--clr-accent));
+    color: var(--clr-link-hover);
 }
 
 p {
@@ -84,16 +82,23 @@ p:last-child {
 
 b,
 strong {
+    color: var(--clr-text-strong);
     font-weight: 700;
 }
 
 code,
 pre {
+    color: var(--clr-text-main);
     font-family: var(--ff-main);
 }
 
 pre {
     white-space: pre-wrap;
+}
+
+::selection {
+    background-color: var(--clr-selection-bg);
+    color: var(--clr-selection-text);
 }
 
 @media (prefers-reduced-motion: reduce) {
