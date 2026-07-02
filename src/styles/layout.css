@@ -1,0 +1,54 @@
+/*
+ * Layout styles
+ * Page structure, main wrapper, layout grid, content, and sidebar.
+ * Responsive layout behavior and layout media queries.
+ * Examples: .l-main-wrapper, .l-layout-grid, .l-content, .l-sidebar, layout media queries. 
+ */
+
+.l-main-wrapper {
+    width: 100%;
+    max-width: clamp(320px, 95vw, 900px);
+    margin: 0 auto;
+    overflow: visible;
+
+    background: var(--clr-bg-container);
+    border: var(--bw-frame) solid var(--clr-border);
+    outline: none;
+    border-radius: var(--br-sm);
+    box-shadow: none;
+}
+
+.l-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    gap: var(--space-md);
+    padding: var(--space-md);
+}
+
+.l-content {
+    line-height: 1.5;
+}
+
+/* Layout media queries */
+
+@media (min-width: 48em) {
+    body {
+        align-items: flex-start;
+        padding: var(--space-xl) 2vw var(--space-md);
+    }
+
+    .l-layout-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--space-xl);
+        padding: var(--space-lg);
+    }
+
+    .l-content {
+        grid-column: span 2;
+    }
+
+    .l-sidebar {
+        grid-column: 3;
+    }
+}
