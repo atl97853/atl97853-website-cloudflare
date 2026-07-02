@@ -1,19 +1,15 @@
 /*
  * Component styles
  * Site header, footer, cards, profile image, navigation, and readonly inputs.
- * Temporary component grouping while CSS structure is being refactored.
  */
 
- .c-site-header {
+.c-site-header {
     padding: var(--space-lg) var(--space-sm);
-    color: var(--clr-text-main);
-    background: transparent;
-    border: none;
     text-align: center;
 }
 
 .c-site-header__title {
-    color: var(--clr-text-main);
+    color: var(--clr-text-strong);
     font-size: var(--fs-lg);
     line-height: 1.25;
     font-weight: 700;
@@ -25,37 +21,24 @@
     font-size: var(--fs-xs);
     line-height: 1.4;
     text-align: center;
-    border: none;
 }
 
 .c-card {
-    position: relative;
     margin-bottom: var(--space-lg);
-    overflow: visible;
     background: var(--clr-bg-card);
-    border: none;
+    border: var(--bw-frame) solid var(--clr-border);
     border-radius: var(--br-sm);
-    box-shadow: none;
-    transition: none;
 }
 
 .c-card__header {
-    padding: 0 0 var(--space-sm);
-    color: var(--clr-text-main);
-    background: transparent;
-    border: none;
+    padding-bottom: var(--space-sm);
+    color: var(--clr-text-strong);
     font-size: var(--fs-md);
     line-height: 1.25;
     font-weight: 700;
-    letter-spacing: 0;
-}
-
-.c-card__header::before {
-    content: "";
 }
 
 .c-card__body {
-    padding: 0;
     color: var(--clr-text-main);
     font-size: var(--fs-sm);
     line-height: 1.5;
@@ -63,22 +46,17 @@
 
 .c-pfp {
     flex-shrink: 0;
-    width: 100px;
-    height: 100px;
+    width: var(--size-pfp);
+    height: var(--size-pfp);
     margin-bottom: var(--space-md);
     overflow: hidden;
-    background: transparent;
-    border: none;
-    outline: none;
-    box-shadow: none;
 }
 
 .c-pfp img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border: none;
-    outline: none;
+    image-rendering: pixelated;
 }
 
 .c-nav-list {
@@ -86,49 +64,26 @@
     flex-direction: column;
     gap: 0;
     padding: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
 }
 
 .c-nav-list__link {
     display: block;
     padding: 0;
-    color: var(--clr-accent);
-    background: transparent;
-    border: none;
-    box-shadow: none;
+    color: var(--clr-link-main);
     font-size: var(--fs-sm);
     line-height: 1.4;
-    letter-spacing: 0;
     text-decoration: underline;
-    transition: none;
-}
-
-.c-nav-list__link::before,
-.c-nav-list__link::after {
-    content: "";
-    display: none;
 }
 
 .c-nav-list__link:hover,
 .c-nav-list__link:focus-visible {
-    color: var(--clr-link-hover, var(--clr-accent));
-    padding-left: 0;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    text-shadow: none;
-    transform: none;
+    color: var(--clr-link-hover);
 }
 
 .c-input--readonly {
     width: 100%;
     padding: var(--space-xs);
-    background: transparent;
     color: var(--clr-text-main);
-    border: none;
-    box-shadow: none;
     font-size: var(--fs-xs);
     line-height: 1.4;
 }
