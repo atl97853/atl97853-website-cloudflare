@@ -3,7 +3,7 @@ import "../styles/global.css";
 
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
-import NavbarComponent from "../components/NavbarComponent.astro";
+import Navbar from "../components/Navbar.astro";
 import PfpComponent from "../components/PfpComponent.astro";
 
 interface Props {
@@ -37,7 +37,7 @@ const {
                 </main>
 
                 <aside class="l-sidebar">
-                    <NavbarComponent />
+                    <Navbar />
 
                     <slot name="custom-cards-aside" />
                 </aside>
