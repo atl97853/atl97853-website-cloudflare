@@ -1,0 +1,32 @@
+---
+import { Image } from "astro:assets";
+
+import Card from "./primitives/Card.astro";
+
+import pfp from "../images/pfp_avatar.jpg";
+---
+
+<Card
+    title="Welcome to my website!"
+    titleId="welcome-card-title"
+    class="c-card--welcome"
+    bodyClass="u-flex"
+>
+    <div class="c-pfp">
+        <a href="/" aria-label="Go to homepage">
+            <Image
+                src={pfp}
+                alt="Avatar illustration of Atl"
+                decoding="async"
+            />
+        </a>
+    </div>
+
+    <div class="c-intro">
+        <p>
+            Hi, my name is <b>Atl</b>, and this is my personal website. Here I
+            write about my studies, technology, books I’ve read, and other
+            things I find interesting. Feel free to wander around.
+        </p>
+    </div>
+</Card>

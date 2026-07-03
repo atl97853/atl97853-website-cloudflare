@@ -4,7 +4,7 @@ import "../styles/global.css";
 import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import Navbar from "../components/Navbar.astro";
-import PfpComponent from "../components/PfpComponent.astro";
+import Pfp from "../components/Pfp.astro";
 
 interface Props {
     tabTitle?: string;
@@ -31,7 +31,7 @@ const {
 
             <div class="l-layout-grid">
                 <main id="main-content" class="l-content">
-                    <PfpComponent />
+                    <Pfp />
 
                     <slot name="custom-cards" />
                 </main>
