@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/primitives/Card.astro";
 import ProgressBar from "../components/ProgressBar.astro";
+
 import coursework from "../content/data/coursework/coursework.json";
 
 type CourseStatus = "incomplete" | "in-progress" | "completed";
@@ -44,7 +46,11 @@ function getSeasonId(season: string, index: number): string {
     return `season-${slug || index}`;
 }
 
-const seasonGroups = (coursework as SeasonGroup[])
+const rawCoursework = Array.isArray(coursework)
+    ? (coursework as SeasonGroup[])
+    : [];
+
+const seasonGroups = rawCoursework
     .map((group) => {
         const courses = Array.isArray(group.courses)
             ? group.courses
@@ -73,94 +79,91 @@ const hasCoursework = seasonGroups.length > 0;
 ---
 
 <BaseLayout tabTitle="coursework">
-    <article
-        class="c-card c-coursework-card"
+    <Card
         slot="custom-cards"
-        aria-labelledby="coursework-title"
+        as="article"
+        title="Coursework"
+        titleId="coursework-title"
+        class="c-coursework-card"
+        bodyClass="c-coursework-card__body"
     >
-        <header class="c-coursework-card__header">
-            <h1 id="coursework-title" class="c-card__header c-coursework-card__title">
-                coursework
-            </h1>
-        </header>
+        {
+            hasCoursework ? (
+                seasonGroups.map((season, index) => {
+                    const seasonId = getSeasonId(season.season, index);
 
-        <div class="c-card__body c-coursework-card__body">
-            {
-                hasCoursework ? (
-                    seasonGroups.map((season, index) => {
-                        const seasonId = getSeasonId(season.season, index);
+                    return (
+                        <section class="c-season-group" aria-labelledby={seasonId}>
+                            <h2 id={seasonId} class="c-season-title">
+                                {season.season}
+                            </h2>
 
-                        return (
-                            <section class="c-season-group" aria-labelledby={seasonId}>
-                                <h2 id={seasonId} class="c-season-title">
-                                    {season.season}
-                                </h2>
-
-                                <ul
-                                    class="c-course-list"
-                                    aria-label={`${season.season} coursework`}
-                                >
-                                    {season.courses.map((course) => (
-                                        <li
-                                            class="c-course-item"
-                                            data-status={course.status}
-                                        >
-                                            <span class="c-course-name">
-                                                {course.code && (
-                                                    <span class="c-course-code">
-                                                        {course.code}:{" "}
-                                                    </span>
-                                                )}
-
-                                                <span>{course.title}</span>
-                                            </span>
-
-                                            {course.status === "completed" && (
-                                                <span class="u-sr-only">
-                                                    completed
+                            <ul
+                                class="c-course-list"
+                                aria-label={`${season.season} coursework`}
+                            >
+                                {season.courses.map((course) => (
+                                    <li
+                                        class="c-course-item"
+                                        data-status={course.status}
+                                    >
+                                        <span class="c-course-name">
+                                            {course.code && (
+                                                <span class="c-course-code">
+                                                    {course.code}:{" "}
                                                 </span>
                                             )}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </section>
-                        );
-                    })
-                ) : (
-                    <p class="c-coursework-empty">
-                        I'm currently in the process of transitioning between universities and organizing my credits, so there's nothing available here at the moment.
-                    </p>
-                )
-            }
-        </div>
-    </article>
+
+                                            <span>{course.title}</span>
+                                        </span>
+
+                                        {course.status === "completed" && (
+                                            <span class="u-sr-only">
+                                                completed
+                                            </span>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    );
+                })
+            ) : (
+                <p class="c-coursework-empty">
+                    I'm currently in the process of transitioning between
+                    universities and organizing my credits, so there's nothing
+                    available here at the moment.
+                </p>
+            )
+        }
+    </Card>
 
     <ProgressBar slot="custom-cards-aside" />
 </BaseLayout>
 
 <style>
-    .c-coursework-card {
-        --course-completed: var(--clr-text-muted, currentColor);
+    :global(.c-coursework-card) {
+        --course-completed: var(--clr-text-muted);
     }
 
-    :global([theme="dark"]) .c-coursework-card {
+    :global([theme="dark"] .c-coursework-card) {
         --course-completed: rgba(255, 255, 255, 0.72);
     }
 
-    .c-coursework-card__body {
+    :global(.c-coursework-card__body) {
         max-width: 48rem;
-        padding-top: var(--space-md, 16px);
+        /* padding-top: var(--space-md); */
         line-height: 1.45;
     }
 
     .c-season-group + .c-season-group {
-        margin-top: var(--space-lg, 24px);
+        margin-top: var(--space-lg);
     }
 
     .c-season-title {
-        margin: 0 0 var(--space-sm, 8px);
-        color: var(--clr-text-main, currentColor);
-        font-size: var(--fs-sm, 1rem);
+        margin: 0 0 var(--space-sm);
+        color: var(--clr-text-main);
+        font-size: var(--fs-sm);
         font-style: italic;
         font-weight: 700;
         line-height: 1.35;
@@ -175,7 +178,7 @@ const hasCoursework = seasonGroups.length > 0;
 
     .c-course-item {
         padding-left: 0.15rem;
-        color: var(--clr-text-main, currentColor);
+        color: var(--clr-text-main);
     }
 
     .c-course-item + .c-course-item {
@@ -196,13 +199,13 @@ const hasCoursework = seasonGroups.length > 0;
 
     .c-course-item[data-status="completed"] .c-course-name {
         text-decoration: line-through;
-        text-decoration-thickness: 1px;
+        text-decoration-thickness: var(--bw-frame);
         text-decoration-color: currentColor;
     }
 
     .c-coursework-empty {
         margin: 0;
-        color: var(--clr-text-muted, currentColor);
+        color: var(--clr-text-muted);
         overflow-wrap: break-word;
     }
 
