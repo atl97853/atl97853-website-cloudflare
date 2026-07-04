@@ -1,5 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
+
+import Card from "./primitives/Card.astro";
 import SpoilerImage from "./SpoilerImage.astro";
 
 interface Props {
@@ -24,10 +26,18 @@ const {
 const { Content } = await book.render();
 
 const bookTitleId = `library-book-${book.slug.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+
 const coverSrc =
-    typeof cover === "string" && cover.trim().length > 0 ? cover : null;const hasCover = coverSrc !== null;
+    typeof cover === "string" && cover.trim().length > 0 ? cover : null;
+
+const hasCover = coverSrc !== null;
 const hasRating = typeof rating === "number";
 const hasNotes = typeof book.body === "string" && book.body.trim().length > 0;
+const hasSummary = typeof summary === "string" && summary.trim().length > 0;
+
+const bookClass = hasCover
+    ? "c-library-book"
+    : "c-library-book c-library-book--no-cover";
 
 function clampRating(value: number): number {
     return Math.min(5, Math.max(0, value));
@@ -35,11 +45,14 @@ function clampRating(value: number): number {
 
 function formatRating(value: number): string {
     const safeValue = clampRating(value);
+
     return Number.isInteger(safeValue) ? `${safeValue}` : safeValue.toFixed(1);
 }
 
 function renderStars(value?: number): string {
-    if (typeof value !== "number") return "unrated";
+    if (typeof value !== "number") {
+        return "unrated";
+    }
 
     const roundedValue = Math.round(clampRating(value));
     const emptyStars = 5 - roundedValue;
@@ -48,25 +61,25 @@ function renderStars(value?: number): string {
 }
 ---
 
-<article
-    class:list={[
-        "c-library-book",
-        { "c-library-book--no-cover": !hasCover },
-    ]}
-    aria-labelledby={bookTitleId}
+<Card
+    as="article"
+    class={bookClass}
+    ariaLabel={`Book: ${title}`}
 >
-    {coverSrc && (
-        <div class="c-library-book__cover">
-            <SpoilerImage
-                src={coverSrc}
-                alt={coverAlt || `Cover image for ${title}`}
-                spoiler={coverHasSpoiler}
-            />
-        </div>
-    )}
+    {
+        coverSrc && (
+            <div class="c-library-book__cover">
+                <SpoilerImage
+                    src={coverSrc}
+                    alt={coverAlt || `Cover image for ${title}`}
+                    spoiler={coverHasSpoiler}
+                />
+            </div>
+        )
+    }
 
     <div class="c-library-book__content">
-        <header class="c-library-book__header">
+        <header>
             <p class="c-library-book__meta">
                 {status}
                 {pubYear && ` · ${pubYear}`}
@@ -81,55 +94,80 @@ function renderStars(value?: number): string {
             </p>
         </header>
 
-        <p class="c-library-book__summary">
-            {summary}
-        </p>
+        {
+            hasSummary && (
+                <p class="c-library-book__summary">
+                    {summary}
+                </p>
+            )
+        }
 
         <div
             class="c-library-book__rating"
-            aria-label={hasRating ? `${formatRating(rating)} out of 5 stars` : "unrated"}
+            aria-label={
+                hasRating ? `${formatRating(rating)} out of 5 stars` : "unrated"
+            }
         >
             <span aria-hidden="true">{renderStars(rating)}</span>
-            {hasRating && (
-                <span class="c-library-book__rating-value">
-                    {formatRating(rating)} / 5
-                </span>
-            )}
+
+            {
+                hasRating && (
+                    <span class="c-library-book__rating-value">
+                        {formatRating(rating)} / 5
+                    </span>
+                )
+            }
         </div>
 
-        {tags.length > 0 && (
-            <ul class="c-library-book__tags" aria-label="Book tags">
-                {tags.map((tag) => (
-                    <li class="c-library-book__tag">{tag}</li>
-                ))}
-            </ul>
-        )}
+        {
+            tags.length > 0 && (
+                <ul class="c-library-book__tags" aria-label="Book tags">
+                    {tags.map((tag) => (
+                        <li class="c-library-book__tag">{tag}</li>
+                    ))}
+                </ul>
+            )
+        }
 
-        {hasNotes && (
-            <details class="c-library-book__notes">
-                <summary class="c-library-book__notes-summary">
-                    <span class="c-library-book__notes-closed">reading notes</span>
-                    <span class="c-library-book__notes-open">hide notes</span>
-                </summary>
+        {
+            hasNotes && (
+                <details class="c-library-book__notes">
+                    <summary class="c-library-book__notes-summary">
+                        <span class="c-library-book__notes-closed">
+                            reading notes
+                        </span>
 
-                <div class="c-library-book__notes-content">
-                    <Content />
-                </div>
-            </details>
-        )}
+                        <span class="c-library-book__notes-open">
+                            hide notes
+                        </span>
+                    </summary>
+
+                    <div class="c-library-book__notes-content">
+                        <Content />
+                    </div>
+                </details>
+            )
+        }
     </div>
-</article>
+</Card>
 
 <style>
-    .c-library-book {
-        display: grid;
-        grid-template-columns: 120px minmax(0, 1fr);
-        gap: var(--space-md, 16px);
-        padding: var(--space-md, 16px) 0;
-        border-bottom: 1px solid var(--library-border, rgba(0, 0, 0, 0.14));
+    :global(.c-library-book) {
+        margin-bottom: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
     }
 
-    .c-library-book--no-cover {
+    :global(.c-library-book > .c-card__body) {
+        display: grid;
+        grid-template-columns: 120px minmax(0, 1fr);
+        gap: var(--space-md);
+        padding: var(--space-md) 0;
+        border-bottom: var(--bw-frame) solid var(--library-border, var(--clr-border));
+    }
+
+    :global(.c-library-book--no-cover > .c-card__body) {
         grid-template-columns: 1fr;
     }
 
@@ -139,7 +177,6 @@ function renderStars(value?: number): string {
         aspect-ratio: 2 / 3;
         min-width: 0;
         overflow: hidden;
-        background: transparent;
     }
 
     .c-library-book__cover :global(.c-spoiler-image),
@@ -153,16 +190,16 @@ function renderStars(value?: number): string {
     }
 
     .c-library-book__meta {
-        margin: 0 0 var(--space-xs, 4px);
-        color: var(--clr-text-muted, currentColor);
-        font-size: var(--fs-xs, 0.875rem);
+        margin: 0 0 var(--space-xs);
+        color: var(--clr-text-muted);
+        font-size: var(--fs-xs);
         line-height: 1.4;
     }
 
     .c-library-book__title {
         margin: 0;
-        color: var(--clr-text-main, currentColor);
-        font-size: var(--fs-sm, 1rem);
+        color: var(--clr-text-main);
+        font-size: var(--fs-sm);
         line-height: 1.35;
         font-weight: 700;
         overflow-wrap: anywhere;
@@ -170,16 +207,16 @@ function renderStars(value?: number): string {
 
     .c-library-book__author {
         margin: 2px 0 0;
-        color: var(--clr-text-muted, currentColor);
-        font-size: var(--fs-sm, 1rem);
+        color: var(--clr-text-muted);
+        font-size: var(--fs-sm);
         line-height: 1.35;
         overflow-wrap: break-word;
     }
 
     .c-library-book__summary {
-        margin: var(--space-sm, 8px) 0 0;
-        color: var(--clr-text-main, currentColor);
-        font-size: var(--fs-sm, 1rem);
+        margin: var(--space-sm) 0 0;
+        color: var(--clr-text-main);
+        font-size: var(--fs-sm);
         line-height: 1.5;
         overflow-wrap: break-word;
     }
@@ -188,46 +225,46 @@ function renderStars(value?: number): string {
         display: flex;
         flex-wrap: wrap;
         align-items: baseline;
-        gap: var(--space-xs, 4px);
-        margin-top: var(--space-xs, 4px);
-        color: var(--library-star, var(--clr-accent, currentColor));
-        font-size: var(--fs-sm, 1rem);
+        gap: var(--space-xs);
+        margin-top: var(--space-xs);
+        color: var(--library-star, var(--clr-accent));
+        font-size: var(--fs-sm);
         line-height: 1.4;
         letter-spacing: 0.03em;
     }
 
     .c-library-book__rating-value {
-        color: var(--clr-text-muted, currentColor);
-        font-size: var(--fs-xs, 0.875rem);
+        color: var(--clr-text-muted);
+        font-size: var(--fs-xs);
         letter-spacing: 0;
     }
 
     .c-library-book__tags {
         display: flex;
         flex-wrap: wrap;
-        gap: var(--space-xs, 4px);
-        margin: var(--space-sm, 8px) 0 0;
+        gap: var(--space-xs);
+        margin: var(--space-sm) 0 0;
         padding: 0;
         list-style: none;
     }
 
     .c-library-book__tag {
         padding: 0.1rem 0.45rem;
-        color: var(--clr-text-main, currentColor);
-        background: var(--library-tag-bg, rgba(0, 0, 0, 0.04));
-        border: 1px solid var(--library-border, rgba(0, 0, 0, 0.14));
-        font-size: var(--fs-xs, 0.875rem);
+        color: var(--clr-text-main);
+        background: var(--library-tag-bg, transparent);
+        border: var(--bw-frame) solid var(--library-border, var(--clr-border));
+        font-size: var(--fs-xs);
         line-height: 1.35;
     }
 
     .c-library-book__notes {
-        margin-top: var(--space-sm, 8px);
+        margin-top: var(--space-sm);
     }
 
     .c-library-book__notes-summary {
         display: inline-block;
-        color: var(--clr-accent, currentColor);
-        font-size: var(--fs-sm, 1rem);
+        color: var(--clr-accent);
+        font-size: var(--fs-sm);
         line-height: 1.4;
         text-decoration: underline;
         text-underline-offset: 0.14em;
@@ -235,7 +272,6 @@ function renderStars(value?: number): string {
         list-style: none;
     }
 
-    
     .c-library-book__notes-summary::-webkit-details-marker {
         display: none;
     }
@@ -243,13 +279,14 @@ function renderStars(value?: number): string {
     .c-library-book__notes-summary::marker {
         content: "";
     }
+
     .c-library-book__notes-summary:hover,
     .c-library-book__notes-summary:focus-visible {
-        color: var(--clr-link-hover, var(--clr-accent, currentColor));
+        color: var(--clr-link-hover);
     }
 
     .c-library-book__notes-summary:focus-visible {
-        outline: 2px solid currentColor;
+        outline: var(--bw-frame) solid currentColor;
         outline-offset: 2px;
     }
 
@@ -266,9 +303,9 @@ function renderStars(value?: number): string {
     }
 
     .c-library-book__notes-content {
-        margin-top: var(--space-sm, 8px);
-        color: var(--clr-text-main, currentColor);
-        font-size: var(--fs-sm, 1rem);
+        margin-top: var(--space-sm);
+        color: var(--clr-text-main);
+        font-size: var(--fs-sm);
         line-height: 1.6;
         overflow-wrap: break-word;
     }
@@ -282,7 +319,7 @@ function renderStars(value?: number): string {
     }
 
     @media (max-width: 38em) {
-        .c-library-book {
+        :global(.c-library-book > .c-card__body) {
             grid-template-columns: 1fr;
         }
 

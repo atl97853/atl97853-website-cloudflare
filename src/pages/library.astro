@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import LibraryBookCard from "../components/LibraryBookCard.astro";
+import BookEntry from "../components/BookEntry.astro";
 import LibraryYearNav from "../components/LibraryYearNav.astro";
 
 const books: CollectionEntry<"library">[] = (await getCollection("library")).sort(
@@ -76,7 +76,7 @@ const bookCountLabel = totalBooks === 1 ? "1 book" : `${totalBooks} books`;
 
                         <div class="c-library-list">
                             {books.map((book) => (
-                                <LibraryBookCard book={book} />
+                                <BookEntry book={book} />
                             ))}
                         </div>
                     </section>
