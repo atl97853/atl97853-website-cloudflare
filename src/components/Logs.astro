@@ -1,4 +1,6 @@
 ---
+import Card from "./primitives/Card.astro";
+
 import latestLogs from "../content/data/logs/latest_logs.json";
 
 interface LogEntry {
@@ -65,54 +67,52 @@ const logs: NormalizedLogEntry[] = Array.isArray(latestLogs)
 const hasLogs = logs.length > 0;
 ---
 
-<section class="c-card c-logs-card" aria-labelledby="logs-title">
-    <h2 id="logs-title" class="c-card__header c-logs-card__title">
-        <a
-            class="c-logs-card__title-link"
-            href="https://nownownow.com/about"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Read about now pages. Opens in a new tab."
-        >
-            update log
-        </a>
-    </h2>
+<Card
+    titleId="logs-title"
+    class="c-logs-card"
+    bodyClass="c-logs-card__body"
+>
+    <a
+        slot="header"
+        class="c-logs-card__title-link"
+        href="https://nownownow.com/about"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Read about now pages. Opens in a new tab."
+    >
+        Update log
+    </a>
 
-    <div class="c-card__body c-logs-card__body">
-        {
-            hasLogs ? (
-                <ul class="c-log" aria-label="latest updates">
-                    {logs.map((log) => (
-                        <li class="c-log__item">
-                            <time
-                                class="c-log__marker"
-                                datetime={log.dateTime}
-                            >
-                                {log.marker}:
-                            </time>{" "}
+    {
+        hasLogs ? (
+            <ul class="c-log" aria-label="latest updates">
+                {logs.map((log) => (
+                    <li class="c-log__item">
+                        <time class="c-log__marker" datetime={log.dateTime}>
+                            {log.marker}:
+                        </time>{" "}
 
-                            <span class="c-log__text">{log.text}</span>
+                        <span class="c-log__text">{log.text}</span>
 
-                            {log.hasDate && log.time && (
-                                <>
-                                    {" "}
-                                    <time
-                                        class="c-log__time"
-                                        datetime={log.dateTime}
-                                    >
-                                        {log.time}
-                                    </time>
-                                </>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p class="c-log__empty">No updates available at the moment.</p>
-            )
-        }
-    </div>
-</section>
+                        {log.hasDate && log.time && (
+                            <>
+                                {" "}
+                                <time
+                                    class="c-log__time"
+                                    datetime={log.dateTime}
+                                >
+                                    {log.time}
+                                </time>
+                            </>
+                        )}
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <p class="c-log__empty">No updates available at the moment.</p>
+        )
+    }
+</Card>
 
 <style>
     .c-logs-card__title {
