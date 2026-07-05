@@ -84,8 +84,6 @@ const hasCoursework = seasonGroups.length > 0;
         as="article"
         title="Coursework"
         titleId="coursework-title"
-        class="c-coursework-card"
-        bodyClass="c-coursework-card__body"
     >
         {
             hasCoursework ? (
@@ -142,18 +140,15 @@ const hasCoursework = seasonGroups.length > 0;
 </BaseLayout>
 
 <style>
-    :global(.c-coursework-card) {
+    .c-coursework {
         --course-completed: var(--clr-text-muted);
-    }
 
-    :global([theme="dark"] .c-coursework-card) {
-        --course-completed: rgba(255, 255, 255, 0.72);
-    }
-
-    :global(.c-coursework-card__body) {
         max-width: 48rem;
-        /* padding-top: var(--space-md); */
-        line-height: 1.45;
+        line-height: var(--lh-body);
+    }
+
+    :global([theme="dark"]) .c-coursework {
+        --course-completed: rgba(255, 255, 255, 0.72);
     }
 
     .c-season-group + .c-season-group {
@@ -161,17 +156,17 @@ const hasCoursework = seasonGroups.length > 0;
     }
 
     .c-season-title {
-        margin: 0 0 var(--space-sm);
+        margin: var(--space-none) var(--space-none) var(--space-sm);
         color: var(--clr-text-main);
         font-size: var(--fs-sm);
         font-style: italic;
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         line-height: 1.35;
         overflow-wrap: break-word;
     }
 
     .c-course-list {
-        margin: 0;
+        margin: var(--space-none);
         padding-left: 1.35rem;
         list-style: disc;
     }
@@ -190,7 +185,7 @@ const hasCoursework = seasonGroups.length > 0;
     }
 
     .c-course-code {
-        font-weight: 700;
+        font-weight: var(--fw-bold);
     }
 
     .c-course-item[data-status="completed"] {
@@ -204,7 +199,7 @@ const hasCoursework = seasonGroups.length > 0;
     }
 
     .c-coursework-empty {
-        margin: 0;
+        margin: var(--space-none);
         color: var(--clr-text-muted);
         overflow-wrap: break-word;
     }
@@ -213,7 +208,7 @@ const hasCoursework = seasonGroups.length > 0;
         position: absolute;
         width: 1px;
         height: 1px;
-        padding: 0;
+        padding: var(--space-none);
         margin: -1px;
         overflow: hidden;
         clip: rect(0, 0, 0, 0);
