@@ -63,16 +63,16 @@ import pfp from "../images/pfp_avatar.jpg";
     }
 
     .c-card--welcome .c-intro p {
-        max-width: 42rem;
-        margin: 0;
-        line-height: 1.5;
+        max-width: var(--component-pfp-intro-max-width);
+        margin: var(--space-none);
+        line-height: var(--lh-text);
         overflow-wrap: break-word;
     }
 
     @media (min-width: 48em) {
         .c-pfp {
             margin-right: var(--space-lg);
-            margin-bottom: 0;
+            margin-bottom: var(--space-none);
         }
     }
 
