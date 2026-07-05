@@ -1,4 +1,72 @@
 ---
+/**
+ * Card body hook override
+ *
+ * Summary:
+ * Renders the homepage profile/welcome card using the reusable Card primitive.
+ *
+ * Why this hook exists:
+ * This component needs to customize the layout of the Card body, specifically
+ * the element rendered by Card.astro as `.c-card__body`.
+ *
+ * However, `.c-card__body` does not exist directly in this file. It is created
+ * inside Card.astro. Because Astro scopes component styles by default, selectors
+ * written in this component are transformed so they only match elements that
+ * belong to this component's own template.
+ *
+ * That means a local selector like:
+ *
+ * `.c-card--welcome .c-card__body`
+ *
+ * is not the safest option here. The `.c-card--welcome` class is passed to the
+ * Card wrapper, but the internal `.c-card__body` element belongs to Card.astro's
+ * generated markup, not directly to Pfp.astro's scoped template.
+ *
+ * How the hook works:
+ * Card.astro exposes a `bodyClass` prop. This lets a parent component pass extra
+ * classes into the internal Card body without modifying Card.astro itself.
+ *
+ * This component uses that API to pass:
+ *
+ * `c-pfp-card__body`
+ *
+ * as a component-specific hook class.
+ *
+ * A hook class is a deliberate styling target. It is not meant to define a new
+ * reusable Card variant, and it is not meant to affect all cards globally. Its
+ * purpose is to give this component a safe and explicit way to style one specific
+ * generated element from the Card primitive.
+ *
+ * Why `:global()` is used:
+ * Since the hook class is applied to an element rendered inside Card.astro, this
+ * component's scoped CSS needs `:global()` to reach it:
+ *
+ * `:global(.c-pfp-card__body)`
+ *
+ * Even though `:global()` disables Astro's local selector scoping for that rule,
+ * the override remains limited in practice because only this component passes
+ * the `c-pfp-card__body` hook class to Card.astro.
+ *
+ * Result:
+ * - Card.astro stays reusable and unchanged.
+ * - Other Card instances are not affected.
+ * - The shared card.css file stays generic.
+ * - The profile-specific layout override stays documented in Pfp.astro.
+ *
+ * In short:
+ * Instead of styling Card.astro's internal structure from the outside:
+ *
+ * `.c-card--welcome .c-card__body`
+ *
+ * this component intentionally injects a hook class through `bodyClass`:
+ *
+ * `bodyClass="u-flex c-pfp-card__body"`
+ *
+ * and then targets that hook:
+ *
+ * `:global(.c-pfp-card__body)`
+ */
+
 import { Image } from "astro:assets";
 
 import Card from "./primitives/Card.astro";
@@ -10,7 +78,7 @@ import pfp from "../images/pfp_avatar.jpg";
     title="Welcome to my website!"
     titleId="welcome-card-title"
     class="c-card--welcome"
-    bodyClass="u-flex"
+    bodyClass="u-flex c-pfp-card__body"
 >
     <div class="c-pfp">
         <a href="/" aria-label="Go to homepage">
@@ -33,10 +101,18 @@ import pfp from "../images/pfp_avatar.jpg";
 </Card>
 
 <style>
-    .c-card--welcome .c-card__body {
+    /*
+     * Targets the hook class passed through Card's `bodyClass` prop.
+     * `:global()` is required because the class is applied to markup rendered
+     * inside Card.astro, but the effect stays limited because this hook class is
+     * only used by this Pfp card instance.
+     * This does not affect Card.astro or other cards unless they explicitly
+     * reuse the same class.
+     */
+    :global(.c-pfp-card__body) {
         align-items: center;
     }
-    
+
     .c-pfp {
         flex-shrink: 0;
         width: var(--size-pfp);
@@ -77,7 +153,7 @@ import pfp from "../images/pfp_avatar.jpg";
     }
 
     @media (max-width: 560px) {
-        .c-card--welcome .c-card__body {
+        :global(.c-pfp-card__body) {
             flex-direction: column;
             align-items: center;
             text-align: center;
