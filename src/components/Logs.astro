@@ -67,11 +67,7 @@ const logs: NormalizedLogEntry[] = Array.isArray(latestLogs)
 const hasLogs = logs.length > 0;
 ---
 
-<Card
-    titleId="logs-title"
-    class="c-logs-card"
-    bodyClass="c-logs-card__body"
->
+<Card titleId="logs-title">
     <a
         slot="header"
         class="c-logs-card__title-link"
@@ -115,16 +111,12 @@ const hasLogs = logs.length > 0;
 </Card>
 
 <style>
-    .c-logs-card__title {
-        margin: 0;
-    }
-
     .c-logs-card__title-link,
     .c-logs-card__title-link:visited,
     .c-logs-card__title-link:hover,
     .c-logs-card__title-link:active {
         color: inherit;
-        text-decoration: none;
+        text-decoration: var(--component-log-title-link-decoration);
     }
 
     .c-logs-card__title-link {
@@ -132,45 +124,43 @@ const hasLogs = logs.length > 0;
     }
 
     .c-logs-card__title-link:focus-visible {
-        outline: 1px dotted currentColor;
-        outline-offset: 2px;
-    }
-
-    .c-logs-card__body {
-        padding-top: var(--space-xs, 4px);
+        outline: var(--component-log-focus-outline-width)
+            var(--component-log-focus-outline-style) currentColor;
+        outline-offset: var(--component-log-focus-outline-offset);
     }
 
     .c-log {
-        margin: 0;
-        padding: 0;
-        list-style: none;
+        margin: var(--space-none);
+        padding: var(--component-log-space-before) var(--space-none)
+            var(--space-none);
+        list-style: var(--component-log-list-style);
     }
 
     .c-log__item {
-        margin: 0;
-        line-height: 1.45;
+        margin: var(--space-none);
+        line-height: var(--lh-log);
         text-wrap: pretty;
         overflow-wrap: anywhere;
     }
 
     .c-log__item + .c-log__item {
-        margin-top: var(--space-xs, 4px);
+        margin-top: var(--component-log-item-space-before);
     }
 
     .c-log__marker {
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         white-space: nowrap;
     }
 
     .c-log__time {
-        color: var(--clr-text-muted, currentColor);
-        font-size: var(--fs-xs, 0.875rem);
+        color: var(--clr-text-muted);
+        font-size: var(--fs-xs);
         white-space: nowrap;
     }
 
     .c-log__empty {
-        margin: 0;
-        color: var(--clr-text-muted, currentColor);
+        margin: var(--space-none);
+        color: var(--clr-text-muted);
         overflow-wrap: break-word;
     }
 

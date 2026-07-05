@@ -42,6 +42,7 @@
     --lh-heading: 1.25;
     --lh-link: 1.4;
     --lh-footer: 1.4;
+    --lh-log: 1.45;
 
     --space-none: 0;
     --space-xs: 4px;
@@ -78,6 +79,13 @@
     --component-link-decoration: underline;
 
     --component-pfp-intro-max-width: 42rem;
+
+    --component-log-item-space-before: var(--space-xs);
+    --component-log-title-link-decoration: none;
+    --component-log-list-style: none;
+    --component-log-focus-outline-width: 1px;
+    --component-log-focus-outline-style: dotted;
+    --component-log-focus-outline-offset: 2px;
 }
 
 /* Light theme */
