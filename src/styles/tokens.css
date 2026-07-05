@@ -1,7 +1,9 @@
 /*
  * Design tokens
- * Reusable CSS variables for colors, typography, spacing, borders, and theme values.
- * Use this file for values, not styling rules.
+ * Reusable CSS variables for colors, typography, spacing, borders, layout values,
+ * and shared component values.
+ *
+ * This file is for values, not styling rules.
  */
 
 /* Default theme: dark */
@@ -27,11 +29,21 @@
 
     --ff-main: Arial, Helvetica, sans-serif;
 
+    --fs-root: 16px;
     --fs-xs: 0.875rem;
     --fs-sm: 1rem;
     --fs-md: 1.35rem;
     --fs-lg: 1.75rem;
 
+    --fw-bold: 700;
+
+    --lh-body: 1.45;
+    --lh-text: 1.5;
+    --lh-heading: 1.25;
+    --lh-link: 1.4;
+    --lh-footer: 1.4;
+
+    --space-none: 0;
     --space-xs: 4px;
     --space-sm: 8px;
     --space-md: 16px;
@@ -42,6 +54,30 @@
 
     --br-sm: 0;
     --bw-frame: 0;
+
+    --list-padding-inline: 1.5rem;
+
+    --layout-wrapper-max-width: clamp(320px, 95vw, 900px);
+    --layout-body-padding: var(--space-sm);
+    --layout-body-padding-desktop: var(--space-xl) 2vw var(--space-md);
+    --layout-grid-columns: 1fr;
+    --layout-grid-columns-desktop: repeat(3, minmax(0, 1fr));
+    --layout-content-column-desktop: 1 / span 2;
+    --layout-sidebar-column-desktop: 3;
+
+    --component-header-padding: var(--space-lg) var(--space-sm);
+
+    --component-footer-padding: var(--space-md);
+
+    --component-card-space-after: var(--space-lg);
+    --component-card-header-space-after: var(--space-sm);
+
+    --component-nav-list-gap: var(--space-none);
+    --component-nav-list-padding: var(--space-none);
+    --component-nav-link-padding: var(--space-none);
+    --component-link-decoration: underline;
+
+    --component-pfp-intro-max-width: 42rem;
 }
 
 /* Light theme */
