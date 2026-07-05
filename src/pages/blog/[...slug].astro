@@ -33,7 +33,6 @@ const pubDateIso = pubDate.toISOString();
         slot="custom-cards"
         as="article"
         class="c-blog-post"
-        bodyClass="c-blog-post__body"
         ariaLabel={title}
     >
         <header class="c-blog-post__header">
@@ -69,12 +68,11 @@ const pubDateIso = pubDate.toISOString();
         max-width: min(100%, 74ch);
         margin-inline: auto;
         margin-bottom: var(--space-xl);
-        padding: 0;
+
         color: var(--clr-text-main);
         background: var(--blog-surface);
         border: 0;
-        border-radius: 0;
-        box-shadow: none;
+        border-radius: var(--br-sm);
     }
 
     [theme="dark"] .c-blog-post {
@@ -86,13 +84,6 @@ const pubDateIso = pubDate.toISOString();
         --blog-link: #e0e0e0;
         --blog-link-visited: #cfcfcf;
         --blog-focus: #ffffff;
-    }
-
-    .c-blog-post__body {
-        color: var(--clr-text-main);
-        font-size: var(--fs-sm);
-        line-height: 1.72;
-        overflow-wrap: break-word;
     }
 
     .c-blog-post__header {
@@ -108,11 +99,11 @@ const pubDateIso = pubDate.toISOString();
     }
 
     .c-blog-post__title {
-        margin: 0;
+        margin: var(--space-none);
         color: var(--clr-text-main);
         font-size: clamp(1.75rem, 5vw, 2.35rem);
         line-height: 1.12;
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         overflow-wrap: break-word;
     }
 
@@ -123,12 +114,19 @@ const pubDateIso = pubDate.toISOString();
         background: var(--blog-border);
     }
 
+    .c-blog-post__content {
+        color: var(--clr-text-main);
+        font-size: var(--fs-sm);
+        line-height: 1.72;
+        overflow-wrap: break-word;
+    }
+
     .c-blog-post__content > *:first-child {
-        margin-top: 0;
+        margin-top: var(--space-none);
     }
 
     .c-blog-post__content > *:last-child {
-        margin-bottom: 0;
+        margin-bottom: var(--space-none);
     }
 
     .c-blog-post__content h1,
@@ -139,31 +137,31 @@ const pubDateIso = pubDate.toISOString();
     .c-blog-post__content h6 {
         color: var(--clr-text-main);
         line-height: 1.22;
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         overflow-wrap: break-word;
     }
 
     .c-blog-post__content h1 {
-        margin: var(--space-xl) 0 var(--space-md);
+        margin: var(--space-xl) var(--space-none) var(--space-md);
         font-size: clamp(1.55rem, 4vw, 2rem);
     }
 
     .c-blog-post__content h2 {
-        margin: var(--space-xl) 0 var(--space-sm);
+        margin: var(--space-xl) var(--space-none) var(--space-sm);
         padding-bottom: var(--space-xs);
         font-size: clamp(1.3rem, 3vw, 1.65rem);
         border-bottom: var(--bw-frame) solid var(--blog-border);
     }
 
     .c-blog-post__content h3 {
-        margin: var(--space-lg) 0 var(--space-sm);
+        margin: var(--space-lg) var(--space-none) var(--space-sm);
         font-size: clamp(1.12rem, 2.5vw, 1.35rem);
     }
 
     .c-blog-post__content h4,
     .c-blog-post__content h5,
     .c-blog-post__content h6 {
-        margin: var(--space-md) 0 var(--space-xs);
+        margin: var(--space-md) var(--space-none) var(--space-xs);
         font-size: var(--fs-sm);
     }
 
@@ -200,7 +198,7 @@ const pubDateIso = pubDate.toISOString();
 
     .c-blog-post__content ul,
     .c-blog-post__content ol {
-        padding-left: 1.5rem;
+        padding-left: var(--list-padding-inline);
     }
 
     .c-blog-post__content ul {
@@ -219,7 +217,7 @@ const pubDateIso = pubDate.toISOString();
 
     .c-blog-post__content li > ul,
     .c-blog-post__content li > ol {
-        margin-bottom: 0;
+        margin-bottom: var(--space-none);
     }
 
     .c-blog-post__content blockquote {
@@ -230,7 +228,7 @@ const pubDateIso = pubDate.toISOString();
     }
 
     .c-blog-post__content blockquote > *:last-child {
-        margin-bottom: 0;
+        margin-bottom: var(--space-none);
     }
 
     .c-blog-post__content img,
@@ -241,18 +239,18 @@ const pubDateIso = pubDate.toISOString();
     }
 
     .c-blog-post__content figure {
-        margin: var(--space-lg) 0;
+        margin: var(--space-lg) var(--space-none);
     }
 
     .c-blog-post__content figure img {
-        margin: 0 auto;
+        margin: var(--space-none) auto;
     }
 
     .c-blog-post__content figcaption {
         margin-top: var(--space-xs);
         color: var(--clr-text-muted);
         font-size: var(--fs-xs);
-        line-height: 1.45;
+        line-height: var(--lh-body);
         text-align: center;
     }
 
@@ -279,10 +277,10 @@ const pubDateIso = pubDate.toISOString();
     .c-blog-post__content pre code {
         display: block;
         min-width: max-content;
-        padding: 0;
+        padding: var(--space-none);
         color: inherit;
         background: transparent;
-        border-radius: 0;
+        border-radius: var(--br-sm);
         font-size: 0.92rem;
         line-height: 1.6;
     }
@@ -305,12 +303,12 @@ const pubDateIso = pubDate.toISOString();
     }
 
     .c-blog-post__content th {
-        font-weight: 700;
+        font-weight: var(--fw-bold);
     }
 
     .c-blog-post__content hr {
         height: var(--bw-frame);
-        margin: var(--space-xl) 0;
+        margin: var(--space-xl) var(--space-none);
         background: var(--blog-border);
         border: 0;
     }
@@ -321,7 +319,7 @@ const pubDateIso = pubDate.toISOString();
         max-width: 100%;
         overflow-x: auto;
         overflow-y: hidden;
-        padding: var(--space-xs) 0;
+        padding: var(--space-xs) var(--space-none);
         -webkit-overflow-scrolling: touch;
     }
 
