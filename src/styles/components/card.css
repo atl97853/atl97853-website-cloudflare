@@ -1,31 +1,32 @@
 /*
  * Component styles
  *
- * Shared styles for reusable component primitives and small site components.
- * Keep this file organized by component/block so unused classes are easier to find.
+ * Shared styles for reusable component primitives and small global site components.
+ * Component-specific variants should live in their own Astro component when they
+ * only exist to customize one component instance.
  */
 
 /* Site header / Header.astro */
 
 .c-site-header {
-    padding: var(--space-lg) var(--space-sm);
+    padding: var(--component-header-padding);
     text-align: center;
 }
 
 .c-site-header__title {
     color: var(--clr-text-strong);
     font-size: var(--fs-lg);
-    line-height: 1.25;
-    font-weight: 700;
+    line-height: var(--lh-heading);
+    font-weight: var(--fw-bold);
 }
 
 /* Site footer / Footer.astro */
 
 .c-site-footer {
-    padding: var(--space-md);
+    padding: var(--component-footer-padding);
     color: var(--clr-text-muted);
     font-size: var(--fs-xs);
-    line-height: 1.4;
+    line-height: var(--lh-footer);
     text-align: center;
 }
 
@@ -42,24 +43,24 @@
 /* Card primitive / Card.astro */
 
 .c-card {
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--component-card-space-after);
     background: var(--clr-bg-card);
     border: var(--bw-frame) solid var(--clr-border);
     border-radius: var(--br-sm);
 }
 
 .c-card__header {
-    padding-bottom: var(--space-sm);
+    padding-bottom: var(--component-card-header-space-after);
     color: var(--clr-text-strong);
     font-size: var(--fs-md);
-    line-height: 1.25;
-    font-weight: 700;
+    line-height: var(--lh-heading);
+    font-weight: var(--fw-bold);
 }
 
 .c-card__body {
     color: var(--clr-text-main);
     font-size: var(--fs-sm);
-    line-height: 1.5;
+    line-height: var(--lh-text);
 }
 
 /* Link list primitive / LinkList.astro */
@@ -67,17 +68,17 @@
 .c-nav-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    padding: 0;
+    gap: var(--component-nav-list-gap);
+    padding: var(--component-nav-list-padding);
 }
 
 .c-nav-list__link {
     display: block;
-    padding: 0;
+    padding: var(--component-nav-link-padding);
     color: var(--clr-link-main);
     font-size: var(--fs-sm);
-    line-height: 1.4;
-    text-decoration: underline;
+    line-height: var(--lh-link);
+    text-decoration: var(--component-link-decoration);
     overflow-wrap: break-word;
 }
 
