@@ -71,7 +71,7 @@ import { Image } from "astro:assets";
 
 import Card from "./primitives/Card.astro";
 
-import pfp from "../images/pfp_avatar.jpg";
+import pfp from "/public/pfp_avatar.jpg";
 ---
 
 <Card
@@ -90,6 +90,7 @@ import pfp from "../images/pfp_avatar.jpg";
                 height={100}
                 layout="fixed"
                 fit="cover"
+                loading="eager"
             />
         </a>
     </div>
