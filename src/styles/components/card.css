@@ -6,20 +6,6 @@
  * only exist to customize one component instance.
  */
 
-/* Site header / Header.astro */
-
-.c-site-header {
-    padding: var(--component-header-padding);
-    text-align: center;
-}
-
-.c-site-header__title {
-    color: var(--clr-text-strong);
-    font-size: var(--fs-lg);
-    line-height: var(--lh-heading);
-    font-weight: var(--fw-bold);
-}
-
 /* Site footer / Footer.astro */
 
 .c-site-footer {
