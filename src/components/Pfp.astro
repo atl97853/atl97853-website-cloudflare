@@ -67,11 +67,11 @@
  * `:global(.c-pfp-card__body)`
  */
 
-import { Image } from "astro:assets";
+// import { Image } from "astro:assets";
 
 import Card from "./primitives/Card.astro";
 
-import pfp from "/public/pfp_avatar.jpg";
+// import pfp from "/public/pfp_avatar.jpg";
 ---
 
 <Card
@@ -80,17 +80,15 @@ import pfp from "/public/pfp_avatar.jpg";
     class="c-card--welcome"
     bodyClass="u-flex c-pfp-card__body"
 >
-    <div class="c-pfp">
+    <div class="c-pfp" transition:persist="site-pfp">
         <a href="/" aria-label="Go to homepage">
-            <Image
-                src={pfp}
-                alt="Pfp avatar"
-                priority
-                width={100}
-                height={100}
-                layout="fixed"
-                fit="cover"
+            <img
+                src="/pfp_avatar.jpg"
+                width="100"
+                height="100"
                 loading="eager"
+                decoding="sync"
+                fetchpriority="high"
             />
         </a>
     </div>
@@ -131,6 +129,10 @@ import pfp from "/public/pfp_avatar.jpg";
         height: 100%;
         object-fit: cover;
         image-rendering: pixelated;
+        opacity: 1;
+        filter: none;
+        transition: none;
+        animation: none;
     }
 
     .c-card--welcome .c-pfp {
