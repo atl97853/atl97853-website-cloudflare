@@ -1,65 +1,27 @@
 ---
+import Card from "./primitives/Card.astro";
+import LinkList from "./primitives/LinkList.astro";
+
 interface Props {
     years: number[];
 }
 
 const { years } = Astro.props;
 
-const normalizedYears = [...new Set(years)]
+const yearLinks = [...new Set(years)]
     .filter((year) => Number.isInteger(year) && year > 0)
-    .sort((a, b) => b - a);
+    .sort((a, b) => b - a)
+    .map((year) => ({
+        href: `#library-${year}`,
+        label: year,
+        ariaLabel: `Jump to books read in ${year}`,
+    }));
 ---
 
-{
-    normalizedYears.length > 0 && (
-        <nav
-            class="c-card c-library-year-nav"
-            aria-labelledby="library-years-title"
-        >
-            <header
-                id="library-years-title"
-                class="c-card__header c-library-year-nav__title"
-            >
-                years
-            </header>
-
-            <div class="c-card__body c-library-year-nav__body">
-                <ul class="c-nav-list c-library-year-nav__list">
-                    {normalizedYears.map((year) => (
-                        <li class="c-library-year-nav__item">
-                            <a
-                                href={`#library-${year}`}
-                                class="c-nav-list__link c-library-year-nav__link"
-                                aria-label={`Jump to books read in ${year}`}
-                            >
-                                {year}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </nav>
-    )
-}
-
-<style>
-    .c-library-year-nav__title {
-        margin: 0;
-    }
-
-    .c-library-year-nav__body {
-        padding-top: var(--space-xs, 4px);
-    }
-
-    .c-library-year-nav__list {
-        gap: 0;
-    }
-
-    .c-library-year-nav__item {
-        min-width: 0;
-    }
-
-    .c-library-year-nav__link {
-        overflow-wrap: break-word;
-    }
-</style>
+<Card
+    as="nav"
+    title="Years"
+    titleId="library-years-title"
+>
+    <LinkList items={yearLinks} />
+</Card>

@@ -1,11 +1,14 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection, render } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
-import { formatDate } from '../../utils';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Card from "../../components/primitives/Card.astro";
+
+import { getCollection, render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+import { formatDate } from "../../utils";
 
 export async function getStaticPaths() {
-    const allBlogPosts: CollectionEntry<'blog'>[] = await getCollection('blog');
+    const allBlogPosts: CollectionEntry<"blog">[] = await getCollection("blog");
 
     return allBlogPosts.map((entry) => ({
         params: { slug: entry.slug },
@@ -14,7 +17,7 @@ export async function getStaticPaths() {
 }
 
 interface Props {
-    entry: CollectionEntry<'blog'>;
+    entry: CollectionEntry<"blog">;
 }
 
 const { entry } = Astro.props as Props;
@@ -26,30 +29,31 @@ const pubDateIso = pubDate.toISOString();
 ---
 
 <BaseLayout tabTitle={title}>
-    <article class='c-blog-post' slot='custom-cards' aria-labelledby='blog-post-title'>
-        <header class='c-blog-post__header'>
-            <time datetime={pubDateIso} class='c-blog-post__date'>
+    <Card
+        slot="custom-cards"
+        as="article"
+        class="c-blog-post"
+        ariaLabel={title}
+    >
+        <header class="c-blog-post__header">
+            <time datetime={pubDateIso} class="c-blog-post__date">
                 {formatDate(pubDate)}
             </time>
 
-            <h1 id='blog-post-title' class='c-blog-post__title'>
+            <h1 id="blog-post-title" class="c-blog-post__title">
                 {title}
             </h1>
 
-            <div class='c-blog-post__divider' aria-hidden='true'></div>
+            <div class="c-blog-post__divider" aria-hidden="true"></div>
         </header>
 
-        <div class='c-blog-post__content'>
+        <div class="c-blog-post__content">
             <Content />
         </div>
-    </article>
+    </Card>
 </BaseLayout>
 
 <style is:global>
-    .l-content {
-        min-width: 0;
-    }
-
     .c-blog-post {
         --blog-surface: #ffffff;
         --blog-surface-soft: rgba(0, 0, 0, 0.035);
@@ -62,32 +66,16 @@ const pubDateIso = pubDate.toISOString();
 
         width: 100%;
         max-width: min(100%, 74ch);
-        margin: 0 auto var(--space-xl);
-        padding: 0;
+        margin-inline: auto;
+        margin-bottom: var(--space-xl);
+
         color: var(--clr-text-main);
         background: var(--blog-surface);
         border: 0;
-        border-radius: 0;
-        box-shadow: none;
-        transform: none;
-        transition: none;
+        border-radius: var(--br-sm);
     }
 
-    .c-blog-post:hover,
-    .c-blog-post:focus,
-    .c-blog-post:focus-within {
-        background: var(--blog-surface);
-        box-shadow: none;
-        transform: none;
-    }
-
-    .c-blog-post::before,
-    .c-blog-post::after {
-        content: none;
-        display: none;
-    }
-
-    [theme='dark'] .c-blog-post {
+    [theme="dark"] .c-blog-post {
         --blog-surface: transparent;
         --blog-surface-soft: rgba(255, 255, 255, 0.055);
         --blog-border: rgba(255, 255, 255, 0.18);
@@ -96,39 +84,6 @@ const pubDateIso = pubDate.toISOString();
         --blog-link: #e0e0e0;
         --blog-link-visited: #cfcfcf;
         --blog-focus: #ffffff;
-
-        color: var(--clr-text-main);
-        background: transparent;
-    }
-
-    [theme='dark'] .c-blog-post:hover,
-    [theme='dark'] .c-blog-post:focus,
-    [theme='dark'] .c-blog-post:focus-within {
-        background: transparent;
-        box-shadow: none;
-        transform: none;
-    }
-
-    [theme='light'] .c-blog-post {
-        --blog-surface: #ffffff;
-        --blog-surface-soft: rgba(0, 0, 0, 0.035);
-        --blog-border: rgba(0, 0, 0, 0.18);
-        --blog-code-bg: #f5f5f5;
-        --blog-code-text: #111111;
-        --blog-link: #0000ee;
-        --blog-link-visited: #551a8b;
-        --blog-focus: #000000;
-
-        color: #000000;
-        background: #ffffff;
-    }
-
-    [theme='light'] .c-blog-post:hover,
-    [theme='light'] .c-blog-post:focus,
-    [theme='light'] .c-blog-post:focus-within {
-        background: #ffffff;
-        box-shadow: none;
-        transform: none;
     }
 
     .c-blog-post__header {
@@ -144,17 +99,17 @@ const pubDateIso = pubDate.toISOString();
     }
 
     .c-blog-post__title {
-        margin: 0;
+        margin: var(--space-none);
         color: var(--clr-text-main);
         font-size: clamp(1.75rem, 5vw, 2.35rem);
         line-height: 1.12;
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         overflow-wrap: break-word;
     }
 
     .c-blog-post__divider {
         width: 100%;
-        height: 1px;
+        height: var(--bw-frame);
         margin-top: var(--space-md);
         background: var(--blog-border);
     }
@@ -167,11 +122,11 @@ const pubDateIso = pubDate.toISOString();
     }
 
     .c-blog-post__content > *:first-child {
-        margin-top: 0;
+        margin-top: var(--space-none);
     }
 
     .c-blog-post__content > *:last-child {
-        margin-bottom: 0;
+        margin-bottom: var(--space-none);
     }
 
     .c-blog-post__content h1,
@@ -182,32 +137,32 @@ const pubDateIso = pubDate.toISOString();
     .c-blog-post__content h6 {
         color: var(--clr-text-main);
         line-height: 1.22;
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         overflow-wrap: break-word;
     }
 
     .c-blog-post__content h1 {
-        margin: var(--space-xl) 0 var(--space-md);
+        margin: var(--space-xl) var(--space-none) var(--space-md);
         font-size: clamp(1.55rem, 4vw, 2rem);
     }
 
     .c-blog-post__content h2 {
-        margin: var(--space-xl) 0 var(--space-sm);
-        padding-bottom: 0.15rem;
+        margin: var(--space-xl) var(--space-none) var(--space-sm);
+        padding-bottom: var(--space-xs);
         font-size: clamp(1.3rem, 3vw, 1.65rem);
-        border-bottom: 1px solid var(--blog-border);
+        border-bottom: var(--bw-frame) solid var(--blog-border);
     }
 
     .c-blog-post__content h3 {
-        margin: var(--space-lg) 0 var(--space-sm);
+        margin: var(--space-lg) var(--space-none) var(--space-sm);
         font-size: clamp(1.12rem, 2.5vw, 1.35rem);
     }
 
     .c-blog-post__content h4,
     .c-blog-post__content h5,
     .c-blog-post__content h6 {
-        margin: var(--space-md) 0 var(--space-xs);
-        font-size: 1rem;
+        margin: var(--space-md) var(--space-none) var(--space-xs);
+        font-size: var(--fs-sm);
     }
 
     .c-blog-post__content p,
@@ -233,17 +188,17 @@ const pubDateIso = pubDate.toISOString();
     .c-blog-post__content a:hover,
     .c-blog-post__content a:focus-visible {
         color: var(--blog-link);
-        text-decoration-thickness: 2px;
+        text-decoration-thickness: calc(var(--bw-frame) * 2);
     }
 
     .c-blog-post__content a:focus-visible {
-        outline: 2px solid var(--blog-focus);
-        outline-offset: 2px;
+        outline: calc(var(--bw-frame) * 2) solid var(--blog-focus);
+        outline-offset: calc(var(--bw-frame) * 2);
     }
 
     .c-blog-post__content ul,
     .c-blog-post__content ol {
-        padding-left: 1.5rem;
+        padding-left: var(--list-padding-inline);
     }
 
     .c-blog-post__content ul {
@@ -254,25 +209,26 @@ const pubDateIso = pubDate.toISOString();
         list-style: decimal;
     }
 
-    .c-blog-post__content li + li {
-        margin-top: 0.25rem;
+    .c-blog-post__content li + li,
+    .c-blog-post__content li > ul,
+    .c-blog-post__content li > ol {
+        margin-top: var(--space-xs);
     }
 
     .c-blog-post__content li > ul,
     .c-blog-post__content li > ol {
-        margin-top: 0.25rem;
-        margin-bottom: 0;
+        margin-bottom: var(--space-none);
     }
 
     .c-blog-post__content blockquote {
         padding: var(--space-sm) var(--space-md);
         color: var(--clr-text-main);
         background: var(--blog-surface-soft);
-        border-left: 4px solid var(--blog-border);
+        border-left: calc(var(--bw-frame) * 4) solid var(--blog-border);
     }
 
     .c-blog-post__content blockquote > *:last-child {
-        margin-bottom: 0;
+        margin-bottom: var(--space-none);
     }
 
     .c-blog-post__content img,
@@ -283,18 +239,18 @@ const pubDateIso = pubDate.toISOString();
     }
 
     .c-blog-post__content figure {
-        margin: var(--space-lg) 0;
+        margin: var(--space-lg) var(--space-none);
     }
 
     .c-blog-post__content figure img {
-        margin: 0 auto;
+        margin: var(--space-none) auto;
     }
 
     .c-blog-post__content figcaption {
         margin-top: var(--space-xs);
         color: var(--clr-text-muted);
         font-size: var(--fs-xs);
-        line-height: 1.45;
+        line-height: var(--lh-body);
         text-align: center;
     }
 
@@ -302,8 +258,8 @@ const pubDateIso = pubDate.toISOString();
         padding: 0.08rem 0.28rem;
         color: var(--blog-code-text);
         background: var(--blog-code-bg);
-        border-radius: 3px;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+        border-radius: var(--br-sm);
+        font-family: var(--ff-mono);
         font-size: 0.92em;
     }
 
@@ -313,7 +269,7 @@ const pubDateIso = pubDate.toISOString();
         overflow-x: auto;
         color: var(--blog-code-text);
         background: var(--blog-code-bg);
-        border-radius: 6px;
+        border-radius: var(--br-sm);
         white-space: pre;
         -webkit-overflow-scrolling: touch;
     }
@@ -321,10 +277,10 @@ const pubDateIso = pubDate.toISOString();
     .c-blog-post__content pre code {
         display: block;
         min-width: max-content;
-        padding: 0;
+        padding: var(--space-none);
         color: inherit;
         background: transparent;
-        border-radius: 0;
+        border-radius: var(--br-sm);
         font-size: 0.92rem;
         line-height: 1.6;
     }
@@ -340,37 +296,36 @@ const pubDateIso = pubDate.toISOString();
 
     .c-blog-post__content th,
     .c-blog-post__content td {
-        padding: 0.55rem 0.7rem;
-        border-bottom: 1px solid var(--blog-border);
+        padding: var(--space-xs) var(--space-sm);
+        border-bottom: var(--bw-frame) solid var(--blog-border);
         text-align: left;
         vertical-align: top;
     }
 
     .c-blog-post__content th {
-        font-weight: 700;
+        font-weight: var(--fw-bold);
     }
 
     .c-blog-post__content hr {
-        height: 1px;
-        margin: var(--space-xl) 0;
+        height: var(--bw-frame);
+        margin: var(--space-xl) var(--space-none);
         background: var(--blog-border);
         border: 0;
     }
 
     .c-blog-post__content .katex-display,
     .c-blog-post__content .math-display,
-    .c-blog-post__content mjx-container[display='true'] {
+    .c-blog-post__content mjx-container[display="true"] {
         max-width: 100%;
         overflow-x: auto;
         overflow-y: hidden;
-        padding: var(--space-xs) 0;
+        padding: var(--space-xs) var(--space-none);
         -webkit-overflow-scrolling: touch;
     }
 
     @media print {
         .c-blog-post {
             max-width: none;
-            padding: 0;
             color: #111111 !important;
             background: transparent !important;
             box-shadow: none !important;

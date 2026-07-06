@@ -1,49 +1,51 @@
 ---
 import { getCollection } from "astro:content";
-import type { CollectionEntry } from "astro:content";
+
+import Card from "./primitives/Card.astro";
+
 import { formatDate } from "../utils";
 
-const allBlogPosts: CollectionEntry<"blog">[] = (await getCollection("blog")).sort(
-    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
-);
+const posts = (await getCollection("blog"))
+    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .map((post) => ({
+        href: `/blog/${post.slug}/`,
+        title: post.data.title,
+        summary: post.data.summary,
+        dateLabel: formatDate(post.data.pubDate),
+        dateTime: post.data.pubDate.toISOString(),
+    }));
+
+const hasPosts = posts.length > 0;
 ---
 
-<section class="c-card c-posts-card" aria-labelledby="recent-posts-title">
-    <h2 id="recent-posts-title" class="c-card__header c-posts-card__title">
-        recent posts
-    </h2>
+<Card
+    title="Recent posts"
+    titleId="recent-posts-title"
+    class="c-posts-card"
+    bodyClass="c-posts-card__body"
+>
+    {
+        hasPosts ? (
+            <ul class="c-log" aria-label="recent blog posts">
+                {posts.map((post) => (
+                    <li class="c-log__item">
+                        <a href={post.href} class="c-log__link">
+                            <time datetime={post.dateTime} class="blog-date">
+                                {post.dateLabel}
+                            </time>
 
-    <div class="c-card__body c-posts-card__body">
-        {
-            allBlogPosts.length > 0 ? (
-                <ul class="c-log">
-                    {allBlogPosts.map((post) => (
-                        <li class="c-log__item">
-                            <a href={`/blog/${post.slug}/`} class="c-log__link">
-                                <time
-                                    datetime={post.data.pubDate.toISOString()}
-                                    class="blog-date"
-                                >
-                                    {formatDate(post.data.pubDate)}
-                                </time>
+                            <span class="blog-title">{post.title}</span>
 
-                                <span class="blog-title">
-                                    {post.data.title}
-                                </span>
-
-                                <span class="blog-summary">
-                                    {post.data.summary}
-                                </span>
-                            </a>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p class="c-posts-card__empty">No posts yet.</p>
-            )
-        }
-    </div>
-</section>
+                            <span class="blog-summary">{post.summary}</span>
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <p class="c-posts-card__empty">No posts yet.</p>
+        )
+    }
+</Card>
 
 <style>
     .c-posts-card {

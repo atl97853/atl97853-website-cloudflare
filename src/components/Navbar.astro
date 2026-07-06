@@ -1,0 +1,28 @@
+---
+import Card from "./primitives/Card.astro";
+import LinkList from "./primitives/LinkList.astro";
+
+interface SiteNavLink {
+    href: string;
+    label: string;
+    icon: string;
+}
+
+const navLinks: SiteNavLink[] = [
+    { href: "/", label: "homepage", icon: "📁" },
+    { href: "/about", label: "about", icon: "👤" },
+    { href: "/blog", label: "blog", icon: "📁" },
+    { href: "/coursework", label: "coursework", icon: "📄" },
+    { href: "/library", label: "library", icon: "📖" },
+    // { href: "/guestbook", label: "guestbook", icon: "📝" },
+    // { href: "/projects", label: "projects", icon: "⚙️" },
+];
+---
+
+<Card
+    as="nav"
+    title="Navigation"
+    titleId="site-navigation-title"
+>
+    <LinkList items={navLinks} />
+</Card>

@@ -1,41 +1,149 @@
 ---
+import { Image } from "astro:assets";
+
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/primitives/Card.astro";
+
+import tohru404 from "../images/tohru_404.jpg";
+
+const fortunes = [
+    {
+        code: "404-01",
+        message: "Tohru, the cat engineer, rerouted this page through a wormhole and forgot the return address.",
+    },
+    {
+        code: "404-02",
+        message: "This page was removed from the graph. Tohru insists it was not connected anyway.",
+    },
+    {
+        code: "404-03",
+        message: "Tohru tried to prove this route exists by contradiction. The contradiction won.",
+    },
+    {
+        code: "404-04",
+        message: "The page entered deep space, lost signal, and Tohru marked the mission as mostly successful.",
+    },
+    {
+        code: "404-05",
+        message: "Tohru refactored the universe and accidentally deleted this path.",
+    },
+    {
+        code: "404-06",
+        message: "This URL failed its type check. Tohru says the compiler is being dramatic.",
+    },
+    {
+        code: "404-07",
+        message: "The page was hidden inside a recursive spell, and Tohru forgot the base case.",
+    },
+    {
+        code: "404-08",
+        message: "Tohru opened a portal to the archive, but this page was not in the catalog.",
+    },
+    {
+        code: "404-09",
+        message: "This path evaluates to undefined. Tohru calls it an elegant abstraction.",
+    },
+    {
+        code: "404-10",
+        message: "Tohru misplaced this page somewhere between a dragon hoard and a database migration.",
+    },
+    {
+        code: "404-11",
+        message: "The page was transformed into pure math. Unfortunately, browsers cannot render that yet.",
+    },
+    {
+        code: "404-12",
+        message: "Tohru says this route belongs to the empty set.",
+    },
+    {
+        code: "404-13",
+        message: "This page was captured by a tiny bug in the routing matrix. Tohru is negotiating.",
+    },
+    {
+        code: "404-14",
+        message: "Tohru cast a lookup spell, but the result came back null.",
+    },
+    {
+        code: "404-15",
+        message: "The page exists in a parallel timeline where Tohru finished debugging earlier.",
+    },
+    {
+        code: "404-16",
+        message: "This link wandered into a dungeon and failed its pathfinding algorithm.",
+    },
+    {
+        code: "404-17",
+        message: "Tohru compressed the site map and this page became a rounding error.",
+    },
+    {
+        code: "404-18",
+        message: "The page was probably eaten by a dragon. Tohru denies involvement, suspiciously.",
+    },
+    {
+        code: "404-19",
+        message: "This route has no proof, no implementation, and no snacks. Tohru moved on.",
+    },
+    {
+        code: "404-20",
+        message: "Tohru marked this page as optional homework, then forgot to publish it.",
+    },
+] as const;
+
+const fortune = fortunes[Math.floor(Math.random() * fortunes.length)];
 ---
 
+<BaseLayout tabTitle="404">
+    <Card
+        slot="custom-cards"
+        title=""
+        titleId="not-found-title"
+        class="c-error-card"
+        bodyClass="c-error-card__body"
+    >
+        <span class="c-error-card__code">404</span>
+
+        <Image
+            src={tohru404}
+            alt="Tohru the cat engineer investigating a missing page"
+            class="c-error-card__image"
+            loading="eager"
+            decoding="sync"
+        />
+
+        <p class="c-error-card__message">
+            {fortune.message}
+        </p>
+    </Card>
+</BaseLayout>
+
 <style>
-    .card-error-body {
+    :global(.c-error-card__body) {
         display: flex;
         flex-direction: column;
         align-items: center;
-        text-align: center;
+        gap: var(--space-sm);
         padding: var(--space-md);
+        text-align: center;
     }
 
-    .error-code {
-        font-size: var(--fs-lg);
-        font-weight: bold;
+    .c-error-card__code {
         color: var(--clr-accent);
-        margin-bottom: var(--space-xs);
+        font-size: var(--fs-lg);
+        font-weight: 700;
+        line-height: 1;
     }
 
-    .c-error-message {
-        line-height: 1.6;
-        color: var(--clr-text-main);
+    .c-error-card__image {
+        width: min(100%, 14rem);
+        height: auto;
+        image-rendering: pixelated;
+    }
+
+    .c-error-card__message {
+        max-width: 36rem;
+        margin: 0;
+        color: var(--clr-text-strong);
         font-size: var(--fs-sm);
-        max-width: 100%;
+        line-height: 1.5;
     }
 </style>
-
-<BaseLayout tabTitle="404">
-    <section class="c-card" slot="custom-cards">
-        <div class="c-card__header">. . .</div>
-        <div class="c-card__body card-error-body">
-            <span class="error-code">404</span>
-            <div class="c-error-message">
-                <p>
-                    Sorry we couldn't find the page you were looking for. Please check the address and try again.
-                </p>
-            </div>
-        </div>
-    </section> 
-</BaseLayout>

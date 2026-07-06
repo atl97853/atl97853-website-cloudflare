@@ -1,4 +1,6 @@
 ---
+import Card from "./primitives/Card.astro";
+
 import latestLogs from "../content/data/logs/latest_logs.json";
 
 interface LogEntry {
@@ -65,66 +67,56 @@ const logs: NormalizedLogEntry[] = Array.isArray(latestLogs)
 const hasLogs = logs.length > 0;
 ---
 
-<section class="c-card c-logs-card" aria-labelledby="logs-title">
-    <h2 id="logs-title" class="c-card__header c-logs-card__title">
-        <a
-            class="c-logs-card__title-link"
-            href="https://nownownow.com/about"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Read about now pages. Opens in a new tab."
-        >
-            update log
-        </a>
-    </h2>
+<Card titleId="logs-title">
+    <a
+        slot="header"
+        class="c-logs-card__title-link"
+        href="https://nownownow.com/about"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Read about now pages. Opens in a new tab."
+    >
+        Update log
+    </a>
 
-    <div class="c-card__body c-logs-card__body">
-        {
-            hasLogs ? (
-                <ul class="c-log" aria-label="latest updates">
-                    {logs.map((log) => (
-                        <li class="c-log__item">
-                            <time
-                                class="c-log__marker"
-                                datetime={log.dateTime}
-                            >
-                                {log.marker}:
-                            </time>{" "}
+    {
+        hasLogs ? (
+            <ul class="c-log" aria-label="latest updates">
+                {logs.map((log) => (
+                    <li class="c-log__item">
+                        <time class="c-log__marker" datetime={log.dateTime}>
+                            {log.marker}:
+                        </time>{" "}
 
-                            <span class="c-log__text">{log.text}</span>
+                        <span class="c-log__text">{log.text}</span>
 
-                            {log.hasDate && log.time && (
-                                <>
-                                    {" "}
-                                    <time
-                                        class="c-log__time"
-                                        datetime={log.dateTime}
-                                    >
-                                        {log.time}
-                                    </time>
-                                </>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p class="c-log__empty">No updates available at the moment.</p>
-            )
-        }
-    </div>
-</section>
+                        {log.hasDate && log.time && (
+                            <>
+                                {" "}
+                                <time
+                                    class="c-log__time"
+                                    datetime={log.dateTime}
+                                >
+                                    {log.time}
+                                </time>
+                            </>
+                        )}
+                    </li>
+                ))}
+            </ul>
+        ) : (
+            <p class="c-log__empty">No updates available at the moment.</p>
+        )
+    }
+</Card>
 
 <style>
-    .c-logs-card__title {
-        margin: 0;
-    }
-
     .c-logs-card__title-link,
     .c-logs-card__title-link:visited,
     .c-logs-card__title-link:hover,
     .c-logs-card__title-link:active {
         color: inherit;
-        text-decoration: none;
+        text-decoration: var(--component-log-title-link-decoration);
     }
 
     .c-logs-card__title-link {
@@ -132,45 +124,43 @@ const hasLogs = logs.length > 0;
     }
 
     .c-logs-card__title-link:focus-visible {
-        outline: 1px dotted currentColor;
-        outline-offset: 2px;
-    }
-
-    .c-logs-card__body {
-        padding-top: var(--space-xs, 4px);
+        outline: var(--component-log-focus-outline-width)
+            var(--component-log-focus-outline-style) currentColor;
+        outline-offset: var(--component-log-focus-outline-offset);
     }
 
     .c-log {
-        margin: 0;
-        padding: 0;
-        list-style: none;
+        margin: var(--space-none);
+        padding: var(--component-log-space-before) var(--space-none)
+            var(--space-none);
+        list-style: var(--component-log-list-style);
     }
 
     .c-log__item {
-        margin: 0;
-        line-height: 1.45;
+        margin: var(--space-none);
+        line-height: var(--lh-log);
         text-wrap: pretty;
         overflow-wrap: anywhere;
     }
 
     .c-log__item + .c-log__item {
-        margin-top: var(--space-xs, 4px);
+        margin-top: var(--component-log-item-space-before);
     }
 
     .c-log__marker {
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         white-space: nowrap;
     }
 
     .c-log__time {
-        color: var(--clr-text-muted, currentColor);
-        font-size: var(--fs-xs, 0.875rem);
+        color: var(--clr-text-muted);
+        font-size: var(--fs-xs);
         white-space: nowrap;
     }
 
     .c-log__empty {
-        margin: 0;
-        color: var(--clr-text-muted, currentColor);
+        margin: var(--space-none);
+        color: var(--clr-text-muted);
         overflow-wrap: break-word;
     }
 

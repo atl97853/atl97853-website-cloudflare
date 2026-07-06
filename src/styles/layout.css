@@ -6,8 +6,8 @@
 
 .l-main-wrapper {
     width: 100%;
-    max-width: clamp(320px, 95vw, 900px);
-    margin: 0 auto;
+    max-width: var(--layout-wrapper-max-width);
+    margin: var(--space-none) auto;
     overflow: visible;
 
     background: var(--clr-bg-container);
@@ -17,13 +17,13 @@
 
 .l-layout-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: var(--layout-grid-columns);
     gap: var(--space-md);
     padding: var(--space-md);
 }
 
 .l-content {
-    line-height: 1.5;
+    line-height: var(--lh-text);
 }
 
 /* Layout media queries */
@@ -31,20 +31,20 @@
 @media (min-width: 48em) {
     body {
         align-items: flex-start;
-        padding: var(--space-xl) 2vw var(--space-md);
+        padding: var(--layout-body-padding-desktop);
     }
 
     .l-layout-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: var(--layout-grid-columns-desktop);
         gap: var(--space-xl);
         padding: var(--space-lg);
     }
 
     .l-content {
-        grid-column: 1 / span 2;
+        grid-column: var(--layout-content-column-desktop);
     }
 
     .l-sidebar {
-        grid-column: 3;
+        grid-column: var(--layout-sidebar-column-desktop);
     }
 }
