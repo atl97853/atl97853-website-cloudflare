@@ -1,7 +1,10 @@
 ---
-import Card from "./primitives/Card.astro";
+/**
+ * Displays the ten most recent valid log entries.
+ */
 
-import latestLogs from "../content/data/logs/latest_logs.json";
+import latestLogs from "../content/data/logs/latest_logs.example.json";
+import Card from "./primitives/Card.astro";
 
 interface LogEntry {
     date?: string;
@@ -10,19 +13,31 @@ interface LogEntry {
 }
 
 interface NormalizedLogEntry {
-    date: string;
-    time: string;
-    text: string;
     marker: string;
+    markerDateTime: string;
+    time: string;
     dateTime: string;
-    hasDate: boolean;
+    text: string;
 }
 
-const LOG_LIMIT = 5;
+const LOG_LIMIT = 10;
 
-function normalizeText(value?: string): string {
-    return typeof value === "string" ? value.trim() : "";
-}
+const MONTH_NAMES = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+] as const;
+
+const logEntries = latestLogs satisfies LogEntry[];
 
 function formatDate(date: string): string {
     const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -32,124 +47,117 @@ function formatDate(date: string): string {
     }
 
     const [, year, month, day] = match;
-    return `${day}.${month}.${year.slice(2)}`;
-}
+    const monthName = MONTH_NAMES[Number(month) - 1];
 
-function getDateTimeValue(date: string, time: string): string {
-    if (date && time) {
-        return `${date}T${time}`;
+    if (!monthName) {
+        return date;
     }
 
-    return date || time;
+    return `${day} ${monthName}, ${year}`;
 }
 
-const logs: NormalizedLogEntry[] = Array.isArray(latestLogs)
-    ? (latestLogs as LogEntry[])
-          .map((log) => {
-              const date = normalizeText(log.date);
-              const time = normalizeText(log.time);
-              const text = normalizeText(log.text);
-              const hasDate = date.length > 0;
+function normalizeLog(log: LogEntry): NormalizedLogEntry | null {
+    const date = log.date?.trim() ?? "";
+    const time = log.time?.trim() ?? "";
+    const text = log.text?.trim() ?? "";
 
-              return {
-                  date,
-                  time,
-                  text,
-                  hasDate,
-                  marker: hasDate ? formatDate(date) : time,
-                  dateTime: getDateTimeValue(date, time),
-              };
-          })
-          .filter((log) => log.marker.length > 0 && log.text.length > 0)
-          .slice(0, LOG_LIMIT)
-    : [];
+    if (!text || (!date && !time)) {
+        return null;
+    }
 
-const hasLogs = logs.length > 0;
+    return {
+        marker: date ? formatDate(date) : time,
+        markerDateTime: date || time,
+        time: date ? time : "",
+        dateTime: date && time ? `${date}T${time}` : date || time,
+        text,
+    };
+}
+
+const logs = logEntries
+    .map(normalizeLog)
+    .filter((log): log is NormalizedLogEntry => log !== null)
+    .slice(0, LOG_LIMIT);
 ---
 
-<Card titleId="logs-title">
-    <a
-        slot="header"
-        class="c-logs-card__title-link"
-        href="https://nownownow.com/about"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Read about now pages. Opens in a new tab."
-    >
-        Update log
-    </a>
-
+<Card title="Update log">
     {
-        hasLogs ? (
-            <ul class="c-log" aria-label="latest updates">
+        logs.length > 0 ? (
+            <ul class="c-log">
                 {logs.map((log) => (
                     <li class="c-log__item">
-                        <time class="c-log__marker" datetime={log.dateTime}>
-                            {log.marker}:
-                        </time>{" "}
+                        <div class="c-log__row">
+                            <time
+                                class="c-log__date"
+                                datetime={log.markerDateTime}
+                            >
+                                {log.marker}
+                                {"-"}
+                            </time>
 
-                        <span class="c-log__text">{log.text}</span>
+                            <span class="c-log__entry">
+                                <span class="c-log__text">{log.text}</span>
 
-                        {log.hasDate && log.time && (
-                            <>
-                                {" "}
-                                <time
-                                    class="c-log__time"
-                                    datetime={log.dateTime}
-                                >
-                                    {log.time}
-                                </time>
-                            </>
-                        )}
+                                {log.time && (
+                                    <>
+                                        {" "}
+                                        <time
+                                            class="c-log__time"
+                                            datetime={log.dateTime}
+                                        >
+                                            {log.time}
+                                        </time>
+                                    </>
+                                )}
+                            </span>
+                        </div>
                     </li>
                 ))}
             </ul>
         ) : (
-            <p class="c-log__empty">No updates available at the moment.</p>
+            <p class="c-log__empty">
+                No updates available at the moment.
+            </p>
         )
     }
 </Card>
 
 <style>
-    .c-logs-card__title-link,
-    .c-logs-card__title-link:visited,
-    .c-logs-card__title-link:hover,
-    .c-logs-card__title-link:active {
-        color: inherit;
-        text-decoration: var(--component-log-title-link-decoration);
-    }
-
-    .c-logs-card__title-link {
-        cursor: pointer;
-    }
-
-    .c-logs-card__title-link:focus-visible {
-        outline: var(--component-log-focus-outline-width)
-            var(--component-log-focus-outline-style) currentColor;
-        outline-offset: var(--component-log-focus-outline-offset);
-    }
-
     .c-log {
         margin: var(--space-none);
-        padding: var(--component-log-space-before) var(--space-none)
-            var(--space-none);
-        list-style: var(--component-log-list-style);
+        padding-block-start: var(--component-log-space-before);
+        padding-inline-start: var(--space-lg);
+        color: var(--clr-text-main);
+        list-style: disc;
     }
 
     .c-log__item {
         margin: var(--space-none);
         line-height: var(--lh-log);
-        text-wrap: pretty;
-        overflow-wrap: anywhere;
     }
 
     .c-log__item + .c-log__item {
         margin-top: var(--component-log-item-space-before);
     }
 
-    .c-log__marker {
+    .c-log__row {
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: var(--space-sm);
+        align-items: baseline;
+    }
+
+    .c-log__date {
+        color: var(--clr-text-main);
         font-weight: var(--fw-bold);
+        font-variant-numeric: tabular-nums;
         white-space: nowrap;
+    }
+
+    .c-log__entry {
+        min-width: 0;
+        text-wrap: pretty;
+        overflow-wrap: anywhere;
     }
 
     .c-log__time {
@@ -165,7 +173,12 @@ const hasLogs = logs.length > 0;
     }
 
     @media (max-width: 560px) {
-        .c-log__marker,
+        .c-log__row {
+            grid-template-columns: 1fr;
+            gap: var(--space-none);
+        }
+
+        .c-log__date,
         .c-log__time {
             white-space: normal;
         }
