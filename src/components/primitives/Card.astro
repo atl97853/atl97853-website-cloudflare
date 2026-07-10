@@ -1,78 +1,82 @@
 ---
 /**
- * Card component
+ * Reusable semantic wrapper for card-like sections.
  *
- * Reusable semantic wrapper for standardized card-like sections across the site.
- * It renders a configurable HTML element through the `as` prop, such as
- * `section`, `article`, `nav`, `aside`, or `div`.
- *
- * The component can render either a simple title through the `title` prop or a
- * custom named `header` slot. When a visible header exists, it connects the card
- * to that heading with `aria-labelledby`. When no visible header exists, it can
- * use `ariaLabel` instead.
- *
- * The body content is rendered through the default slot inside `.c-card__body`.
- * Extra classes can be added to the outer card with `class` and to the body with
- * `bodyClass`, allowing each component to keep a shared structure while still
- * supporting small layout/style variations.
+ * The element rendered by the component is controlled through `as`.
+ * Native attributes belonging to that element are forwarded to it.
  */
 
-interface Props {
-    as?: "section" | "article" | "nav" | "aside" | "div";
+import type { HTMLTag, Polymorphic } from "astro/types";
+
+type CardTag = Extract<
+    HTMLTag,
+    "section" | "article" | "nav" | "aside" | "div"
+>;
+
+type HeadingLevel = 2 | 3 | 4;
+
+interface CardProps {
     title?: string;
     titleId?: string;
-    class?: string;
     bodyClass?: string;
-    headingLevel?: 2 | 3 | 4;
-    ariaLabel?: string;
+    headingLevel?: HeadingLevel;
 }
 
+type Props<Tag extends CardTag = "section"> = Polymorphic<
+    CardProps & {
+        as: Tag;
+    }
+>;
+
 const {
-    as = "section",
+    as: Tag = "section",
     title,
     titleId,
-    class: className,
     bodyClass,
     headingLevel = 2,
-    ariaLabel,
+    class: className,
+    "aria-label": ariaLabel,
+    "aria-labelledby": externalLabelledBy,
+    ...attrs
 } = Astro.props;
 
-const slugify = (value: string) => {
-    const slug = value
-        .trim()
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
-    return slug || undefined;
-};
-
-const hasHeaderSlot = Astro.slots.has("header");
 const normalizedTitle = title?.trim();
-const hasTitle = Boolean(normalizedTitle);
-const hasHeader = hasTitle || hasHeaderSlot;
+const hasHeadingSlot = Astro.slots.has("heading");
+const hasHeading = Boolean(normalizedTitle) || hasHeadingSlot;
 
-const titleSlug = normalizedTitle ? slugify(normalizedTitle) : undefined;
-const headingId = titleId?.trim() || (titleSlug ? `${titleSlug}-title` : undefined);
-
-const Tag = as;
 const Heading = `h${headingLevel}` as const;
 
-const labelledBy = hasHeader && headingId ? headingId : undefined;
-const label = labelledBy ? undefined : ariaLabel;
+const headingId = hasHeading
+    ? titleId?.trim() || `card-heading-${crypto.randomUUID()}`
+    : undefined;
+
+const canHaveAccessibleName =
+    Tag !== "div" || Boolean(Astro.props.role);
+
+const labelledBy = canHaveAccessibleName
+    ? headingId || externalLabelledBy
+    : undefined;
+
+const label =
+    canHaveAccessibleName && !labelledBy
+        ? ariaLabel
+        : undefined;
 ---
 
 <Tag
+    {...attrs}
     class:list={["c-card", className]}
     aria-labelledby={labelledBy}
     aria-label={label}
 >
     {
-        hasHeader && (
+        hasHeading && (
             <Heading id={headingId} class="c-card__header">
-                {hasHeaderSlot ? <slot name="header" /> : normalizedTitle}
+                {hasHeadingSlot ? (
+                    <slot name="heading" />
+                ) : (
+                    normalizedTitle
+                )}
             </Heading>
         )
     }
@@ -81,3 +85,26 @@ const label = labelledBy ? undefined : ariaLabel;
         <slot />
     </div>
 </Tag>
+
+<style>
+    .c-card {
+        margin-bottom: var(--component-card-space-after);
+        background: var(--clr-bg-card);
+        border: var(--bw-frame) solid var(--clr-border);
+        border-radius: var(--br-sm);
+    }
+
+    .c-card__header {
+        padding-bottom: var(--component-card-header-space-after);
+        color: var(--clr-text-strong);
+        font-size: var(--fs-md);
+        line-height: var(--lh-heading);
+        font-weight: var(--fw-bold);
+    }
+
+    .c-card__body {
+        color: var(--clr-text-main);
+        font-size: var(--fs-sm);
+        line-height: var(--lh-text);
+    }
+</style>

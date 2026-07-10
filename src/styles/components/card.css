@@ -26,29 +26,6 @@
     color: var(--clr-link-hover);
 }
 
-/* Card primitive / Card.astro */
-
-.c-card {
-    margin-bottom: var(--component-card-space-after);
-    background: var(--clr-bg-card);
-    border: var(--bw-frame) solid var(--clr-border);
-    border-radius: var(--br-sm);
-}
-
-.c-card__header {
-    padding-bottom: var(--component-card-header-space-after);
-    color: var(--clr-text-strong);
-    font-size: var(--fs-md);
-    line-height: var(--lh-heading);
-    font-weight: var(--fw-bold);
-}
-
-.c-card__body {
-    color: var(--clr-text-main);
-    font-size: var(--fs-sm);
-    line-height: var(--lh-text);
-}
-
 /* Link list primitive / LinkList.astro */
 
 .c-nav-list {
