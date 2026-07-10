@@ -1,9 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-
-import Logs from '../components/Logs.astro';
+import Pfp from "../components/Pfp.astro";
+import Logs from "../components/Logs.astro";
 ---
 
 <BaseLayout>
-    <Logs slot="custom-cards" />
+    <Fragment slot="custom-cards">
+        <Pfp />
+        <Logs />
+    </Fragment>
 </BaseLayout>
