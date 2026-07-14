@@ -1,26 +1,32 @@
-<footer class="c-site-footer">
-    <a href="/colophon" class="c-site-footer__link"> 
-        atl97853 since 2025 | 
-    </a>
-    &copy; All rights reserved !!!
+<footer class="site-footer">
+    <p>atl97853 since 2025 · © {new Date().getFullYear()}</p>
+    <a href="#main-content">Back to top ↑</a>
 </footer>
 
 <style>
-    .c-site-footer {
-        padding: var(--component-footer-padding);
-        color: var(--clr-text-muted);
-        font-size: var(--fs-xs);
-        line-height: var(--lh-footer);
-        text-align: center;
+    .site-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--space-md);
+        padding: var(--space-md);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card-bg);
+        color: var(--text-muted);
+        font-size: var(--font-xs);
+        line-height: 1.4;
+        box-shadow: var(--shadow);
     }
 
-    .c-site-footer__link {
-        all: unset;
-        cursor: pointer;
+    .site-footer a {
+        color: var(--link-main);
+        text-decoration: none;
     }
 
-    .c-site-footer__link:hover,
-    .c-site-footer__link:focus-visible {
-        color: var(--clr-link-hover);
+    @media (max-width: 38rem) {
+        .site-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
     }
 </style>
