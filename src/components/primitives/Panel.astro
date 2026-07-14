@@ -1,0 +1,84 @@
+---
+/**
+ * A polymorphic primitive that provides the shared outer structure and
+ * appearance used by panel-like feature components.
+ *
+ * When a title is provided, titleID is also required so the rendered heading
+ * can provide an accessible name for the panel through aria-labelledby.
+ */
+
+import type { Polymorphic } from "astro/types";
+
+type PanelTag =
+    | "section"
+    | "article"
+    | "aside"
+    | "nav"
+    | "div";
+
+type HeadingTag = "h1" | "h2";
+
+type Props<Tag extends PanelTag> = Polymorphic<{
+    as: Tag;
+    title?: string;
+    titleID?: string;
+    headingLevel?: HeadingTag;
+}>;
+
+const {
+    as: Tag,
+    title,
+    titleID,
+    headingLevel: Heading = "h2",
+    class: parentClass,
+    "aria-labelledby": ariaLabelledBy,
+    ...attributes
+} = Astro.props;
+
+/**
+ * Prefer an explicitly supplied aria-labelledby value.
+ *
+ * Otherwise, use titleID only when a visible title is also rendered. This
+ * prevents the panel from referencing an element that does not exist.
+ */
+const labelledBy =
+    ariaLabelledBy ?? (title && titleID ? titleID : undefined);
+---
+
+<Tag
+    class:list={["panel", parentClass]}
+    aria-labelledby={ariaLabelledBy ?? titleID}
+    {...attributes}
+>
+    {
+        title && (
+            <Heading id={titleID} class="panel__heading">
+                {title}
+            </Heading>
+        )
+    }
+
+    <slot />
+</Tag>
+
+<style>
+    .panel {
+        overflow: hidden;
+        padding: var(--space-md);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--card-bg);
+        box-shadow: var(--shadow);
+    }
+
+    .panel__heading {
+        margin: 0 0 var(--space-sm);
+        color: var(--text-strong);
+        font-size: var(--font-md);
+        font-weight: var(--fw-bold);
+        line-height: var(--lh-panel-heading);
+        {/* That means each pair of characters is tightened by roughly a quarter of a pixel. The effect is subtle. */}
+        {/* letter-spacing: -0.015em; */}
+        {/* text-transform: lowercase; */}
+    }
+</style>
