@@ -1,4 +1,277 @@
-@import "./tokens.css";
-@import "./base.css";
-@import "./layout.css";
-@import "./utilities.css";
+/*
+ * Global foundations only:
+ * tokens, reset, shared page shell, shared panels, and responsive layout.
+ * Component-specific styles stay scoped inside each .astro component.
+ */
+
+:root {
+    --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    --font-xs: 0.875rem;
+    --font-md: 1rem;
+
+    --fw-bold: 700;
+
+    --space-none: 0;
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 40px;
+
+    --shell-max-width: 900px;
+    --shell-padding: 24px;
+    --sidebar-width: 255px;
+    --layout-gap: 40px;
+
+    --lh-panel-heading: 1.25;
+
+    --reading-line-height: 1.55;
+    --reading-width: 66ch;
+    --gallery-width: 31rem;
+
+    --radius: 7px;
+
+    --page-bg: #111a24;
+    --container-bg: #182432;
+    --card-bg: #202d3d;
+
+    --text-main: #d8e3ec;
+    --text-muted: #91a4b5;
+    --text-strong: #ffffff;
+
+    --link-main: #58a9d2;
+    --link-hover: #84c8e8;
+    --link-visited: #8eadd0;
+
+    --border: #3a4a5b;
+    --border-strong: #506173;
+    --surface-soft: #263547;
+    --surface-hover: #2b3c50;
+    --page-shell: #182432;
+
+    --selection-bg: #2f83ad;
+    --selection-text: #ffffff;
+
+    --theme-active-bg: var(--link-main);
+    --theme-active-text: #10202b;
+
+    --shadow: 0 1px 3px rgb(4 9 14 / 40%);
+}
+
+:root[data-theme="light"] {
+    --page-bg: #63acd0;
+    --container-bg: #e7eef2;
+    --card-bg: #ffffff;
+
+    --text-main: #202020;
+    --text-muted: #687986;
+    --text-strong: #111111;
+
+    --link-main: #1488ca;
+    --link-hover: #0d6d9f;
+    --link-visited: #536fa1;
+
+    --border: #d6dee4;
+    --border-strong: #c4ced6;
+    --surface-soft: #f1f5f7;
+    --surface-hover: #edf3f6;
+    --page-shell: #e7eef2;
+
+    --selection-bg: #ffbd2e;
+    --selection-text: #111111;
+
+    --theme-active-bg: #ffbd2e;
+    --theme-active-text: #4b3a00;
+
+    --shadow: 0 1px 1px rgb(35 54 68 / 8%);
+}
+
+html {
+    min-height: 100%;
+    color-scheme: dark;
+    scroll-behavior: smooth;
+}
+
+html[data-theme="light"] {
+    color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+p,
+figure,
+dl,
+dd {
+    margin: 0;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    padding:
+        2.5rem var(--space-md)
+        calc(var(--space-xl) + 4.5rem);
+    border-top: 6px solid #26323d;
+    background: var(--page-bg);
+    color: var(--text-main);
+    font-family: var(--font-main);
+    font-size: 16px;
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    transition:
+        background-color 140ms ease,
+        color 140ms ease;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+a {
+    color: var(--link-main);
+}
+
+a:visited {
+    color: var(--link-visited);
+}
+
+a:hover {
+    color: var(--link-hover);
+}
+
+button,
+a,
+input {
+    -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+    outline: 2px solid var(--link-hover);
+    outline-offset: 2px;
+}
+
+::selection {
+    background: var(--selection-bg);
+    color: var(--selection-text);
+}
+
+/* custom classes */
+
+.skip-link {
+    position: fixed;
+    z-index: 100;
+    top: var(--space-sm);
+    left: var(--space-sm);
+    padding: var(--space-xs) var(--space-sm);
+    transform: translateY(-150%);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    color: var(--text-main);
+    font-size: var(--font-xs);
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
+.site-shell {
+    width: 100%;
+    max-width: var(--shell-max-width);
+    min-height: 100vh;
+    margin-inline: auto;
+    padding: 0 var(--shell-padding) var(--space-lg);
+    background: var(--page-shell);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 8%);
+}
+
+.page-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+    gap: var(--layout-gap);
+    align-items: start;
+    padding-bottom: var(--space-xl);
+}
+
+.page-main,
+.page-sidebar {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+}
+
+.page-sidebar {
+    position: sticky;
+    top: var(--space-md);
+}
+
+/* peharps this is only for primitive components */
+/* .panel {
+    overflow: hidden;
+    padding: var(--space-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+} */
+
+@media (max-width: 52rem) {
+    body {
+        padding-top: var(--space-md);
+    }
+
+    .site-shell {
+        padding-inline: var(--space-md);
+    }
+
+    .page-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .page-sidebar {
+        position: static;
+        grid-row: 1;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 38rem) {
+    body {
+        padding-inline: var(--space-sm);
+    }
+
+    .page-sidebar {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
