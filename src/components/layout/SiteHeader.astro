@@ -1,12 +1,8 @@
 ---
+import { Image } from 'astro:assets';
+import bannerImg from "@images/banner_img.jpg";
+
 import ThemeControls from "./ThemeControls.astro";
-
-interface Props {
-    bannerSrc: string;
-    bannerAlt: string;
-}
-
-const { bannerSrc, bannerAlt } = Astro.props;
 ---
 
 <header class="site-header">
@@ -21,22 +17,20 @@ const { bannerSrc, bannerAlt } = Astro.props;
             <span>atl97853</span>
         </a>
 
-        <span class="site-wordmark" aria-hidden="true">atl archive</span>
+        {/* When you restore the wordmark, restore the three-column declaration as well. */}
+        {/* <span class="site-wordmark" aria-hidden="true"></span> */}
 
         <ThemeControls />
     </div>
 
-    <figure class="site-banner">
-        <img
-            src={bannerSrc}
-            alt={bannerAlt}
-            width="1600"
-            height="420"
-            loading="eager"
-            decoding="async"
-            fetchpriority="high"
+    <div class="site-banner">
+        <Image
+            class="site-banner__image"
+            src={bannerImg}
+            alt=""
+            priority
         />
-    </figure>
+    </div>
 </header>
 
 <style>
@@ -46,7 +40,8 @@ const { bannerSrc, bannerAlt } = Astro.props;
 
     .site-toolbar {
         display: grid;
-        grid-template-columns: 1fr auto 1fr;
+        /* grid-template-columns: 1fr auto 1fr; */
+        grid-template-columns: minmax(0, 1fr) auto;
         min-height: 3rem;
         align-items: center;
         gap: var(--space-md);
@@ -68,7 +63,7 @@ const { bannerSrc, bannerAlt } = Astro.props;
         gap: var(--space-sm);
         color: var(--text-muted);
         font-size: var(--font-xs);
-        font-weight: 700;
+        font-weight: var(--fw-bold);
         text-decoration: none;
     }
 
@@ -77,13 +72,13 @@ const { bannerSrc, bannerAlt } = Astro.props;
         height: 1rem;
     }
 
-    .site-wordmark {
+    /* .site-wordmark {
         color: var(--link-main);
         font-size: var(--font-xs);
         font-weight: var(--fw-bold);
         letter-spacing: 0.03em;
         text-transform: lowercase;
-    }
+    } */
 
     .site-banner {
         margin: 0 0 var(--space-lg);
@@ -94,22 +89,23 @@ const { bannerSrc, bannerAlt } = Astro.props;
         box-shadow: var(--shadow);
     }
 
-    .site-banner img {
+    .site-banner__image {
         width: 100%;
         height: 145px;
         object-fit: cover;
     }
 
     @media (max-width: 38rem) {
-        .site-toolbar {
+        /* redundant? */
+        /* .site-toolbar {
             grid-template-columns: 1fr auto;
-        }
+        } */
 
         .site-wordmark {
             display: none;
         }
 
-        .site-banner img {
+        .site-banner__image {
             height: 115px;
         }
     }
