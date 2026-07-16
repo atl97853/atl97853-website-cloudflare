@@ -42,20 +42,25 @@ const hasSidebar = Astro.slots.has("sidebar");
 
         <script is:inline>
             (() => {
-                const storageKey = "site-theme";
-                const savedTheme = localStorage.getItem(storageKey);
-                const systemTheme = window.matchMedia(
+                const STORAGE_KEY = "site-theme";
+
+                const prefersLight = window.matchMedia(
                     "(prefers-color-scheme: light)",
-                ).matches
-                    ? "light"
-                    : "dark";
+                ).matches;
 
-                const initialTheme =
-                    savedTheme === "light" || savedTheme === "dark"
-                        ? savedTheme
-                        : systemTheme;
+                let theme = prefersLight ? "light" : "dark";
 
-                document.documentElement.dataset.theme = initialTheme;
+                try {
+                    const savedTheme = localStorage.getItem(STORAGE_KEY);
+
+                    if (savedTheme === "light" || savedTheme === "dark") {
+                        theme = savedTheme;
+                    }
+                } catch {
+                    // Keep the system theme when storage is unavailable.
+                }
+
+                document.documentElement.dataset.theme = theme;
             })();
         </script>
     </head>

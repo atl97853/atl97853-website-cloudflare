@@ -48,8 +48,19 @@
     </button>
 </theme-controls>
 
+{/*
+ * BaseLayout sets the initial theme before the page renders, using the saved
+ * preference or the system setting. ThemeControls then lets the user change
+ * the theme, saves the new preference, and keeps the buttons synchronized.
+ */}
 <script>
     const STORAGE_KEY = "site-theme";
+
+    type Theme = "dark" | "light";
+
+    function isTheme(value: string | undefined): value is Theme {
+        return value === "dark" || value === "light";
+    }
 
     class ThemeControlsElement extends HTMLElement {
         private handleClick = (event: Event) => {
@@ -63,23 +74,35 @@
 
             const theme = button?.dataset.themeValue;
 
-            if (theme !== "dark" && theme !== "light") return;
+            if (!isTheme(theme)) return;
 
-            document.documentElement.dataset.theme = theme;
-            localStorage.setItem(STORAGE_KEY, theme);
-            this.sync(theme);
+            this.setTheme(theme);
         };
 
         connectedCallback() {
             this.addEventListener("click", this.handleClick);
-            this.sync(document.documentElement.dataset.theme ?? "dark");
+
+            const theme = document.documentElement.dataset.theme;
+
+            this.sync(isTheme(theme) ? theme : "dark");
         }
 
         disconnectedCallback() {
             this.removeEventListener("click", this.handleClick);
         }
 
-        private sync(theme: string) {
+        private setTheme(theme: Theme) {
+            document.documentElement.dataset.theme = theme;
+            this.sync(theme);
+
+            try {
+                localStorage.setItem(STORAGE_KEY, theme);
+            } catch {
+                // The selected theme still works for the current page.
+            }
+        }
+
+        private sync(theme: Theme) {
             this.querySelectorAll<HTMLButtonElement>(
                 "[data-theme-value]",
             ).forEach((button) => {
@@ -92,7 +115,10 @@
     }
 
     if (!customElements.get("theme-controls")) {
-        customElements.define("theme-controls", ThemeControlsElement);
+        customElements.define(
+            "theme-controls",
+            ThemeControlsElement,
+        );
     }
 </script>
 
