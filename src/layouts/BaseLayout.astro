@@ -115,6 +115,34 @@ const hasSidebar = Astro.slots.has("sidebar");
  * grid to one column so the main content and sidebar stack vertically.
  */}
 <style>
+    .skip-link {
+        position: fixed;
+        z-index: 100;
+        top: var(--space-sm);
+        left: var(--space-sm);
+        padding: var(--space-xs) var(--space-sm);
+        transform: translateY(-150%);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius);
+        background: var(--card-bg);
+        color: var(--text-main);
+        font-size: var(--font-xs);
+    }
+
+    .skip-link:focus {
+        transform: translateY(0);
+    }
+
+    .site-shell {
+        width: 100%;
+        max-width: var(--shell-max-width);
+        min-height: 100vh;
+        margin-inline: auto;
+        padding: 0 var(--shell-padding) var(--space-lg);
+        background: var(--page-shell);
+        box-shadow: 0 0 0 1px rgb(255 255 255 / 8%);
+    }
+
     .page-grid {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
@@ -123,16 +151,45 @@ const hasSidebar = Astro.slots.has("sidebar");
         padding-bottom: var(--space-xl);
     }
 
+    .page-main,
+    .page-sidebar {
+        display: grid;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .page-sidebar {
+        position: sticky;
+        top: var(--space-md);
+    }
+
+
     .page-grid--with-sidebar {
         grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
     }
 
     @media (max-width: 52rem) {
+        .site-shell {
+            padding-inline: var(--space-md);
+        }
+
         .page-grid {
             gap: var(--space-md);
         }
 
         .page-grid--with-sidebar {
+            grid-template-columns: 1fr;
+        }
+
+        .page-sidebar {
+            position: static;
+            grid-row: 1;
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 38rem) {
+        .page-sidebar {
             grid-template-columns: 1fr;
         }
     }

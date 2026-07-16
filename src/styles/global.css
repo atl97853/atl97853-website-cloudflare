@@ -1,7 +1,10 @@
 /*
  * Global foundations only:
- * tokens, reset, shared page shell, shared panels, and responsive layout.
- * Component-specific styles stay scoped inside each .astro component.
+ * design tokens, themes, reset rules, base element styles,
+ * document-level accessibility, and global user preferences.
+ *
+ * Layout and component-specific styles remain scoped inside
+ * their owning Astro components.
  */
 
 :root {
@@ -171,71 +174,15 @@ input {
     color: var(--selection-text);
 }
 
-/* custom classes */
-
-.skip-link {
-    position: fixed;
-    z-index: 100;
-    top: var(--space-sm);
-    left: var(--space-sm);
-    padding: var(--space-xs) var(--space-sm);
-    transform: translateY(-150%);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius);
-    background: var(--card-bg);
-    color: var(--text-main);
-    font-size: var(--font-xs);
-}
-
-.skip-link:focus {
-    transform: translateY(0);
-}
-
-.site-shell {
-    width: 100%;
-    max-width: var(--shell-max-width);
-    min-height: 100vh;
-    margin-inline: auto;
-    padding: 0 var(--shell-padding) var(--space-lg);
-    background: var(--page-shell);
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 8%);
-}
-
-.page-main,
-.page-sidebar {
-    display: grid;
-    gap: 12px;
-    min-width: 0;
-}
-
-.page-sidebar {
-    position: sticky;
-    top: var(--space-md);
-}
-
 @media (max-width: 52rem) {
     body {
         padding-top: var(--space-md);
-    }
-
-    .site-shell {
-        padding-inline: var(--space-md);
-    }
-
-    .page-sidebar {
-        position: static;
-        grid-row: 1;
-        grid-template-columns: 1fr 1fr;
     }
 }
 
 @media (max-width: 38rem) {
     body {
         padding-inline: var(--space-sm);
-    }
-
-    .page-sidebar {
-        grid-template-columns: 1fr;
     }
 }
 
