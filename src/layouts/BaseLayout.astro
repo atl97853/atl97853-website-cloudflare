@@ -18,6 +18,8 @@ const {
     // audioSrc = "/audio/late-night-study.wav",
     // trackTitle = "Late-night study loop · atl97853 radio",
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
@@ -28,7 +30,8 @@ const {
         <meta name="description" content={description} />
         <meta name="color-scheme" content="dark light" />
         <meta name="theme-color" content="#111a24" />
-
+        
+        <link rel="canonical" href={canonicalURL} />
 
         <title>{title}</title>
 
