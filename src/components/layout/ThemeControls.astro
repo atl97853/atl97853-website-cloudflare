@@ -122,6 +122,14 @@
     }
 </script>
 
+{/*
+BaseLayout sets data-theme before the page renders, so CSS can
+immediately style the active theme button.
+
+ThemeControls then synchronizes aria-pressed after hydration.
+This prevents button flicker without hiding the component or
+causing layout shift.
+*/}
 <style>
     .theme-controls {
         display: flex;
@@ -160,7 +168,10 @@
         color: var(--link-hover);
     }
 
-    .theme-control[aria-pressed="true"] {
+    :global(html[data-theme="dark"])
+        .theme-control[data-theme-value="dark"],
+    :global(html[data-theme="light"])
+        .theme-control[data-theme-value="light"] {
         background: var(--theme-active-bg);
         color: var(--theme-active-text);
         box-shadow: inset 0 0 0 1px rgb(0 0 0 / 10%);
