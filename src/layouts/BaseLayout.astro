@@ -106,13 +106,20 @@ const hasSidebar = Astro.slots.has("sidebar");
 </html>
 
 {/*
- * `page-grid` provides the default one-column layout.
- *
- * When a sidebar slot exists, `class:list` also applies
- * `page-grid--with-sidebar`, which creates the desktop sidebar column.
- *
- * On smaller/mobile screens, the gap is reduced and the modifier returns the
- * grid to one column so the main content and sidebar stack vertically.
+    * `page-grid` provides the default one-column layout.
+    *
+    * When a sidebar slot exists, `class:list` also applies
+    * `page-grid--with-sidebar`, which creates the desktop sidebar column.
+    *
+    * On smaller/mobile screens, the gap is reduced and the modifier returns the
+    * grid to one column so the main content and sidebar stack vertically.
+*/}
+
+{/*
+    * --site-gutter represents the shell’s current horizontal inner spacing.
+    * Child components inherit it, allowing elements such as the toolbar to use
+    * the exact same responsive spacing as the layout without repeating
+    * breakpoint-specific values.
  */}
 <style>
     .skip-link {
@@ -134,11 +141,13 @@ const hasSidebar = Astro.slots.has("sidebar");
     }
 
     .site-shell {
+        --site-gutter: var(--shell-padding);
+
         width: 100%;
         max-width: var(--shell-max-width);
         min-height: 100vh;
         margin-inline: auto;
-        padding: 0 var(--shell-padding) var(--space-lg);
+        padding: 0 var(--site-gutter) var(--space-lg);
         background: var(--page-shell);
         box-shadow: 0 0 0 1px rgb(255 255 255 / 8%);
     }
@@ -170,7 +179,7 @@ const hasSidebar = Astro.slots.has("sidebar");
 
     @media (max-width: 52rem) {
         .site-shell {
-            padding-inline: var(--space-md);
+            --site-gutter: var(--space-md);
         }
 
         .page-grid {

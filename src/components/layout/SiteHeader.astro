@@ -40,14 +40,13 @@ import ThemeControls from "./ThemeControls.astro";
 
     .site-toolbar {
         display: grid;
-        /* grid-template-columns: 1fr auto 1fr; */
         grid-template-columns: minmax(0, 1fr) auto;
         min-height: 3rem;
         align-items: center;
         gap: var(--space-md);
-        margin-inline: calc(var(--shell-padding) * -1);
+        margin-inline: calc(var(--site-gutter) * -1);
         margin-bottom: var(--space-lg);
-        padding: var(--space-xs) var(--shell-padding);
+        padding: var(--space-xs) var(--site-gutter);
         border-bottom: 1px solid var(--border);
         background: color-mix(
             in srgb,
