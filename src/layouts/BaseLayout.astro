@@ -1,49 +1,76 @@
 ---
 import "../styles/global.css";
 
-import Header from "../components/layout/Header.astro";
-import Footer from "../components/layout/Footer.astro";
-import Navbar from "../components/Navbar.astro";
+// import MusicPlayer from "../components/home/MusicPlayer.astro";
+import SiteFooter from "../components/layout/SiteFooter.astro";
+import SiteHeader from "../components/layout/SiteHeader.astro";
 
 interface Props {
-    tabTitle?: string;
-    description?: string;
+    title: string;
+    description: string;
+    // audioSrc?: string;
+    // trackTitle?: string;
 }
 
 const {
-    tabTitle = "atl97853",
-    description = "Hi, my name is Atl, and this is my personal website. Here I write about my studies, technology, books I have read, and other things I find interesting. Feel free to wander around.",
+    title,
+    description,
+    // audioSrc = "/audio/late-night-study.wav",
+    // trackTitle = "Late-night study loop · atl97853 radio",
 } = Astro.props;
 ---
-<!DOCTYPE html>
-<html lang="en">
+
+<!doctype html>
+<html lang="en" data-theme="dark">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width", initial-scale=1 />
         <meta name="description" content={description} />
-        <title>{tabTitle}</title>
+        <meta name="color-scheme" content="dark light" />
+        <meta name="theme-color" content="#111a24" />
+
+
+        <title>{title}</title>
+
+        <script is:inline>
+            (() => {
+                const storageKey = "site-theme";
+                const savedTheme = localStorage.getItem(storageKey);
+                const systemTheme = window.matchMedia(
+                    "(prefers-color-scheme: light)",
+                ).matches
+                    ? "light"
+                    : "dark";
+
+                const initialTheme =
+                    savedTheme === "light" || savedTheme === "dark"
+                        ? savedTheme
+                        : systemTheme;
+
+                document.documentElement.dataset.theme = initialTheme;
+            })();
+        </script>
     </head>
 
     <body>
-        <div class="l-main-wrapper">
-            <Header />
+        <a class="skip-link" href="#main-content">Skip to content</a>
 
-            <div class="l-layout-grid">
-                <main id="main-content" class="l-content">
-                    {/*}<Pfp />*/}
+        <div class="site-shell">
+            <SiteHeader />
 
-                    {/* change name for main components */}
-                    <slot name="custom-cards" />
+            <div class="page-grid">
+                <main class="page-main" id="main-content">
+                    <slot />
                 </main>
 
-                <aside class="l-sidebar">
-                    <Navbar />
-                    {/* change name for aside components */}
-                    <slot name="custom-cards-aside" />
+                <aside class="page-sidebar" aria-label="Site sidebar">
+                    <slot name="sidebar" />
                 </aside>
             </div>
 
-            <Footer />
+            <SiteFooter />
         </div>
+
+        {/*<MusicPlayer src={audioSrc} title={trackTitle} />*/}
     </body>
 </html>
