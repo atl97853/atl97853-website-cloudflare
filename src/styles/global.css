@@ -201,14 +201,6 @@ input {
     box-shadow: 0 0 0 1px rgb(255 255 255 / 8%);
 }
 
-.page-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
-    gap: var(--layout-gap);
-    align-items: start;
-    padding-bottom: var(--space-xl);
-}
-
 .page-main,
 .page-sidebar {
     display: grid;
@@ -221,16 +213,6 @@ input {
     top: var(--space-md);
 }
 
-/* peharps this is only for primitive components */
-/* .panel {
-    overflow: hidden;
-    padding: var(--space-md);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--card-bg);
-    box-shadow: var(--shadow);
-} */
-
 @media (max-width: 52rem) {
     body {
         padding-top: var(--space-md);
@@ -238,11 +220,6 @@ input {
 
     .site-shell {
         padding-inline: var(--space-md);
-    }
-
-    .page-grid {
-        grid-template-columns: 1fr;
-        gap: var(--space-md);
     }
 
     .page-sidebar {

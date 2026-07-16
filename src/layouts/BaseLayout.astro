@@ -1,9 +1,9 @@
 ---
 import "../styles/global.css";
 
-// import MusicPlayer from "../components/home/MusicPlayer.astro";
-import SiteFooter from "../components/layout/SiteFooter.astro";
-import SiteHeader from "../components/layout/SiteHeader.astro";
+// import MusicPlayer from "@components/layout/MusicPlayer.astro";
+import SiteHeader from "@components/layout/SiteHeader.astro";
+import SiteFooter from "@components/layout/SiteFooter.astro";
 
 interface Props {
     title: string;
@@ -20,17 +20,22 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+/**
+ * Controls both the optional sidebar markup and the two-column grid layout.
+ * The result is stored because it is used in two places.
+ */
+const hasSidebar = Astro.slots.has("sidebar");
 ---
 
 <!doctype html>
 <html lang="en" data-theme="dark">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width", initial-scale=1 />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content={description} />
         <meta name="color-scheme" content="dark light" />
         <meta name="theme-color" content="#111a24" />
-        
+
         <link rel="canonical" href={canonicalURL} />
 
         <title>{title}</title>
@@ -56,19 +61,36 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     </head>
 
     <body>
-        <a class="skip-link" href="#main-content">Skip to content</a>
+        <a class="skip-link" href="#main-content">
+            Skip to content
+        </a>
 
         <div class="site-shell">
             <SiteHeader />
 
-            <div class="page-grid">
+            {/*
+             * The sidebar slot controls both the rendered markup and the grid.
+             *
+             * `class:list` always applies `page-grid` and conditionally adds
+             * `page-grid--with-sidebar` when `hasSidebar` is true.
+             *
+             * Without sidebar content, the layout uses one column.
+             * With sidebar content, the modifier creates main and sidebar
+             * columns and the <aside> wrapper is rendered.
+             * On smaller screens, the layout returns to one column.
+             */}
+            <div
+                class:list={["page-grid", { "page-grid--with-sidebar": hasSidebar }]}
+            >
                 <main class="page-main" id="main-content">
                     <slot />
                 </main>
 
+                {hasSidebar && (
                 <aside class="page-sidebar" aria-label="Site sidebar">
                     <slot name="sidebar" />
                 </aside>
+                )}
             </div>
 
             <SiteFooter />
@@ -77,3 +99,36 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         {/*<MusicPlayer src={audioSrc} title={trackTitle} />*/}
     </body>
 </html>
+
+{/*
+ * `page-grid` provides the default one-column layout.
+ *
+ * When a sidebar slot exists, `class:list` also applies
+ * `page-grid--with-sidebar`, which creates the desktop sidebar column.
+ *
+ * On smaller/mobile screens, the gap is reduced and the modifier returns the
+ * grid to one column so the main content and sidebar stack vertically.
+ */}
+<style>
+    .page-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--layout-gap);
+        align-items: start;
+        padding-bottom: var(--space-xl);
+    }
+
+    .page-grid--with-sidebar {
+        grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+    }
+
+    @media (max-width: 52rem) {
+        .page-grid {
+            gap: var(--space-md);
+        }
+
+        .page-grid--with-sidebar {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
