@@ -1,12 +1,12 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Pfp from "../components/Pfp.astro";
-import Logs from "../components/Logs.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+const tabTitle = "atl97853";
+const metaDescription = "Hello, my name is Atl, and this is my personal website. Here I write about my studies, technology, books I have read, and other things I find interesting. Feel free to wander around.";
 ---
 
-<BaseLayout>
-    <Fragment slot="custom-cards">
-        <Pfp />
-        <Logs />
-    </Fragment>
+<BaseLayout
+    title={tabTitle}
+    description={metaDescription}
+>
 </BaseLayout>
