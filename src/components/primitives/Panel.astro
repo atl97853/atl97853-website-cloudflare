@@ -1,10 +1,32 @@
 ---
 /**
- * A polymorphic primitive that provides the shared outer structure and
- * appearance used by panel-like feature components.
+ * A polymorphic primitive that provides the shared structure and appearance
+ * used by panel-like feature components.
  *
- * When a title is provided, titleID is also required so the rendered heading
- * can provide an accessible name for the panel through aria-labelledby.
+ * The `as` prop determines which HTML element is rendered as the panel root,
+ * such as `section`, `article`, `aside`, `nav`, or `div`. An optional `title`
+ * renders a heading whose level is selected through `headingLevel`, defaulting
+ * to `h2`.
+ *
+ * `class:list` always applies the primitive `panel` class and appends any
+ * additional class supplied by the parent component. This additional class
+ * acts as a component-specific styling hook without replacing the panel’s
+ * base styles.
+ *
+ * Astro automatically scopes the styles below to markup rendered by this
+ * component. During compilation, selectors such as `.panel` and
+ * `.panel__heading` receive a generated scope marker, preventing these rules
+ * from affecting similarly named elements elsewhere. The exact compiled
+ * selector depends on Astro’s scoped-style strategy and may resemble
+ * `.panel:where(.astro-...)`.
+ *
+ * Remaining HTML attributes are forwarded to the root element. This also
+ * preserves Astro’s generated scope attributes when the component is styled
+ * by its parent.
+ *
+ * Slotted content remains owned by the parent component. Panel provides only
+ * the outer container and optional heading; the parent remains responsible
+ * for the content’s structure and component-specific styling.
  */
 
 import type { Polymorphic } from "astro/types";
@@ -21,38 +43,26 @@ type HeadingTag = "h1" | "h2";
 type Props<Tag extends PanelTag> = Polymorphic<{
     as: Tag;
     title?: string;
-    titleID?: string;
     headingLevel?: HeadingTag;
 }>;
 
 const {
     as: Tag,
     title,
-    titleID,
     headingLevel: Heading = "h2",
     class: parentClass,
-    "aria-labelledby": ariaLabelledBy,
     ...attributes
 } = Astro.props;
 
-/**
- * Prefer an explicitly supplied aria-labelledby value.
- *
- * Otherwise, use titleID only when a visible title is also rendered. This
- * prevents the panel from referencing an element that does not exist.
- */
-const labelledBy =
-    ariaLabelledBy ?? (title && titleID ? titleID : undefined);
 ---
 
 <Tag
     class:list={["panel", parentClass]}
-    aria-labelledby={ariaLabelledBy ?? titleID}
     {...attributes}
 >
     {
         title && (
-            <Heading id={titleID} class="panel__heading">
+            <Heading class="panel__heading">
                 {title}
             </Heading>
         )
@@ -77,8 +87,15 @@ const labelledBy =
         font-size: var(--font-md);
         font-weight: var(--fw-bold);
         line-height: var(--lh-panel-heading);
-        {/* That means each pair of characters is tightened by roughly a quarter of a pixel. The effect is subtle. */}
-        {/* letter-spacing: -0.015em; */}
-        {/* text-transform: lowercase; */}
     }
 </style>
+{/*
+ * Extra code for .panel__heading. I’ll leave it here for now,
+ * but remove it later if you don’t need it.
+ *
+ * Each pair of characters is tightened by roughly a quarter
+ * of a pixel. The effect is subtle.
+ *
+ * letter-spacing: -0.015em;
+ * text-transform: lowercase;
+ */}
