@@ -7,7 +7,11 @@ import Panel from "@components/primitives/Panel.astro";
 const title = "Welcome to my website!";
 ---
 
-<Panel as="section" title={title}>
+<Panel 
+    as="section" 
+    class="home-intro"
+    title={title}
+>
     <div class="home-intro__layout">
         <Image
             class="home-intro__avatar"
@@ -29,11 +33,24 @@ const title = "Welcome to my website!";
 </Panel>
 
 <style>
+    /* Scoped Panel heading override */
+    .home-intro {
+        padding: 0;
+    }
+
+    .home-intro > :global(.panel__heading) {
+        margin: 0;
+        padding: 0.82rem var(--space-md);
+        border-bottom: 1px solid var(--border);
+    }
+    /* Scoped Panel heading override */
+
     .home-intro__layout {
         display: grid;
         grid-template-columns: auto minmax(0, 1fr);
         align-items: center;
         gap: var(--space-lg);
+        padding: var(--space-md);
     }
 
     .home-intro__avatar {
