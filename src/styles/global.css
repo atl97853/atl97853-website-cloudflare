@@ -10,9 +10,19 @@
 :root {
     --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-    --font-xs: 0.875rem;
-    --font-md: 1rem;
+    --font-2xs: 0.75rem;    /* 12px */
+    --font-xs: 0.875rem;    /* 14px */
+    --font-sm: 0.9375rem;   /* 15px */
+    --font-md: 1rem;        /* 16px */
+    --font-lg: 1.125rem;    /* 18px */
+    --font-xl: 1.25rem;     /* 20px */
+    --font-2xl: 1.5rem;     /* 24px */
+    --font-3xl: 1.875rem;   /* 30px */
+    --font-4xl: 2.25rem;    /* 36px */
 
+    --fw-normal: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
     --fw-bold: 700;
 
     --space-none: 0;
