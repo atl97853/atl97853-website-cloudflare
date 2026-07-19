@@ -1,0 +1,360 @@
+---
+import Panel from "@components/primitives/Panel.astro";
+import recentImages from "../../content/data/gallery/recent_images.json";
+
+interface GalleryImage {
+    src?: string;
+    alt?: string;
+    title?: string;
+    caption?: string;
+}
+
+interface NormalizedGalleryImage {
+    src: string;
+    alt: string;
+    title: string;
+}
+
+const IMAGE_LIMIT = 4;
+const imageEntries = recentImages satisfies GalleryImage[];
+
+function normalizeImage(
+    image: GalleryImage,
+): NormalizedGalleryImage | null {
+    const src = image.src?.trim() ?? "";
+    const alt = image.alt?.trim() ?? "";
+    const title = image.title?.trim() || image.caption?.trim() || "";
+
+    if (!src || !alt || !title) return null;
+
+    return { src, alt, title };
+}
+
+const images = imageEntries
+    .slice(0, IMAGE_LIMIT)
+    .map(normalizeImage)
+    .filter((image): image is NormalizedGalleryImage => image !== null);
+---
+
+<Panel as="section" class="recent-images" title="Recent images">
+    {
+        images.length > 0 ? (
+            <recent-images-gallery class="recent-images__gallery">
+                <div
+                    class="recent-images__grid"
+                    data-image-count={images.length}
+                >
+                    {images.map((image) => (
+                        <button
+                            class="recent-images__item"
+                            type="button"
+                            data-gallery-open
+                            data-image-src={image.src}
+                            data-image-alt={image.alt}
+                            data-image-title={image.title}
+                            aria-label={`Expand image: ${image.title}`}
+                        >
+                            <img
+                                class="recent-images__thumbnail"
+                                src={image.src}
+                                alt={image.alt}
+                                loading="lazy"
+                                decoding="async"
+                            />
+
+                            <span class="recent-images__title">
+                                {image.title}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+
+                <dialog class="recent-images__dialog" data-gallery-dialog>
+                    <button
+                        class="recent-images__close"
+                        type="button"
+                        data-gallery-close
+                        aria-label="Close expanded image"
+                    >
+                        ×
+                    </button>
+
+                    <figure class="recent-images__figure">
+                        <img
+                            class="recent-images__expanded-image"
+                            data-expanded-image
+                            alt=""
+                        />
+                        <figcaption
+                            class="recent-images__expanded-caption"
+                            data-expanded-caption
+                        />
+                    </figure>
+                </dialog>
+            </recent-images-gallery>
+        ) : (
+            <p class="recent-images__empty">No images available.</p>
+        )
+    }
+</Panel>
+
+<script>
+    class ImageGalleryElement extends HTMLElement {
+        private handleClick = (event: Event) => {
+            const target = event.target;
+
+            if (!(target instanceof Element)) return;
+
+            const dialog = this.querySelector<HTMLDialogElement>(
+                "[data-gallery-dialog]",
+            );
+
+            if (!dialog) return;
+
+            const openButton = target.closest<HTMLButtonElement>(
+                "[data-gallery-open]",
+            );
+
+            if (openButton) {
+                const expandedImage =
+                    dialog.querySelector<HTMLImageElement>(
+                        "[data-expanded-image]",
+                    );
+                const expandedCaption =
+                    dialog.querySelector<HTMLElement>(
+                        "[data-expanded-caption]",
+                    );
+                const src = openButton.dataset.imageSrc;
+                const alt = openButton.dataset.imageAlt;
+                const imageTitle = openButton.dataset.imageTitle;
+
+                if (!expandedImage || !expandedCaption || !src || !alt) {
+                    return;
+                }
+
+                expandedImage.src = src;
+                expandedImage.alt = alt;
+                expandedCaption.textContent = imageTitle ?? "";
+
+                if (!dialog.open) dialog.showModal();
+                return;
+            }
+
+            if (target.closest("[data-gallery-close]")) {
+                dialog.close();
+                return;
+            }
+
+            if (
+                dialog.open &&
+                !target.closest("[data-expanded-image]")
+            ) {
+                dialog.close();
+            }
+        };
+
+        private handleClose = (event: Event) => {
+            const dialog = event.currentTarget;
+
+            if (!(dialog instanceof HTMLDialogElement)) return;
+
+            const expandedImage = dialog.querySelector<HTMLImageElement>(
+                "[data-expanded-image]",
+            );
+            const expandedCaption = dialog.querySelector<HTMLElement>(
+                "[data-expanded-caption]",
+            );
+
+            expandedImage?.removeAttribute("src");
+
+            if (expandedImage) expandedImage.alt = "";
+            if (expandedCaption) expandedCaption.textContent = "";
+        };
+
+        connectedCallback() {
+            const dialog = this.querySelector<HTMLDialogElement>(
+                "[data-gallery-dialog]",
+            );
+
+            this.addEventListener("click", this.handleClick);
+            dialog?.addEventListener("close", this.handleClose);
+        }
+
+        disconnectedCallback() {
+            const dialog = this.querySelector<HTMLDialogElement>(
+                "[data-gallery-dialog]",
+            );
+
+            this.removeEventListener("click", this.handleClick);
+            dialog?.removeEventListener("close", this.handleClose);
+        }
+    }
+
+    if (!customElements.get("recent-images-gallery")) {
+        customElements.define(
+            "recent-images-gallery",
+            ImageGalleryElement,
+        );
+    }
+</script>
+
+<style>
+    /* Scoped Panel heading override */
+    .recent-images {
+        padding: 0;
+    }
+
+    .recent-images > :global(.panel__heading) {
+        margin: 0;
+        padding: 0.82rem var(--space-md);
+        border-bottom: 1px solid var(--border);
+    }
+    /* Scoped Panel heading override */
+
+    .recent-images__gallery {
+        display: block;
+        padding: var(--space-md);
+    }
+
+    .recent-images__grid {
+        column-count: 2;
+        column-gap: var(--space-sm);
+    }
+
+    .recent-images__grid[data-image-count="1"] {
+        column-count: 1;
+    }
+
+    .recent-images__item {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin: 0 0 var(--space-sm);
+        padding: 0;
+        overflow: hidden;
+        break-inside: avoid;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius);
+        background: var(--card-bg);
+        cursor: zoom-in;
+        font: inherit;
+        text-align: start;
+    }
+
+    .recent-images__item:hover {
+        border-color: var(--link-main);
+    }
+
+    .recent-images__thumbnail {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+    .recent-images__title {
+        display: block;
+        padding: 0.42rem 0.55rem;
+        border-top: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: var(--font-2xs);
+        line-height: 1.25;
+    }
+
+    .recent-images__item:focus-visible {
+        z-index: 1;
+        border-color: var(--link-main);
+        outline: 2px solid var(--link-main);
+        outline-offset: -2px;
+    }
+
+    .recent-images__dialog {
+        width: fit-content;
+        max-width: 94vw;
+        max-height: 92vh;
+        padding: 0;
+        overflow: visible;
+        border: 0;
+        background: transparent;
+    }
+
+    .recent-images__dialog::backdrop {
+        background: rgb(0 0 0 / 88%);
+    }
+
+    .recent-images__figure {
+        display: grid;
+        margin: 0;
+        overflow: hidden;
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-radius: var(--radius);
+        background: #000;
+        box-shadow: 0 1rem 4rem rgb(0 0 0 / 55%);
+    }
+
+    .recent-images__expanded-image {
+        display: block;
+        width: auto;
+        max-width: 92vw;
+        height: auto;
+        max-height: 82vh;
+    }
+
+    .recent-images__expanded-caption {
+        padding: var(--space-sm) var(--space-md);
+        border-top: 1px solid rgb(255 255 255 / 14%);
+        background: #111;
+        color: #ddd;
+        font-size: var(--font-xs);
+        line-height: 1.35;
+    }
+
+    .recent-images__close {
+        position: fixed;
+        z-index: 1;
+        inset-block-start: var(--space-md);
+        inset-inline-end: var(--space-md);
+        display: grid;
+        width: 2.25rem;
+        height: 2.25rem;
+        place-items: center;
+        border: 1px solid rgb(255 255 255 / 28%);
+        border-radius: 50%;
+        background: rgb(0 0 0 / 55%);
+        color: white;
+        font: inherit;
+        font-size: var(--font-xl);
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    .recent-images__close:hover,
+    .recent-images__close:focus-visible {
+        border-color: white;
+        background: rgb(0 0 0 / 78%);
+    }
+
+    .recent-images__close:focus-visible {
+        outline: 2px solid white;
+        outline-offset: 2px;
+    }
+
+    .recent-images__empty {
+        margin: 0;
+        padding: var(--space-md);
+        color: var(--text-muted);
+        font-size: var(--font-sm);
+    }
+
+    @media (max-width: 38rem) {
+        .recent-images__gallery {
+            padding: var(--space-sm);
+        }
+    }
+
+    @media (max-width: 25rem) {
+        .recent-images__grid {
+            column-count: 1;
+        }
+    }
+
+</style>
