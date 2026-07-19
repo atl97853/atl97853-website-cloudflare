@@ -44,60 +44,60 @@
     --gallery-width: 31rem;
 
     --radius: 7px;
+    
+    --page-bg: #0e1620;
+    --container-bg: #151e2a;
+    --card-bg: #1e2937;
 
-    --page-bg: #111a24;
-    --container-bg: #182432;
-    --card-bg: #202d3d;
+    --text-main: #ececf2;
+    --text-muted: #a2a7b5;
+    --text-strong: #f7fbff;
 
-    --text-main: #d8e3ec;
-    --text-muted: #91a4b5;
-    --text-strong: #ffffff;
+    --link-main: #68b8da;
+    --link-hover: #91d1e8;
+    --link-visited: #aaa4d4;
 
-    --link-main: #58a9d2;
-    --link-hover: #84c8e8;
-    --link-visited: #8eadd0;
+    --border: #354454;
+    --border-strong: #4d6073;
+    --surface-soft: #263342;
+    --surface-hover: #2e3d4e;
+    --page-shell: #151e2a;
 
-    --border: #3a4a5b;
-    --border-strong: #506173;
-    --surface-soft: #263547;
-    --surface-hover: #2b3c50;
-    --page-shell: #182432;
+    --selection-bg: #78bfdc;
+    --selection-text: #0d1b25;
 
-    --selection-bg: #2f83ad;
-    --selection-text: #ffffff;
+    --theme-active-bg: #68b8da;
+    --theme-active-text: #0e1821;
 
-    --theme-active-bg: var(--link-main);
-    --theme-active-text: #10202b;
-
-    --shadow: 0 1px 3px rgb(4 9 14 / 40%);
+    --shadow: 0 1px 3px rgb(3 7 12 / 50%);
 }
 
 :root[data-theme="light"] {
-    --page-bg: #63acd0;
-    --container-bg: #e7eef2;
-    --card-bg: #ffffff;
+    --page-bg: #cedde6;
+    --container-bg: #e0e7eb;
+    --card-bg: #fff7f3;
 
-    --text-main: #202020;
-    --text-muted: #687986;
-    --text-strong: #111111;
+    --text-main: #374047;
+    --text-muted: #687179;
+    --text-strong: #222a30;
 
-    --link-main: #1488ca;
-    --link-hover: #0d6d9f;
-    --link-visited: #536fa1;
+    --link-main: #356c8a;
+    --link-hover: #ec94ad;
+    --link-visited: #5e5b8c;
 
-    --border: #d6dee4;
-    --border-strong: #c4ced6;
-    --surface-soft: #f1f5f7;
-    --surface-hover: #edf3f6;
-    --page-shell: #e7eef2;
+    --border: #ccd6dc;
+    --border-strong: #aebdc6;
+    --surface-soft: #f1e6e8;
+    --surface-hover: #e8dadd;
+    --page-shell: #e0e7eb;
 
-    --selection-bg: #ffbd2e;
-    --selection-text: #111111;
+    --selection-bg: #e2a8b8;
+    --selection-text: #38252d;
 
-    --theme-active-bg: #ffbd2e;
-    --theme-active-text: #4b3a00;
+    --theme-active-bg: #356c8a;
+    --theme-active-text: #ffffff;
 
-    --shadow: 0 1px 1px rgb(35 54 68 / 8%);
+    --shadow: 0 1px 2px rgb(44 60 70 / 14%);
 }
 
 html {
