@@ -1,16 +1,25 @@
 ---
+/**
+ * Displays the seven most recent valid log entries.
+ *
+ * Entries may provide either `date` or `time`. When both exist, `date` is the
+ * canonical value used for display, sorting, and the semantic `datetime`
+ * attribute; `time` acts as the fallback.
+ */
+
 import Panel from "@components/primitives/Panel.astro";
 import latestLogs from "@content/logs/recent_logs.json";
 
 interface LogEntry {
+    time?: string;
     date?: string;
     description?: string;
     text?: string;
 }
 
 interface NormalizedLogEntry {
-    date: string;
-    formattedDate: string;
+    datetime: string;
+    displayTimestamp: string;
     description: string;
 }
 
@@ -33,6 +42,11 @@ const MONTH_NAMES = [
 
 const logEntries = latestLogs satisfies LogEntry[];
 
+/**
+ * Converts an ISO calendar date into the compact label used by the component.
+ * Nonmatching values are returned unchanged instead of being reformatted
+ * incorrectly.
+ */
 function formatDate(date: string): string {
     const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
@@ -46,15 +60,22 @@ function formatDate(date: string): string {
     return `${day}, ${monthName}, ${year}`;
 }
 
+/**
+ * Validates one log and resolves its preferred temporal value. `date` takes
+ * precedence over `time` and retains the component's formatted date label.
+ * Invalid entries without a timestamp or description are omitted.
+ */
 function normalizeLog(log: LogEntry): NormalizedLogEntry | null {
+    const time = log.time?.trim() ?? "";
     const date = log.date?.trim() ?? "";
-    const description = (log.description ?? log.text)?.trim() ?? "";
+    const datetime = date || time;
+    const description = log.description?.trim() || log.text?.trim() || "";
 
-    if (!date || !description) return null;
+    if (!datetime || !description) return null;
 
     return {
-        date,
-        formattedDate: formatDate(date),
+        datetime,
+        displayTimestamp: date ? formatDate(date) : time,
         description,
     };
 }
@@ -62,25 +83,23 @@ function normalizeLog(log: LogEntry): NormalizedLogEntry | null {
 const logs = logEntries
     .map(normalizeLog)
     .filter((log): log is NormalizedLogEntry => log !== null)
-    .sort((firstLog, secondLog) => secondLog.date.localeCompare(firstLog.date))
+    .sort((firstLog, secondLog) =>
+        secondLog.datetime.localeCompare(firstLog.datetime),
+    )
     .slice(0, LOG_LIMIT);
 ---
 
-<Panel 
-    as="section" 
-    class="recent-logs" 
-    title="Recent logs"
->
+<Panel as="section" class="recent-logs" title="Recent logs">
     {
         logs.length > 0 ? (
             <ol class="recent-logs__ol">
                 {logs.map((log) => (
                     <li class="recent-logs__li">
                         <time
-                            class="recent-logs__date"
-                            datetime={log.date}
+                            class="recent-logs__timestamp"
+                            datetime={log.datetime}
                         >
-                            {log.formattedDate}
+                            {log.displayTimestamp}
                         </time>
 
                         <p class="recent-logs__description">
@@ -132,7 +151,7 @@ const logs = logEntries
         background: var(--surface-hover);
     } */
 
-    .recent-logs__date {
+    .recent-logs__timestamp {
         grid-column: 2;
         grid-row: 1;
         /* delete later */
