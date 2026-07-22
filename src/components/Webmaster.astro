@@ -1,20 +1,43 @@
 ---
-import Card from "./primitives/Card.astro";
-// You can even remove class="c-webmaster-card" unless you expect to style it later.
-
+// Change the component name after migration, AboutWebmaster.astro, makes more sense
+import Panel from "@components/primitives/Panel.astro";
 ---
-<Card title="About the webmaster" titleId="webmaster-title" class="c-webmaster-card">
-    <p>
-        Hello, wanderer.<br />
-        My name is <em>Atl</em>; it means
-        <em>water</em> in Nahuatl. I’m a student. I’m interested in technology,
-        programming, robotics, and math, and I also like coffee, rainy days, and books,
-        especially science fiction, fantasy, and stories with magic in them. My first language
-        is Spanish, and I’m learning English as a second language, so writing
-        here is part of that process too. I live in a rainy place near the forest,
-        in the mountains close to a volcano, with my two cats, <em>Tohru</em>
-        and <em>Ragnar</em>. They will probably appear here from time to
-        time. As for this website, I’m always moving things around and
-        keeping it under maintenance.
-    </p>
-</Card>
+<Panel
+    as="section"
+    class="about-webmaster"
+    title="About the webmaster" 
+>
+    <div class="about-webmaster__body">
+        <p>
+            Hello, wanderer.<br />
+            My name is <em>Atl</em>; it means
+            <em>water</em> in Nahuatl. I’m a student. I’m interested in technology,
+            programming, robotics, and math, and I also like coffee, rainy days, and books,
+            especially science fiction, fantasy, and stories with magic in them. My first language
+            is Spanish, and I’m learning English as a second language, so writing
+            here is part of that process too. I live in a rainy place near the forest,
+            in the mountains close to a volcano, with my two cats, <em>Tohru</em>
+            and <em>Ragnar</em>. They will probably appear here from time to
+            time. As for this website, I’m always moving things around and
+            keeping it under maintenance. ( ´ ▽ ` )ﾉﾞ
+        </p>
+    </div>
+</Panel>
+
+<style>
+    /* Scoped Panel heading override */
+    .about-webmaster {
+        padding: 0;
+    }
+
+    .about-webmaster > :global(.panel__heading) {
+        margin: 0;
+        padding: 0.82rem var(--space-md);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .about-webmaster__body {
+        padding: 0.82rem var(--space-md);
+    }
+    /* Scoped Panel heading override */
+</style>

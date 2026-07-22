@@ -1,9 +1,15 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import BaseLayout from "@layouts/BaseLayout.astro";
 
-import Webmaster from '../components/Webmaster.astro';
+import SiteNavigation from "@components/layout/SiteNavigation.astro";
+import Webmaster from '@components/Webmaster.astro';
 ---
 
-<BaseLayout tabTitle="about">
-    <Webmaster slot="custom-cards" />
+<BaseLayout 
+    title="about"
+    description="about page" 
+>
+    <Webmaster />
+    
+    <SiteNavigation slot="sidebar" />
 </BaseLayout>
