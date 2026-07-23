@@ -1,0 +1,20 @@
+---
+layout: ../layouts/NestedMarkdownLayout.astro
+title: "Coursework"
+pageTitle: "Coursework"
+description: "Notes about my coursework and academic studies."
+
+# Everything below the closing frontmatter delimiter is the Markdown body.
+# Astro converts this content to HTML and inserts it into the default slot in
+# BaseLayoutMarkdown. Because Panel already renders the page's `<h1>`, start
+# any section headings added here at level two (`## Section name`).
+
+# This paragraph is placeholder content and can be replaced with the actual
+# coursework entries without changing the layout or its component code.
+---
+
+*Fall 2026*
+- *SICP JS edition* *(extra)*
+- *The Missing Semester of Your CS Education* *(extra)*
+
+I'm currently in the process of transitioning between universities and organizing my credits, so there's nothing available here at the moment.
