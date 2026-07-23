@@ -1,0 +1,86 @@
+---
+/**
+ * Nested layout for text-heavy Markdown pages in `src/pages`.
+ *
+ * A Markdown page selects this layout using its special `layout` frontmatter
+ * property. Astro passes the page metadata through `Astro.props.frontmatter`
+ * and sends the rendered Markdown body to this layout’s default `<slot />`.
+ *
+ * `BaseLayout` provides the outer document shell, while this layout adds the
+ * Markdown Panel and sidebar within it.
+ */
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+import SiteNavigation from "@components/layout/SiteNavigation.astro";
+import Panel from "@components/primitives/Panel.astro";
+
+import type { MarkdownLayoutProps } from "astro";
+
+// Defines the custom YAML frontmatter accepted from each Markdown page.
+type Props = MarkdownLayoutProps<{
+    /** Required heading displayed by the Panel. */
+    title: string;
+
+    /** Optional browser-tab title passed to BaseLayout. */
+    pageTitle?: string;
+
+    /** Optional meta description passed to BaseLayout. */
+    description?: string;
+}>;
+
+// Astro automatically provides the selected Markdown page’s frontmatter.
+const { frontmatter } = Astro.props;
+
+// Rename each value by its role; optional metadata falls back to the heading.
+const {
+    title: panelTitle,
+    pageTitle = panelTitle,
+    description = panelTitle,
+} = frontmatter;
+---
+
+<BaseLayout 
+    title={pageTitle} 
+    description={description}
+>
+    <Panel
+        as="article"
+        class="nested-markdown-layout"
+        title={panelTitle}
+    >
+        {/*
+            * Astro replaces `<slot />` with the HTML generated from the Markdown body.
+            * It converts the Markdown body into HTML and passes that HTML as the layout’s default slot.
+            * You do not see an explicit component invocation because Astro creates that relationship from the Markdown file’s layout property.
+        */}
+        <div class="nested-markdown-layout__content">
+            <slot />
+        </div>
+    </Panel>
+
+    <SiteNavigation slot="sidebar" />
+</BaseLayout>
+
+{/*
+    * Your narrow use of :global(.panel__heading) is correct. 
+    * The scoped .markdown-page parent prevents it from affecting every Panel. 
+    * If you later style generated Markdown elements, use similarly bounded 
+    * selectors such as:
+ */}
+<style>
+    /* Scoped Panel override */
+    .nested-markdown-layout {
+        padding: 0;
+    }
+
+    .nested-markdown-layout > :global(.panel__heading) {
+        margin: 0;
+        padding: 0.82rem var(--space-md);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .nested-markdown-layout__content {
+        padding: 0.82rem var(--space-md);
+    }
+    /* Scoped Panel override */
+</style>
