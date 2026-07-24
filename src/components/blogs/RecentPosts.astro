@@ -1,0 +1,186 @@
+---
+import { getCollection } from "astro:content";
+
+import Panel from "@components/primitives/Panel.astro";
+import { formatDate } from "../../utils";
+
+const POST_LIMIT = 7;
+
+const posts = (await getCollection("blog"))
+    .sort(
+        (firstPost, secondPost) =>
+            secondPost.data.pubDate.getTime() -
+            firstPost.data.pubDate.getTime(),
+    )
+    .slice(0, POST_LIMIT)
+    .map((post) => ({
+        href: `/blog/${post.slug}/`,
+        title: post.data.title,
+        summary: post.data.summary,
+        dateLabel: formatDate(post.data.pubDate),
+        dateTime: post.data.pubDate.toISOString(),
+    }));
+
+const hasPosts = posts.length > 0;
+---
+
+<Panel
+    as="section"
+    class="recent-posts"
+    title="Recent posts"
+>
+    {
+        hasPosts ? (
+            <ol class="recent-posts__list">
+                {posts.map((post) => (
+                    <li class="recent-posts__item">
+                        <a
+                            class="recent-posts__link"
+                            href={post.href}
+                        >
+                            <span class="recent-posts__content">
+                                <span class="recent-posts__title">
+                                    {post.title}
+                                </span>
+
+                                {post.summary && (
+                                    <span class="recent-posts__summary">
+                                        {post.summary}
+                                    </span>
+                                )}
+                            </span>
+
+                            <time
+                                class="recent-posts__date"
+                                datetime={post.dateTime}
+                            >
+                                {post.dateLabel}
+                            </time>
+                        </a>
+                    </li>
+                ))}
+            </ol>
+        ) : (
+            <p class="recent-posts__empty">
+                No posts available at the moment.
+            </p>
+        )
+    }
+</Panel>
+
+<style>
+    /* Scoped Panel override */
+    .recent-posts {
+        padding: 0;
+    }
+
+    .recent-posts > :global(.panel__heading) {
+        margin: 0;
+        padding: 0.82rem var(--space-md);
+        border-bottom: 1px solid var(--border);
+    }
+    /* End scoped Panel override */
+
+    .recent-posts__list {
+        display: grid;
+        margin: 0;
+        padding: 0.18rem 0;
+        list-style: none;
+    }
+
+    .recent-posts__item {
+        min-width: 0;
+    }
+
+    .recent-posts__item + .recent-posts__item {
+        border-top: 1px dotted var(--border);
+    }
+
+    .recent-posts__link {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) max-content;
+        align-items: baseline;
+        column-gap: var(--space-xs);
+        min-width: 0;
+        padding: 0.2rem var(--space-md);
+        color: var(--text-main);
+        text-decoration: none;
+        transition:
+            color 140ms ease,
+            background-color 140ms ease;
+    }
+
+    .recent-posts__link:hover,
+    .recent-posts__link:focus-visible {
+        background: var(--surface-hover);
+    }
+
+    .recent-posts__link:focus-visible {
+        outline: 2px solid var(--link-main);
+        outline-offset: -2px;
+    }
+
+    .recent-posts__content {
+        display: grid;
+        grid-column: 1;
+        grid-row: 1;
+        min-width: 0;
+    }
+
+    .recent-posts__title {
+        color: var(--text-main);
+        font-size: var(--font-sm);
+        font-weight: var(--fw-semibold);
+        line-height: var(--reading-line-height);
+        overflow-wrap: anywhere;
+        text-wrap: pretty;
+    }
+
+    .recent-posts__link:hover .recent-posts__title,
+    .recent-posts__link:focus-visible .recent-posts__title {
+        color: var(--link-main);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.18em;
+    }
+
+    .recent-posts__summary {
+        color: var(--text-muted);
+        font-size: var(--font-sm);
+        line-height: var(--reading-line-height);
+        overflow-wrap: anywhere;
+        text-wrap: pretty;
+    }
+
+    .recent-posts__date {
+        grid-column: 2;
+        grid-row: 1;
+        color: var(--link-main);
+        font-size: var(--font-sm);
+        font-weight: var(--fw-semibold);
+        font-variant-numeric: tabular-nums;
+        line-height: var(--reading-line-height);
+        text-align: end;
+        white-space: nowrap;
+    }
+
+    .recent-posts__empty {
+        margin: 0;
+        padding: var(--space-md);
+        color: var(--text-muted);
+        font-size: var(--font-sm);
+        line-height: var(--reading-line-height);
+    }
+
+    @media (max-width: 38rem) {
+        .recent-posts__link {
+            padding-inline: var(--space-sm);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .recent-posts__link {
+            transition: none;
+        }
+    }
+</style>
