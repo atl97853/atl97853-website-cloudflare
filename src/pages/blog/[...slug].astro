@@ -101,7 +101,8 @@ const publishedDateLabel = formatDate(pubDate);
     }
 
     .blog-post__header {
-        padding: var(--space-sm);
+        /* padding: var(--space-sm); */
+        padding: 0.82rem var(--space-md);
         border-bottom: 1px solid var(--border);
     }
 
@@ -137,10 +138,16 @@ const publishedDateLabel = formatDate(pubDate);
      */
     .blog-post__content {
         min-width: 0;
-        padding: var(--space-sm);
+        /* padding: var(--space-sm); */
+        padding: 0.82rem var(--space-md);
         color: var(--text-main);
         font-size: var(--font-md);
-        line-height: 1.55;
+        /*
+         * !!! Core reading rhythm.
+         * This controls spacing between lines within the same paragraph.
+         */
+        /* line-height: 1.55; */
+        line-height: 1.4;
         overflow-wrap: anywhere;
     }
 
@@ -152,6 +159,11 @@ const publishedDateLabel = formatDate(pubDate);
         margin-bottom: 0;
     }
 
+    /*
+     * !!! Core paragraph rhythm.
+     * Blank lines in Markdown create separate <p> elements, and this margin
+     * creates the visible space between those paragraphs.
+     */
     .blog-post__content :global(p) {
         margin-top: 0;
         margin-bottom: var(--space-md);
