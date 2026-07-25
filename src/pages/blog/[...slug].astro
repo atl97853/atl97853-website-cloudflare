@@ -46,7 +46,6 @@ const { Content } = await render(entry);
 
 const {
     title: postTitle,
-    summary: postSummary,
     pubDate,
 } = entry.data;
 
@@ -56,7 +55,7 @@ const publishedDateLabel = formatDate(pubDate);
 
 <BaseLayout
     title={postTitle}
-    description={postSummary || postTitle}
+    description={postTitle}
 >
     <Panel
         as="article"
