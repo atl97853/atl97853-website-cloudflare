@@ -1,4 +1,11 @@
 ---
+/**
+ * Displays the seven most recently published blog posts.
+ *
+ * Collection entries are sorted by publication date before being reduced to
+ * the data required by this presentation component.
+ */
+
 import { getCollection } from "astro:content";
 
 import Panel from "@components/primitives/Panel.astro";
@@ -16,7 +23,6 @@ const posts = (await getCollection("blog"))
     .map((post) => ({
         href: `/blog/${post.id}/`,
         title: post.data.title,
-        summary: post.data.summary,
         dateLabel: formatDate(post.data.pubDate),
         dateTime: post.data.pubDate.toISOString(),
     }));
@@ -31,156 +37,116 @@ const hasPosts = posts.length > 0;
 >
     {
         hasPosts ? (
-            <ol class="recent-posts__list">
+            <ul class="recent-posts__list">
                 {posts.map((post) => (
                     <li class="recent-posts__item">
+                        <time
+                            class="recent-posts__date"
+                            datetime={post.dateTime}
+                        >
+                            ({post.dateLabel})
+                        </time>
+
+                        {" "}
+
                         <a
-                            class="recent-posts__link"
+                            class="recent-posts__title-link"
                             href={post.href}
                         >
-                            <span class="recent-posts__content">
-                                <span class="recent-posts__title">
-                                    {post.title}
-                                </span>
-
-                                {post.summary && (
-                                    <span class="recent-posts__summary">
-                                        {post.summary}
-                                    </span>
-                                )}
-                            </span>
-
-                            <time
-                                class="recent-posts__date"
-                                datetime={post.dateTime}
-                            >
-                                {post.dateLabel}
-                            </time>
+                            {post.title}
                         </a>
                     </li>
                 ))}
-            </ol>
+            </ul>
         ) : (
-            <p class="recent-posts__empty">
+            <div class="recent-posts__empty">
                 No posts available at the moment.
-            </p>
+            </div>
         )
     }
 </Panel>
 
 <style>
-    /* Scoped Panel override */
+    /*
+     * Panel provides the shared surface. Removing its default padding lets
+     * the heading and archive list control their spacing independently.
+     */
     .recent-posts {
         padding: 0;
     }
 
+    /*
+     * Panel renders its heading internally. The scoped parent selector keeps
+     * this global override limited to the RecentPosts component.
+     */
     .recent-posts > :global(.panel__heading) {
         margin: 0;
         padding: 0.82rem var(--space-md);
         border-bottom: 1px solid var(--border);
     }
-    /* End scoped Panel override */
 
+    /*
+     * The list uses ordinary browser bullets to preserve the simple
+     * personal-site archive appearance.
+     */
     .recent-posts__list {
-        display: grid;
         margin: 0;
-        padding: 0.18rem 0;
-        list-style: none;
+        padding: 0.82rem var(--space-md);
+        /* This preserves the same outer panel padding while reserving extra space for the browser-generated bullet marker. */
+        padding-inline-start: calc(var(--space-md) + 1.5rem);
+        list-style: disc;
     }
 
     .recent-posts__item {
-        min-width: 0;
+        color: var(--text-main);
+        font-size: var(--font-md);
+        line-height: 1.55;
     }
 
     .recent-posts__item + .recent-posts__item {
-        border-top: 1px dotted var(--border);
-    }
-
-    .recent-posts__link {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) max-content;
-        align-items: baseline;
-        column-gap: var(--space-xs);
-        min-width: 0;
-        padding: 0.2rem var(--space-md);
-        color: var(--text-main);
-        text-decoration: none;
-        transition:
-            color 140ms ease,
-            background-color 140ms ease;
-    }
-
-    .recent-posts__link:hover,
-    .recent-posts__link:focus-visible {
-        background: var(--surface-hover);
-    }
-
-    .recent-posts__link:focus-visible {
-        outline: 2px solid var(--link-main);
-        outline-offset: -2px;
-    }
-
-    .recent-posts__content {
-        display: grid;
-        grid-column: 1;
-        grid-row: 1;
-        min-width: 0;
-    }
-
-    .recent-posts__title {
-        color: var(--text-main);
-        font-size: var(--font-sm);
-        font-weight: var(--fw-semibold);
-        line-height: var(--reading-line-height);
-        overflow-wrap: anywhere;
-        text-wrap: pretty;
-    }
-
-    .recent-posts__link:hover .recent-posts__title,
-    .recent-posts__link:focus-visible .recent-posts__title {
-        color: var(--link-main);
-        text-decoration: underline;
-        text-decoration-thickness: 1px;
-        text-underline-offset: 0.18em;
-    }
-
-    .recent-posts__summary {
-        color: var(--text-muted);
-        font-size: var(--font-sm);
-        line-height: var(--reading-line-height);
-        overflow-wrap: anywhere;
-        text-wrap: pretty;
+        margin-top: 0.12rem;
     }
 
     .recent-posts__date {
-        grid-column: 2;
-        grid-row: 1;
-        color: var(--link-main);
+        color: var(--text-muted);
         font-size: var(--font-sm);
-        font-weight: var(--fw-semibold);
         font-variant-numeric: tabular-nums;
-        line-height: var(--reading-line-height);
-        text-align: end;
-        white-space: nowrap;
+    }
+
+    .recent-posts__title-link {
+        color: var(--link-main);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.14em;
+        overflow-wrap: anywhere;
+    }
+
+    .recent-posts__title-link:hover,
+    .recent-posts__title-link:focus-visible {
+        color: var(--link-hover);
+        text-decoration-thickness: 2px;
+    }
+
+    .recent-posts__title-link:focus-visible {
+        outline: 2px solid var(--link-main);
+        outline-offset: 2px;
     }
 
     .recent-posts__empty {
-        margin: 0;
-        padding: var(--space-md);
+        padding: 0.82rem var(--space-md);
         color: var(--text-muted);
         font-size: var(--font-sm);
         line-height: var(--reading-line-height);
     }
 
     @media (max-width: 38rem) {
-        .recent-posts__link {
+        .recent-posts__list {
             padding-inline: var(--space-sm);
+            padding-inline-start: calc(var(--space-sm) + 1.25rem);
         }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-        .recent-posts__link {
-            transition: none;
+        .recent-posts__empty {
+            padding-inline: var(--space-sm);
         }
     }
 </style>
