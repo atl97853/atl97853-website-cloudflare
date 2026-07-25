@@ -5,9 +5,7 @@ pageTitle: "Colophon"
 description: "About the website"
 ---
 
-This website is still under construction and is always being maintained.
-
-I started working on it during the autumn and winter of 2025. I had wanted to create my own website for several years, but I had never really made the time for it.
+This website is still under construction and is always being maintained. I started working on it during the autumn and winter of 2025. I had wanted to create my own website for several years, but I had never really made the time for it.
 
 For a while, I tried building it with Hugo and Jekyll, but I felt more comfortable using Astro, which is what the website is built with now. I also managed to deploy the website on Neocities for a while, but I eventually moved it to Cloudflare.
 
