@@ -14,7 +14,7 @@ const posts = (await getCollection("blog"))
     )
     .slice(0, POST_LIMIT)
     .map((post) => ({
-        href: `/blog/${post.slug}/`,
+        href: `/blog/${post.id}/`,
         title: post.data.title,
         summary: post.data.summary,
         dateLabel: formatDate(post.data.pubDate),
