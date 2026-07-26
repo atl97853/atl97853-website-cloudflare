@@ -68,26 +68,18 @@ const {
     * selectors.
  */}
 <style>
-    /*
-     * Panel owns the shared border, background, radius, and shadow.
-     * Removing its default padding lets the heading and body manage their
-     * spacing independently.
-     */
+    /* Scoped Panel override */
     .nested-markdown-layout {
         /* Prevent wide Markdown content from expanding the layout column. */
         min-width: 0;
-        padding: 0;
     }
 
-    /*
-     * Panel renders this heading internally. The local parent selector keeps
-     * the global heading override limited to this layout.
-     */
     .nested-markdown-layout > :global(.panel__heading) {
         margin: 0;
         padding: 0.82rem var(--space-md);
         border-bottom: 1px solid var(--border);
     }
+    /* Scoped Panel override */
 
     /*
      * Markdown is rendered as slotted HTML, so its elements do not receive

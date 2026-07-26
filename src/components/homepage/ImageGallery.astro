@@ -410,21 +410,13 @@ const images: NormalizedGalleryImage[] = await Promise.all(
 </script>
 
 <style>
-    /*
-     * Remove Panel's default padding so its heading and gallery body can form
-     * separate bordered sections. The global heading selector remains limited
-     * to a direct child of this component's scoped root.
-     */
-    .recent-images {
-        padding: 0;
-    }
-
+    /* Scoped Panel override */
     .recent-images > :global(.panel__heading) {
         margin: 0;
         padding: 0.82rem var(--space-md);
         border-bottom: 1px solid var(--border);
     }
-
+    /* Scoped Panel override */
     /* The custom element is the padded body beneath Panel's heading. */
     .recent-images__gallery {
         display: block;

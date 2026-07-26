@@ -33,17 +33,13 @@ const title = "Welcome to my website!";
 </Panel>
 
 <style>
-    /* Scoped Panel heading override */
-    .home-intro {
-        padding: 0;
-    }
-
+    /* Scoped Panel override */
     .home-intro > :global(.panel__heading) {
         margin: 0;
         padding: 0.82rem var(--space-md);
         border-bottom: 1px solid var(--border);
     }
-    /* Scoped Panel heading override */
+    /* Scoped Panel override */
 
     .home-intro__layout {
         display: grid;
@@ -52,7 +48,7 @@ const title = "Welcome to my website!";
         gap: var(--space-lg);
         padding: var(--space-md);
     }
-
+    
     .home-intro__avatar {
         width: 100px;
         height: 100px;

@@ -67,15 +67,7 @@ const hasPosts = posts.length > 0;
 </Panel>
 
 <style>
-    /*
-     * Panel provides the shared surface. Removing its default padding lets
-     * the heading and archive list control their spacing independently.
-     */
-    .recent-posts {
-        padding: 0;
-    }
-
-    /*
+    /* Scoped Panel override. 
      * Panel renders its heading internally. The scoped parent selector keeps
      * this global override limited to the RecentPosts component.
      */
@@ -84,7 +76,7 @@ const hasPosts = posts.length > 0;
         padding: 0.82rem var(--space-md);
         border-bottom: 1px solid var(--border);
     }
-
+    /* Scoped Panel override */
     /*
      * The list uses ordinary browser bullets to preserve the simple
      * personal-site archive appearance.

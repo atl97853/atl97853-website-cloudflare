@@ -88,7 +88,7 @@ const publishedDateLabel = formatDate(pubDate);
 </BaseLayout>
 
 <style>
-    /*
+    /* Scoped Panel override.
      * Panel owns the shared border, background, radius, and shadow.
      * This page removes its padding so the header and body can control
      * their spacing independently.
@@ -96,8 +96,8 @@ const publishedDateLabel = formatDate(pubDate);
     .blog-post {
         width: 100%;
         min-width: 0;
-        padding: 0;
     }
+    /* Scoped Panel override */
 
     .blog-post__header {
         /* padding: var(--space-sm); */
