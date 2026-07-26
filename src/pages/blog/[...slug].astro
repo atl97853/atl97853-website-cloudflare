@@ -1,6 +1,14 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import Card from "../../components/primitives/Card.astro";
+/**
+ * Renders one Markdown entry from the blog collection.
+ *
+ * BaseLayout provides the document shell. Panel provides the shared surface,
+ * while this page owns the post header and Markdown presentation.
+ */
+
+import BaseLayout from "@layouts/BaseLayout.astro";
+
+import Panel from "@components/primitives/Panel.astro";
 
 import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
@@ -8,11 +16,19 @@ import type { CollectionEntry } from "astro:content";
 import { formatDate } from "../../utils";
 
 export async function getStaticPaths() {
-    const allBlogPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+    const posts = await getCollection("blog");
 
-    return allBlogPosts.map((entry) => ({
-        params: { slug: entry.slug },
-        props: { entry },
+    /*
+     * Each collection entry becomes one static route. The entry itself is
+     * passed as a prop so the page can access its frontmatter and body.
+     */
+    return posts.map((entry) => ({
+        params: {
+            slug: entry.id,
+        },
+        props: {
+            entry,
+        },
     }));
 }
 
@@ -20,319 +36,369 @@ interface Props {
     entry: CollectionEntry<"blog">;
 }
 
-const { entry } = Astro.props as Props;
+const { entry } = Astro.props;
+
+/*
+ * `entry.data` contains the validated Markdown frontmatter.
+ * `render(entry)` converts the Markdown body into an Astro component.
+ */
 const { Content } = await render(entry);
 
-const title = entry.data.title;
-const pubDate = entry.data.pubDate;
-const pubDateIso = pubDate.toISOString();
+const {
+    title: postTitle,
+    pubDate,
+} = entry.data;
+
+const publishedDateTime = pubDate.toISOString();
+const publishedDateLabel = formatDate(pubDate);
 ---
 
-<BaseLayout tabTitle={title}>
-    <Card
-        slot="custom-cards"
+<BaseLayout
+    title={postTitle}
+    description={postTitle}
+>
+    <Panel
         as="article"
-        class="c-blog-post"
-        ariaLabel={title}
+        class="blog-post"
     >
-        <header class="c-blog-post__header">
-            <time datetime={pubDateIso} class="c-blog-post__date">
-                {formatDate(pubDate)}
-            </time>
-
-            <h1 id="blog-post-title" class="c-blog-post__title">
-                {title}
+        <header class="blog-post__header">
+            <h1 class="blog-post__title">
+                {postTitle}
             </h1>
 
-            <div class="c-blog-post__divider" aria-hidden="true"></div>
+            <div class="blog-post__meta">
+                <time
+                    class="blog-post__date"
+                    datetime={publishedDateTime}
+                >
+                    {publishedDateLabel}
+                </time>
+
+                {/*
+                 * Future tags can be added to this metadata row without
+                 * changing the Markdown content structure.
+                 */}
+            </div>
         </header>
 
-        <div class="c-blog-post__content">
+        <div class="blog-post__content">
             <Content />
         </div>
-    </Card>
+    </Panel>
 </BaseLayout>
 
-<style is:global>
-    .c-blog-post {
-        --blog-surface: #ffffff;
-        --blog-surface-soft: rgba(0, 0, 0, 0.035);
-        --blog-border: rgba(0, 0, 0, 0.18);
-        --blog-code-bg: #f5f5f5;
-        --blog-code-text: #111111;
-        --blog-link: #0000ee;
-        --blog-link-visited: #551a8b;
-        --blog-focus: #000000;
-
+<style>
+    /*
+     * Panel owns the shared border, background, radius, and shadow.
+     * This page removes its padding so the header and body can control
+     * their spacing independently.
+     */
+    .blog-post {
         width: 100%;
-        max-width: min(100%, 74ch);
-        margin-inline: auto;
-        margin-bottom: var(--space-xl);
-
-        color: var(--clr-text-main);
-        background: var(--blog-surface);
-        border: 0;
-        border-radius: var(--br-sm);
+        min-width: 0;
+        padding: 0;
     }
 
-    [theme="dark"] .c-blog-post {
-        --blog-surface: transparent;
-        --blog-surface-soft: rgba(255, 255, 255, 0.055);
-        --blog-border: rgba(255, 255, 255, 0.18);
-        --blog-code-bg: #111111;
-        --blog-code-text: #f2f2f2;
-        --blog-link: #e0e0e0;
-        --blog-link-visited: #cfcfcf;
-        --blog-focus: #ffffff;
+    .blog-post__header {
+        /* padding: var(--space-sm); */
+        padding: 0.82rem var(--space-md);
+        border-bottom: 1px solid var(--border);
     }
 
-    .c-blog-post__header {
-        margin-bottom: var(--space-lg);
+    .blog-post__title {
+        margin: 0;
+        color: var(--text-strong);
+        font-size: var(--font-md);
+        font-weight: var(--fw-semibold);
+        line-height: var(--reading-line-height);
+        overflow-wrap: anywhere;
+        text-wrap: pretty;
     }
 
-    .c-blog-post__date {
-        display: block;
-        margin-bottom: var(--space-xs);
-        color: var(--clr-text-muted);
-        font-size: var(--fs-xs);
+    .blog-post__meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-xs) var(--space-sm);
+        margin-top: var(--space-xs);
+    }
+
+    .blog-post__date {
+        color: var(--text-muted);
+        font-size: var(--font-sm);
+        font-variant-numeric: tabular-nums;
+        line-height: var(--reading-line-height);
+    }
+
+    /*
+     * Content renders Markdown as generated HTML. The local
+     * blog-post__content selector keeps the global element rules bounded
+     * to this article.
+     */
+    .blog-post__content {
+        min-width: 0;
+        /* padding: var(--space-sm); */
+        padding: 0.82rem var(--space-md);
+        color: var(--text-main);
+        font-size: var(--font-md);
+        /*
+         * !!! Core reading rhythm.
+         * This controls spacing between lines within the same paragraph.
+         */
+        /* line-height: 1.55; */
         line-height: 1.4;
+        overflow-wrap: anywhere;
     }
 
-    .c-blog-post__title {
-        margin: var(--space-none);
-        color: var(--clr-text-main);
-        font-size: clamp(1.75rem, 5vw, 2.35rem);
-        line-height: 1.12;
-        font-weight: var(--fw-bold);
-        overflow-wrap: break-word;
+    .blog-post__content > :global(*:first-child) {
+        margin-top: 0;
     }
 
-    .c-blog-post__divider {
-        width: 100%;
-        height: var(--bw-frame);
-        margin-top: var(--space-md);
-        background: var(--blog-border);
+    .blog-post__content > :global(*:last-child) {
+        margin-bottom: 0;
     }
 
-    .c-blog-post__content {
-        color: var(--clr-text-main);
-        font-size: var(--fs-sm);
-        line-height: 1.72;
-        overflow-wrap: break-word;
-    }
-
-    .c-blog-post__content > *:first-child {
-        margin-top: var(--space-none);
-    }
-
-    .c-blog-post__content > *:last-child {
-        margin-bottom: var(--space-none);
-    }
-
-    .c-blog-post__content h1,
-    .c-blog-post__content h2,
-    .c-blog-post__content h3,
-    .c-blog-post__content h4,
-    .c-blog-post__content h5,
-    .c-blog-post__content h6 {
-        color: var(--clr-text-main);
-        line-height: 1.22;
-        font-weight: var(--fw-bold);
-        overflow-wrap: break-word;
-    }
-
-    .c-blog-post__content h1 {
-        margin: var(--space-xl) var(--space-none) var(--space-md);
-        font-size: clamp(1.55rem, 4vw, 2rem);
-    }
-
-    .c-blog-post__content h2 {
-        margin: var(--space-xl) var(--space-none) var(--space-sm);
-        padding-bottom: var(--space-xs);
-        font-size: clamp(1.3rem, 3vw, 1.65rem);
-        border-bottom: var(--bw-frame) solid var(--blog-border);
-    }
-
-    .c-blog-post__content h3 {
-        margin: var(--space-lg) var(--space-none) var(--space-sm);
-        font-size: clamp(1.12rem, 2.5vw, 1.35rem);
-    }
-
-    .c-blog-post__content h4,
-    .c-blog-post__content h5,
-    .c-blog-post__content h6 {
-        margin: var(--space-md) var(--space-none) var(--space-xs);
-        font-size: var(--fs-sm);
-    }
-
-    .c-blog-post__content p,
-    .c-blog-post__content ul,
-    .c-blog-post__content ol,
-    .c-blog-post__content blockquote,
-    .c-blog-post__content pre,
-    .c-blog-post__content table,
-    .c-blog-post__content figure {
+    /*
+     * !!! Core paragraph rhythm.
+     * Blank lines in Markdown create separate <p> elements, and this margin
+     * creates the visible space between those paragraphs.
+     */
+    .blog-post__content :global(p) {
+        margin-top: 0;
         margin-bottom: var(--space-md);
+        text-wrap: pretty;
     }
 
-    .c-blog-post__content a {
-        color: var(--blog-link);
+    /*
+     * The frontmatter title is the post's primary h1. Markdown content
+     * should generally begin with an h2.
+     */
+    .blog-post__content :global(h1),
+    .blog-post__content :global(h2),
+    .blog-post__content :global(h3),
+    .blog-post__content :global(h4),
+    .blog-post__content :global(h5),
+    .blog-post__content :global(h6) {
+        color: var(--text-strong);
+        font-weight: var(--fw-semibold);
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+        text-wrap: pretty;
+    }
+
+    .blog-post__content :global(h1),
+    .blog-post__content :global(h2) {
+        margin: var(--space-lg) 0 var(--space-sm);
+        padding-bottom: var(--space-xs);
+        font-size: var(--font-md);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .blog-post__content :global(h3) {
+        margin: var(--space-md) 0 var(--space-xs);
+        font-size: var(--font-md);
+    }
+
+    .blog-post__content :global(h4),
+    .blog-post__content :global(h5),
+    .blog-post__content :global(h6) {
+        margin: var(--space-md) 0 var(--space-xs);
+        font-size: var(--font-sm);
+    }
+
+    .blog-post__content :global(a) {
+        color: var(--link-main);
         text-decoration: underline;
-        text-underline-offset: 0.14em;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.16em;
     }
 
-    .c-blog-post__content a:visited {
-        color: var(--blog-link-visited);
+    .blog-post__content :global(a:hover),
+    .blog-post__content :global(a:focus-visible) {
+        text-decoration-thickness: 2px;
     }
 
-    .c-blog-post__content a:hover,
-    .c-blog-post__content a:focus-visible {
-        color: var(--blog-link);
-        text-decoration-thickness: calc(var(--bw-frame) * 2);
+    .blog-post__content :global(a:focus-visible) {
+        outline: 2px solid var(--link-main);
+        outline-offset: 2px;
     }
 
-    .c-blog-post__content a:focus-visible {
-        outline: calc(var(--bw-frame) * 2) solid var(--blog-focus);
-        outline-offset: calc(var(--bw-frame) * 2);
+    .blog-post__content :global(ul),
+    .blog-post__content :global(ol) {
+        margin-top: 0;
+        margin-bottom: var(--space-md);
+        padding-inline-start: 1.2rem;
     }
 
-    .c-blog-post__content ul,
-    .c-blog-post__content ol {
-        padding-left: var(--list-padding-inline);
-    }
-
-    .c-blog-post__content ul {
+    .blog-post__content :global(ul) {
         list-style: disc;
     }
 
-    .c-blog-post__content ol {
+    .blog-post__content :global(ol) {
         list-style: decimal;
     }
 
-    .c-blog-post__content li + li,
-    .c-blog-post__content li > ul,
-    .c-blog-post__content li > ol {
+    .blog-post__content :global(li + li) {
+        margin-top: 0.2rem;
+    }
+
+    .blog-post__content :global(li > ul),
+    .blog-post__content :global(li > ol) {
         margin-top: var(--space-xs);
+        margin-bottom: 0;
     }
 
-    .c-blog-post__content li > ul,
-    .c-blog-post__content li > ol {
-        margin-bottom: var(--space-none);
+    .blog-post__content :global(blockquote) {
+        margin: var(--space-md) 0;
+        padding-inline-start: var(--space-sm);
+        color: var(--text-muted);
+        border-inline-start: 2px solid var(--border);
     }
 
-    .c-blog-post__content blockquote {
-        padding: var(--space-sm) var(--space-md);
-        color: var(--clr-text-main);
-        background: var(--blog-surface-soft);
-        border-left: calc(var(--bw-frame) * 4) solid var(--blog-border);
+    .blog-post__content :global(blockquote > *:last-child) {
+        margin-bottom: 0;
     }
 
-    .c-blog-post__content blockquote > *:last-child {
-        margin-bottom: var(--space-none);
-    }
-
-    .c-blog-post__content img,
-    .c-blog-post__content picture {
+    .blog-post__content :global(img) {
+        display: block;
+        box-sizing: border-box;
         max-width: 100%;
         height: auto;
-        margin: var(--space-lg) auto;
+        margin: var(--space-md) auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
     }
 
-    .c-blog-post__content figure {
-        margin: var(--space-lg) var(--space-none);
+    .blog-post__content :global(figure) {
+        margin: var(--space-md) 0;
     }
 
-    .c-blog-post__content figure img {
-        margin: var(--space-none) auto;
+    .blog-post__content :global(figure img) {
+        margin-block: 0;
     }
 
-    .c-blog-post__content figcaption {
+    .blog-post__content :global(figcaption) {
         margin-top: var(--space-xs);
-        color: var(--clr-text-muted);
-        font-size: var(--fs-xs);
-        line-height: var(--lh-body);
-        text-align: center;
+        color: var(--text-muted);
+        font-size: var(--font-sm);
+        line-height: var(--reading-line-height);
     }
 
-    .c-blog-post__content code {
-        padding: 0.08rem 0.28rem;
-        color: var(--blog-code-text);
-        background: var(--blog-code-bg);
-        border-radius: var(--br-sm);
-        font-family: var(--ff-mono);
-        font-size: 0.92em;
+    .blog-post__content :global(code) {
+        padding: 0.1rem 0.3rem;
+        color: var(--text-strong);
+        background: var(--surface-hover);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        font-family:
+            var(
+                --font-mono,
+                ui-monospace,
+                SFMono-Regular,
+                Consolas,
+                "Liberation Mono",
+                monospace
+            );
+        font-size: 0.9em;
+        font-variant-ligatures: none;
     }
 
-    .c-blog-post__content pre {
+    /*
+     * Fenced code and text blocks preserve whitespace, allowing the same
+     * element to display source code and simple ASCII art.
+     */
+    .blog-post__content :global(pre) {
+        box-sizing: border-box;
         max-width: 100%;
+        margin: var(--space-md) 0;
         padding: var(--space-md);
         overflow-x: auto;
-        color: var(--blog-code-text);
-        background: var(--blog-code-bg);
-        border-radius: var(--br-sm);
+        overflow-wrap: normal;
+        color: var(--text-main);
+        background: var(--surface-hover);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        tab-size: 4;
         white-space: pre;
         -webkit-overflow-scrolling: touch;
     }
 
-    .c-blog-post__content pre code {
+    .blog-post__content :global(pre code) {
         display: block;
         min-width: max-content;
-        padding: var(--space-none);
+        padding: 0;
         color: inherit;
         background: transparent;
-        border-radius: var(--br-sm);
-        font-size: 0.92rem;
+        border: 0;
+        border-radius: 0;
+        font-size: var(--font-sm);
         line-height: 1.6;
+        white-space: inherit;
     }
 
-    .c-blog-post__content table {
+    .blog-post__content :global(table) {
         display: block;
+        box-sizing: border-box;
         width: 100%;
         max-width: 100%;
+        margin: var(--space-md) 0;
         overflow-x: auto;
         border-collapse: collapse;
         -webkit-overflow-scrolling: touch;
     }
 
-    .c-blog-post__content th,
-    .c-blog-post__content td {
+    .blog-post__content :global(th),
+    .blog-post__content :global(td) {
         padding: var(--space-xs) var(--space-sm);
-        border-bottom: var(--bw-frame) solid var(--blog-border);
-        text-align: left;
+        border: 1px solid var(--border);
+        text-align: start;
         vertical-align: top;
     }
 
-    .c-blog-post__content th {
-        font-weight: var(--fw-bold);
+    .blog-post__content :global(th) {
+        color: var(--text-strong);
+        font-weight: var(--fw-semibold);
+        background: var(--surface-hover);
     }
 
-    .c-blog-post__content hr {
-        height: var(--bw-frame);
-        margin: var(--space-xl) var(--space-none);
-        background: var(--blog-border);
+    .blog-post__content :global(hr) {
+        height: 0;
+        margin: var(--space-lg) 0;
         border: 0;
+        border-top: 1px solid var(--border);
     }
 
-    .c-blog-post__content .katex-display,
-    .c-blog-post__content .math-display,
-    .c-blog-post__content mjx-container[display="true"] {
+    .blog-post__content :global(.katex-display),
+    .blog-post__content :global(.math-display),
+    .blog-post__content :global(mjx-container[display="true"]) {
         max-width: 100%;
         overflow-x: auto;
         overflow-y: hidden;
-        padding: var(--space-xs) var(--space-none);
+        padding-block: var(--space-xs);
         -webkit-overflow-scrolling: touch;
     }
 
-    @media print {
-        .c-blog-post {
-            max-width: none;
-            color: #111111 !important;
-            background: transparent !important;
-            box-shadow: none !important;
+    @media (max-width: 38rem) {
+        .blog-post__content :global(ul),
+        .blog-post__content :global(ol) {
+            padding-inline-start: 1.1rem;
         }
 
-        .c-blog-post__content a {
-            color: #000000 !important;
+        .blog-post__content :global(pre) {
+            padding: var(--space-sm);
+        }
+    }
+
+    @media print {
+        .blog-post {
+            color: #111;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+        }
+
+        .blog-post__content :global(a) {
+            color: #000;
         }
     }
 </style>

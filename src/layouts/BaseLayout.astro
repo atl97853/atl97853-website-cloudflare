@@ -1,49 +1,205 @@
 ---
 import "../styles/global.css";
 
-import Header from "../components/layout/Header.astro";
-import Footer from "../components/layout/Footer.astro";
-import Navbar from "../components/Navbar.astro";
+// import MusicPlayer from "@components/layout/MusicPlayer.astro";
+import SiteHeader from "@components/layout/SiteHeader.astro";
+import SiteFooter from "@components/layout/SiteFooter.astro";
 
 interface Props {
-    tabTitle?: string;
-    description?: string;
+    title: string;
+    description: string;
+    // audioSrc?: string;
+    // trackTitle?: string;
 }
 
 const {
-    tabTitle = "atl97853",
-    description = "Hi, my name is Atl, and this is my personal website. Here I write about my studies, technology, books I have read, and other things I find interesting. Feel free to wander around.",
+    title,
+    description,
+    // audioSrc = "/audio/late-night-study.wav",
+    // trackTitle = "Late-night study loop · atl97853 radio",
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+/**
+ * Controls both the optional sidebar markup and the two-column grid layout.
+ * The result is stored because it is used in two places.
+ */
+const hasSidebar = Astro.slots.has("sidebar");
 ---
-<!DOCTYPE html>
-<html lang="en">
+
+<!doctype html>
+<html lang="en" data-theme="dark">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content={description} />
-        <title>{tabTitle}</title>
+        <meta name="color-scheme" content="dark light" />
+        <meta name="theme-color" content="#111a24" />
+
+        <link rel="canonical" href={canonicalURL} />
+
+        <title>{title}</title>
+
+        <script is:inline>
+            (() => {
+                const STORAGE_KEY = "site-theme";
+
+                const prefersLight = window.matchMedia(
+                    "(prefers-color-scheme: light)",
+                ).matches;
+
+                let theme = prefersLight ? "light" : "dark";
+
+                try {
+                    const savedTheme = localStorage.getItem(STORAGE_KEY);
+
+                    if (savedTheme === "light" || savedTheme === "dark") {
+                        theme = savedTheme;
+                    }
+                } catch {
+                    // Keep the system theme when storage is unavailable.
+                }
+
+                document.documentElement.dataset.theme = theme;
+            })();
+        </script>
     </head>
 
     <body>
-        <div class="l-main-wrapper">
-            <Header />
+        <a class="skip-link" href="#main-content">
+            Skip to content
+        </a>
 
-            <div class="l-layout-grid">
-                <main id="main-content" class="l-content">
-                    {/*}<Pfp />*/}
+        <div class="site-shell">
+            <SiteHeader />
 
-                    {/* change name for main components */}
-                    <slot name="custom-cards" />
+            {/*
+             * The sidebar slot controls both the rendered markup and the grid.
+             *
+             * `class:list` always applies `page-grid` and conditionally adds
+             * `page-grid--with-sidebar` when `hasSidebar` is true.
+             *
+             * Without sidebar content, the layout uses one column.
+             * With sidebar content, the modifier creates main and sidebar
+             * columns and the <aside> wrapper is rendered.
+             * On smaller screens, the layout returns to one column.
+             */}
+            <div
+                class:list={["page-grid", { "page-grid--with-sidebar": hasSidebar }]}
+            >
+                <main class="page-main" id="main-content">
+                    <slot />
                 </main>
 
-                <aside class="l-sidebar">
-                    <Navbar />
-                    {/* change name for aside components */}
-                    <slot name="custom-cards-aside" />
+                {hasSidebar && (
+                <aside class="page-sidebar" aria-label="Site sidebar">
+                    <slot name="sidebar" />
                 </aside>
+                )}
             </div>
 
-            <Footer />
+            <SiteFooter />
         </div>
+
+        {/*<MusicPlayer src={audioSrc} title={trackTitle} />*/}
     </body>
 </html>
+
+{/*
+    * `page-grid` provides the default one-column layout.
+    *
+    * When a sidebar slot exists, `class:list` also applies
+    * `page-grid--with-sidebar`, which creates the desktop sidebar column.
+    *
+    * On smaller/mobile screens, the gap is reduced and the modifier returns the
+    * grid to one column so the main content and sidebar stack vertically.
+*/}
+
+{/*
+    * --site-gutter represents the shell’s current horizontal inner spacing.
+    * Child components inherit it, allowing elements such as the toolbar to use
+    * the exact same responsive spacing as the layout without repeating
+    * breakpoint-specific values.
+ */}
+<style>
+    .skip-link {
+        position: fixed;
+        z-index: 100;
+        top: var(--space-sm);
+        left: var(--space-sm);
+        padding: var(--space-xs) var(--space-sm);
+        transform: translateY(-150%);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius);
+        background: var(--card-bg);
+        color: var(--text-main);
+        font-size: var(--font-xs);
+    }
+
+    .skip-link:focus {
+        transform: translateY(0);
+    }
+
+    .site-shell {
+        --site-gutter: var(--shell-padding);
+
+        width: 100%;
+        max-width: var(--shell-max-width);
+        min-height: 100vh;
+        margin-inline: auto;
+        padding: 0 var(--site-gutter) var(--space-lg);
+        background: var(--page-shell);
+        box-shadow: 0 0 0 1px rgb(255 255 255 / 8%);
+    }
+
+    .page-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--layout-gap);
+        align-items: start;
+        padding-bottom: var(--space-xl);
+    }
+
+    .page-main,
+    .page-sidebar {
+        display: grid;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .page-sidebar {
+        position: sticky;
+        top: var(--space-md);
+    }
+
+
+    .page-grid--with-sidebar {
+        grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+    }
+
+    @media (max-width: 52rem) {
+        .site-shell {
+            --site-gutter: var(--space-md);
+        }
+
+        .page-grid {
+            gap: var(--space-md);
+        }
+
+        .page-grid--with-sidebar {
+            grid-template-columns: 1fr;
+        }
+
+        .page-sidebar {
+            position: static;
+            grid-row: 1;
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 38rem) {
+        .page-sidebar {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

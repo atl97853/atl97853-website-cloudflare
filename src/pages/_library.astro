@@ -4,9 +4,9 @@ import type { CollectionEntry } from "astro:content";
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 
-import BookEntry from "../components/BookEntry.astro";
-import LibraryYearNav from "../components/LibraryYearNav.astro";
-import Card from "../components/primitives/Card.astro";
+import BookEntry from "@components/library/BookEntry.astro";
+import LibraryYearNav from "@components/library/LibraryYearNav.astro";
+import Card from "@components/primitives/Card.astro";
 
 const books: CollectionEntry<"library">[] = (await getCollection("library")).sort(
     (a, b) =>

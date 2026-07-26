@@ -1,0 +1,1047 @@
+---
+/**
+ * A compact, framework-free playlist intended for the site sidebar.
+ *
+ * Place each referenced audio file in public/audio/ and add its title,
+ * artist, source, and MIME type to the playlist below.
+ */
+
+import Panel from "@components/primitives/Panel.astro";
+
+type AudioMimeType = "audio/mpeg" | "audio/ogg" | "audio/wav";
+
+interface AudioTrack {
+    title: string;
+    artist: string;
+    src: string;
+    type: AudioMimeType;
+}
+
+// The controls and track counter adapt automatically as entries are added or
+// removed here. The tuple constraint also prevents an empty playlist, which
+// guarantees that the initial <source> always has a valid track.
+const playlist = [
+    {
+        title: "La fille aux cheveux de lin",
+        artist: "Claude Debussy · Fujiko Hemming",
+        src: "/audio/01-la-fille-aux-cheveux-de-lin--fujiko-hemming.mp3",
+        type: "audio/mpeg",
+    },
+    {
+        title: "Nachteule",
+        artist: "Eva Tiedemann",
+        src: "/audio/02-nachteule-eva-tiedemann.mp3",
+        type: "audio/mpeg",
+    },
+    {
+        title: " The Forsaken Waltz",
+        artist: "Joshua Kyan Aalampour",
+        src: "/audio/03-the-forsaken-waltz-joshua-kyan.mp3",
+        type: "audio/mpeg",
+    },
+    {
+        title: "Gnossienne No. 1",
+        artist: "Erik Satie · Alena Cherny",
+        src: "/audio/04-gnossienne-no-1-erik-s-alena-c.mp3",
+        type: "audio/mpeg",
+    },
+    {
+        title: "鮭とイクラと893と娘",
+        artist: "Yoshiki Nakajima (Hinamatsuri)",
+        src: "/audio/05-sake-to-ikura-to-893-to-musume.mp3",
+        type: "audio/mpeg",
+    },
+    {
+        title: "インキャインパルス",
+        artist: "Asobi Asobase",
+        src: "/audio/06-inkya-impulse-asobi-asobase.mp3",
+        type: "audio/mpeg",
+    },
+] as const satisfies readonly [AudioTrack, ...AudioTrack[]];
+
+const firstTrack = playlist[0];
+---
+
+<Panel 
+    as="aside" 
+    class="music-player"
+>
+    <site-audio-player
+        class="music-player__player"
+        data-playlist={JSON.stringify(playlist)}
+        data-playing="false"
+    >
+        <header class="music-player__header">
+            <span class="music-player__eyebrow">
+                <span data-status>Now playing</span>
+                <span aria-hidden="true"> · </span>
+                <span data-track-position>1/{playlist.length}</span>
+            </span>
+
+            <span class="music-player__ticker">
+                {
+                    /**
+                     * The second copy makes the ticker loop without a visible
+                     * jump. It is hidden whenever playback is paused.
+                     */
+                }
+                <span class="music-player__ticker-track">
+                    <span class="music-player__track-info">
+                        <strong
+                            class="music-player__track-title"
+                            data-track-title
+                        >
+                            {firstTrack.title}
+                        </strong>
+                        <span aria-hidden="true"> - </span>
+                        <span data-track-artist>{firstTrack.artist}</span>
+                    </span>
+
+                    <span
+                        class="music-player__track-info music-player__track-info--copy"
+                        aria-hidden="true"
+                    >
+                        <strong
+                            class="music-player__track-title"
+                            data-track-title
+                        >
+                            {firstTrack.title}
+                        </strong>
+                        <span> - </span>
+                        <span data-track-artist>{firstTrack.artist}</span>
+                    </span>
+                </span>
+            </span>
+        </header>
+
+        <div class="music-player__controls">
+            <div class="music-player__transport">
+                <button
+                    class="music-player__transport-button"
+                    type="button"
+                    data-previous-button
+                    aria-label="Previous track"
+                >
+                    <svg
+                        class="music-player__transport-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <path
+                            d="M5 5h2v14H5V5Zm14 0v14L8 12l11-7Z"
+                            fill="currentColor"></path>
+                    </svg>
+                </button>
+
+                <button
+                    class="music-player__transport-button music-player__transport-button--play"
+                    type="button"
+                    data-play-button
+                    aria-label="Play"
+                >
+                    <svg
+                        class="music-player__transport-icon music-player__transport-icon--play"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <path d="m7 4 13 8L7 20V4Z" fill="currentColor"></path>
+                    </svg>
+
+                    <svg
+                        class="music-player__transport-icon music-player__transport-icon--pause"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <path
+                            d="M6 4h4v16H6V4Zm8 0h4v16h-4V4Z"
+                            fill="currentColor"></path>
+                    </svg>
+                </button>
+
+                <button
+                    class="music-player__transport-button"
+                    type="button"
+                    data-next-button
+                    aria-label="Next track"
+                >
+                    <svg
+                        class="music-player__transport-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <path
+                            d="M17 5h2v14h-2V5ZM5 5l11 7-11 7V5Z"
+                            fill="currentColor"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="music-player__volume">
+                <input
+                    class="music-player__volume-input"
+                    type="range"
+                    min="0"
+                    max="1"
+                    value="0.8"
+                    step="0.01"
+                    data-volume
+                    aria-label="Volume"
+                />
+
+                <button
+                    class="music-player__mute-button"
+                    type="button"
+                    data-mute-button
+                    data-muted="false"
+                    aria-label="Mute"
+                    aria-pressed="false"
+                >
+                    <svg
+                        class="music-player__volume-icon"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                        focusable="false"
+                    >
+                        <path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor"
+                        ></path>
+                        <path
+                            class="music-player__volume-waves"
+                            d="M16 8.25a5 5 0 0 1 0 7.5M18.5 5.75a8.5 8.5 0 0 1 0 12.5"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-width="1.6"></path>
+                        <path
+                            class="music-player__volume-muted"
+                            d="m16.5 9 5 5m0-5-5 5"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-linecap="round"
+                            stroke-width="1.8"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="music-player__seeking-row">
+            <input
+                class="music-player__seeking"
+                type="range"
+                min="0"
+                max="0"
+                value="0"
+                step="0.1"
+                data-seeking
+                aria-label="Seek through track"
+                disabled
+            />
+
+            <span class="music-player__time">
+                <span data-current-time>0:00</span>
+                <span aria-hidden="true"> / </span>
+                <span data-duration>0:00</span>
+            </span>
+        </div>
+
+        <audio class="music-player__audio" data-audio preload="metadata">
+            <source
+                data-audio-source
+                src={firstTrack.src}
+                type={firstTrack.type}
+            />
+        </audio>
+    </site-audio-player>
+</Panel>
+
+<script>
+    /**
+     * The custom element owns one player instance without a UI framework.
+     * `data-*` attributes are its private behavior API; BEM classes are kept
+     * exclusively for styling so visual refactors do not break the script.
+     */
+
+    // Astro frontmatter and browser scripts are compiled separately, so the
+    // small runtime representation of a track is declared again here.
+    type AudioMimeType = "audio/mpeg" | "audio/ogg" | "audio/wav";
+
+    interface AudioTrack {
+        title: string;
+        artist: string;
+        src: string;
+        type: AudioMimeType;
+    }
+
+    const SUPPORTED_AUDIO_TYPES = new Set<AudioMimeType>([
+        "audio/mpeg",
+        "audio/ogg",
+        "audio/wav",
+    ]);
+
+    // Markup and behavior live together, so a missing control is a developer
+    // error. Failing loudly makes accidental selector changes easier to find.
+    function getRequiredElement<T extends Element>(
+        root: ParentNode,
+        selector: string,
+    ): T {
+        const element = root.querySelector<T>(selector);
+
+        if (!element) {
+            throw new Error(`MusicPlayer is missing ${selector}.`);
+        }
+
+        return element;
+    }
+
+    function isAudioTrack(value: unknown): value is AudioTrack {
+        if (!value || typeof value !== "object") return false;
+
+        const track = value as Record<string, unknown>;
+
+        const hasText = (property: "title" | "artist" | "src") => {
+            const content = track[property];
+
+            return typeof content === "string" && content.trim().length > 0;
+        };
+
+        return (
+            hasText("title") &&
+            hasText("artist") &&
+            hasText("src") &&
+            typeof track.type === "string" &&
+            SUPPORTED_AUDIO_TYPES.has(track.type as AudioMimeType)
+        );
+    }
+
+    function parsePlaylist(value: string | undefined): AudioTrack[] {
+        try {
+            const parsed: unknown = JSON.parse(value ?? "[]");
+
+            return Array.isArray(parsed) ? parsed.filter(isAudioTrack) : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function formatTime(seconds: number): string {
+        if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+
+        return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+    }
+
+    function resolveTrackUrl(source: string): string {
+        try {
+            return new URL(source, document.baseURI).href;
+        } catch {
+            return source;
+        }
+    }
+
+    function updateRangeFill(
+        input: HTMLInputElement,
+        value: number,
+        maximum: number,
+    ) {
+        const percentage =
+            maximum > 0
+                ? Math.min(100, Math.max(0, (value / maximum) * 100))
+                : 0;
+
+        input.style.setProperty("--range-position", `${percentage}%`);
+    }
+
+    class SiteAudioPlayer extends HTMLElement {
+        private abortController: AbortController | null = null;
+        private audio: HTMLAudioElement | null = null;
+
+        connectedCallback() {
+            // A connected custom element can be observed more than once.
+            // Reuse the existing instance instead of registering listeners
+            // again and causing each control action to fire multiple times.
+            if (this.abortController) return;
+
+            const get = <T extends Element>(selector: string) =>
+                getRequiredElement<T>(this, selector);
+
+            const audio = get<HTMLAudioElement>("[data-audio]");
+            const audioSource = get<HTMLSourceElement>("[data-audio-source]");
+            const playButton = get<HTMLButtonElement>("[data-play-button]");
+            const previousButton = get<HTMLButtonElement>(
+                "[data-previous-button]",
+            );
+            const nextButton = get<HTMLButtonElement>("[data-next-button]");
+            const muteButton = get<HTMLButtonElement>("[data-mute-button]");
+            const seeking = get<HTMLInputElement>("[data-seeking]");
+            const volume = get<HTMLInputElement>("[data-volume]");
+            const currentTime = get<HTMLElement>("[data-current-time]");
+            const duration = get<HTMLElement>("[data-duration]");
+            const status = get<HTMLElement>("[data-status]");
+            const trackPosition = get<HTMLElement>("[data-track-position]");
+            const trackTitles =
+                this.querySelectorAll<HTMLElement>("[data-track-title]");
+            const trackArtists = this.querySelectorAll<HTMLElement>(
+                "[data-track-artist]",
+            );
+            const playlist = parsePlaylist(this.dataset.playlist);
+
+            if (playlist.length === 0) {
+                status.textContent = "Playlist unavailable";
+
+                [
+                    playButton,
+                    previousButton,
+                    nextButton,
+                    muteButton,
+                    seeking,
+                    volume,
+                ].forEach((control) => {
+                    control.disabled = true;
+                });
+
+                return;
+            }
+
+            const abortController = new AbortController();
+            const listenerOptions = { signal: abortController.signal };
+
+            this.abortController = abortController;
+            this.audio = audio;
+
+            // If Astro reconnects the same element, recover the active index
+            // from the media source instead of incorrectly returning to item 1.
+            const activeSource = audio.currentSrc || audioSource.src;
+            const activeTrackIndex = playlist.findIndex(
+                (track) => resolveTrackUrl(track.src) === activeSource,
+            );
+
+            // These values describe interaction state that the media element
+            // does not expose directly.
+            let currentTrackIndex = Math.max(0, activeTrackIndex);
+            let hasAudioError = false;
+            let isLoading = false;
+            let isSeeking = false;
+            let lastAudibleVolume = volume.valueAsNumber || 0.8;
+            // Invalidates a rejected play() promise when another source was
+            // selected before that asynchronous request settled.
+            let sourceRevision = 0;
+
+            const updatePlaybackState = () => {
+                const isPlaying = !audio.paused && !audio.ended;
+
+                this.dataset.playing = String(isPlaying);
+                playButton.setAttribute(
+                    "aria-label",
+                    isPlaying ? "Pause" : "Play",
+                );
+
+                if (hasAudioError) {
+                    status.textContent = "Audio unavailable";
+                } else if (isLoading) {
+                    status.textContent = "Loading";
+                } else if (isPlaying || audio.currentTime === 0) {
+                    status.textContent = "Now playing";
+                } else {
+                    status.textContent = audio.ended ? "Finished" : "Paused";
+                }
+            };
+
+            const updateMuteState = () => {
+                const isMuted = audio.muted || audio.volume === 0;
+
+                if (audio.volume > 0) {
+                    lastAudibleVolume = audio.volume;
+                }
+
+                muteButton.dataset.muted = String(isMuted);
+                muteButton.setAttribute(
+                    "aria-label",
+                    isMuted ? "Unmute" : "Mute",
+                );
+                muteButton.setAttribute("aria-pressed", String(isMuted));
+                volume.value = String(audio.volume);
+                updateRangeFill(volume, audio.volume, 1);
+            };
+
+            const updateSeekingRange = () => {
+                const hasDuration =
+                    Number.isFinite(audio.duration) && audio.duration > 0;
+
+                seeking.disabled = hasAudioError || !hasDuration;
+                seeking.max = hasDuration ? String(audio.duration) : "0";
+                duration.textContent = formatTime(audio.duration);
+
+                if (!isSeeking) {
+                    seeking.value = String(audio.currentTime);
+                    updateRangeFill(seeking, audio.currentTime, audio.duration);
+                }
+            };
+
+            const updateTime = () => {
+                if (!isSeeking) {
+                    seeking.value = String(audio.currentTime);
+                    currentTime.textContent = formatTime(audio.currentTime);
+                    updateRangeFill(seeking, audio.currentTime, audio.duration);
+                }
+            };
+
+            const playAudio = async () => {
+                const requestedRevision = sourceRevision;
+
+                try {
+                    await audio.play();
+                } catch {
+                    // Switching tracks rejects the previous play promise. Do
+                    // not report that expected rejection on the new track.
+                    if (requestedRevision !== sourceRevision) return;
+
+                    isLoading = false;
+                    updatePlaybackState();
+                    status.textContent = "Unable to play";
+                }
+            };
+
+            const updateTrackMetadata = (track: AudioTrack) => {
+                trackTitles.forEach((element) => {
+                    element.textContent = track.title;
+                });
+                trackArtists.forEach((element) => {
+                    element.textContent = track.artist;
+                });
+                trackPosition.textContent = `${currentTrackIndex + 1}/${playlist.length}`;
+            };
+
+            const loadTrack = (index: number, autoplay = false) => {
+                currentTrackIndex = (index + playlist.length) % playlist.length;
+
+                const track = playlist[currentTrackIndex]!;
+
+                sourceRevision += 1;
+                hasAudioError = false;
+                isLoading = true;
+                audio.pause();
+                audioSource.src = track.src;
+                audioSource.type = track.type;
+                updateTrackMetadata(track);
+                currentTime.textContent = "0:00";
+                duration.textContent = "0:00";
+                seeking.value = "0";
+                seeking.max = "0";
+                seeking.disabled = true;
+                updateRangeFill(seeking, 0, 0);
+                playButton.disabled = false;
+
+                audio.load();
+                updatePlaybackState();
+
+                if (autoplay) {
+                    void playAudio();
+                }
+            };
+
+            playButton.addEventListener(
+                "click",
+                () => {
+                    if (audio.paused) {
+                        void playAudio();
+                    } else {
+                        audio.pause();
+                    }
+                },
+                listenerOptions,
+            );
+
+            previousButton.addEventListener(
+                "click",
+                () => {
+                    loadTrack(currentTrackIndex - 1, true);
+                },
+                listenerOptions,
+            );
+
+            nextButton.addEventListener(
+                "click",
+                () => {
+                    loadTrack(currentTrackIndex + 1, true);
+                },
+                listenerOptions,
+            );
+
+            muteButton.addEventListener(
+                "click",
+                () => {
+                    const isMuted = audio.muted || audio.volume === 0;
+
+                    if (isMuted) {
+                        if (audio.volume === 0) {
+                            audio.volume = lastAudibleVolume;
+                        }
+
+                        audio.muted = false;
+                    } else {
+                        audio.muted = true;
+                    }
+                },
+                listenerOptions,
+            );
+
+            // Ignore timeupdate events while the pointer owns the seeking bar;
+            // otherwise playback updates can pull the thumb away from the user.
+            seeking.addEventListener(
+                "pointerdown",
+                () => {
+                    isSeeking = true;
+                },
+                listenerOptions,
+            );
+
+            seeking.addEventListener(
+                "input",
+                () => {
+                    const requestedTime = seeking.valueAsNumber;
+
+                    if (!Number.isFinite(requestedTime)) return;
+
+                    audio.currentTime = requestedTime;
+                    currentTime.textContent = formatTime(requestedTime);
+                    updateRangeFill(seeking, requestedTime, audio.duration);
+                },
+                listenerOptions,
+            );
+
+            const finishSeeking = () => {
+                isSeeking = false;
+                updateTime();
+            };
+
+            seeking.addEventListener(
+                "pointerup",
+                finishSeeking,
+                listenerOptions,
+            );
+            seeking.addEventListener(
+                "pointercancel",
+                finishSeeking,
+                listenerOptions,
+            );
+            seeking.addEventListener("change", finishSeeking, listenerOptions);
+            // The pointer may be released outside the range input. Listening
+            // at window level prevents the seeking lock from getting stuck.
+            window.addEventListener(
+                "pointerup",
+                finishSeeking,
+                listenerOptions,
+            );
+
+            volume.addEventListener(
+                "input",
+                () => {
+                    const requestedVolume = volume.valueAsNumber;
+
+                    if (!Number.isFinite(requestedVolume)) return;
+
+                    if (requestedVolume > 0) {
+                        lastAudibleVolume = requestedVolume;
+                    }
+
+                    audio.volume = requestedVolume;
+                    audio.muted = requestedVolume === 0;
+                    updateRangeFill(volume, requestedVolume, 1);
+                },
+                listenerOptions,
+            );
+
+            audio.addEventListener(
+                "loadedmetadata",
+                () => {
+                    isLoading = false;
+                    updateSeekingRange();
+                    updatePlaybackState();
+                },
+                listenerOptions,
+            );
+            audio.addEventListener(
+                "durationchange",
+                updateSeekingRange,
+                listenerOptions,
+            );
+            audio.addEventListener("timeupdate", updateTime, listenerOptions);
+            audio.addEventListener(
+                "play",
+                () => {
+                    isLoading = false;
+                    updatePlaybackState();
+                },
+                listenerOptions,
+            );
+            audio.addEventListener(
+                "pause",
+                updatePlaybackState,
+                listenerOptions,
+            );
+            audio.addEventListener(
+                "volumechange",
+                updateMuteState,
+                listenerOptions,
+            );
+            audio.addEventListener(
+                "ended",
+                () => {
+                    if (playlist.length > 1) {
+                        loadTrack(currentTrackIndex + 1, true);
+                    } else {
+                        updatePlaybackState();
+                    }
+                },
+                listenerOptions,
+            );
+            audio.addEventListener(
+                "error",
+                () => {
+                    hasAudioError = true;
+                    isLoading = false;
+                    playButton.disabled = true;
+                    seeking.disabled = true;
+                    updatePlaybackState();
+                },
+                listenerOptions,
+            );
+
+            const hasMultipleTracks = playlist.length > 1;
+
+            previousButton.disabled = !hasMultipleTracks;
+            nextButton.disabled = !hasMultipleTracks;
+            audio.volume = volume.valueAsNumber;
+
+            // As with metadata, a cached source can fail before listeners are
+            // attached. Reflect that existing state during initialization.
+            if (audio.error) {
+                hasAudioError = true;
+                playButton.disabled = true;
+                seeking.disabled = true;
+            }
+
+            // Metadata may already be cached before the listeners are attached.
+            updateTrackMetadata(playlist[currentTrackIndex]!);
+            updateSeekingRange();
+            updateTime();
+            updatePlaybackState();
+            updateMuteState();
+        }
+
+        disconnectedCallback() {
+            // Astro can remove this element during client-side navigation.
+            // Abort all listeners and stop playback so detached players do
+            // not continue consuming resources or producing audio.
+            this.abortController?.abort();
+            this.abortController = null;
+            this.audio?.pause();
+            this.audio = null;
+            this.dataset.playing = "false";
+        }
+    }
+
+    // Astro may evaluate this script again during client-side navigation.
+    if (!customElements.get("site-audio-player")) {
+        customElements.define("site-audio-player", SiteAudioPlayer);
+    }
+</script>
+
+<style>
+    .music-player {
+        padding: 0;
+        border-top: 2px solid var(--link-main);
+    }
+
+    .music-player__player {
+        display: grid;
+        background: var(--card-bg);
+    }
+
+    .music-player__header {
+        min-width: 0;
+        padding: 0.65rem var(--space-sm) 0.55rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-soft);
+    }
+
+    .music-player__eyebrow {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+        margin-bottom: 0.35rem;
+        color: var(--text-muted);
+        font-size: var(--font-2xs);
+        font-weight: var(--fw-bold);
+        letter-spacing: 0.08em;
+        line-height: 1;
+        /* text-transform: uppercase; */
+    }
+
+    .music-player__ticker {
+        display: block;
+        min-width: 0;
+        overflow: hidden;
+        color: var(--text-muted);
+        font-size: var(--font-xs);
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .music-player__ticker-track {
+        display: flex;
+        width: max-content;
+        gap: 2rem;
+    }
+
+    .music-player__track-info {
+        display: block;
+        flex: none;
+    }
+
+    .music-player__track-title {
+        color: var(--text-strong);
+        font-weight: var(--fw-semibold);
+    }
+
+    .music-player__track-info--copy {
+        display: none;
+    }
+
+    .music-player__player[data-playing="true"] .music-player__ticker-track {
+        animation: music-player-ticker 9s linear infinite;
+        will-change: transform;
+    }
+
+    .music-player__player[data-playing="true"] .music-player__track-info--copy {
+        display: block;
+    }
+
+    .music-player__seeking-row {
+        display: grid;
+        gap: 0.35rem;
+        min-width: 0;
+        padding: 0.45rem var(--space-sm) 0.6rem;
+        border-top: 1px solid var(--border);
+    }
+
+    /*
+     * Both ranges use --range-position for the filled portion in WebKit.
+     * Firefox supplies its own progress pseudo-element below.
+     */
+    .music-player__seeking,
+    .music-player__volume-input {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        min-width: 0;
+        height: 0.85rem;
+        margin: 0;
+        background: transparent;
+        accent-color: var(--link-main);
+        cursor: pointer;
+    }
+
+    .music-player__seeking::-webkit-slider-runnable-track,
+    .music-player__volume-input::-webkit-slider-runnable-track {
+        height: 2px;
+        border-radius: 999px;
+        background: linear-gradient(
+            to right,
+            var(--link-main) 0 var(--range-position, 0%),
+            var(--border-strong) var(--range-position, 0%) 100%
+        );
+    }
+
+    .music-player__seeking::-webkit-slider-thumb,
+    .music-player__volume-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 0.55rem;
+        height: 0.55rem;
+        margin-top: -0.21rem;
+        border: 1px solid var(--card-bg);
+        border-radius: 50%;
+        background: var(--link-main);
+        box-shadow: 0 0 0 1px var(--border-strong);
+    }
+
+    .music-player__seeking::-moz-range-track,
+    .music-player__volume-input::-moz-range-track {
+        height: 2px;
+        border-radius: 999px;
+        background: var(--border-strong);
+    }
+
+    .music-player__seeking::-moz-range-progress,
+    .music-player__volume-input::-moz-range-progress {
+        height: 2px;
+        border-radius: 999px;
+        background: var(--link-main);
+    }
+
+    .music-player__seeking::-moz-range-thumb,
+    .music-player__volume-input::-moz-range-thumb {
+        width: 0.55rem;
+        height: 0.55rem;
+        border: 1px solid var(--card-bg);
+        border-radius: 50%;
+        background: var(--link-main);
+        box-shadow: 0 0 0 1px var(--border-strong);
+    }
+
+    .music-player__seeking:disabled,
+    .music-player__volume-input:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .music-player__time {
+        color: var(--text-muted);
+        font-size: var(--font-2xs);
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .music-player__controls {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: var(--space-sm);
+        align-items: center;
+        padding: 0.55rem var(--space-sm);
+    }
+
+    .music-player__transport,
+    .music-player__volume {
+        display: flex;
+        align-items: center;
+    }
+
+    .music-player__transport {
+        grid-column: 2;
+        gap: 0.3rem;
+    }
+
+    .music-player__volume {
+        grid-column: 3;
+        justify-self: end;
+        width: 4.5rem;
+        min-width: 0;
+        gap: 0.3rem;
+    }
+
+    .music-player__volume-input {
+        flex: 1;
+    }
+
+    /* Borderless media controls preserve the compact embedded-player look. */
+    .music-player__transport-button,
+    .music-player__mute-button {
+        display: inline-grid;
+        flex: none;
+        padding: 0;
+        border: 0;
+        place-items: center;
+        background: transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+    }
+
+    .music-player__transport-button {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    .music-player__transport-button--play {
+        color: var(--link-main);
+    }
+
+    .music-player__transport-icon {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .music-player__transport-button--play .music-player__transport-icon {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .music-player__transport-icon--pause {
+        display: none;
+    }
+
+    /* Playback state is exposed by JavaScript; CSS owns the icon swap. */
+    .music-player__player[data-playing="true"]
+        .music-player__transport-icon--play {
+        display: none;
+    }
+
+    .music-player__player[data-playing="true"]
+        .music-player__transport-icon--pause {
+        display: block;
+    }
+
+    .music-player__mute-button {
+        width: 1.3rem;
+        height: 1.3rem;
+    }
+
+    .music-player__transport-button:not(:disabled):hover,
+    .music-player__mute-button:not(:disabled):hover {
+        color: var(--link-hover);
+    }
+
+    .music-player__transport-button:focus-visible,
+    .music-player__mute-button:focus-visible {
+        outline-offset: 1px;
+    }
+
+    .music-player__transport-button:disabled,
+    .music-player__mute-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+
+    .music-player__volume-icon {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+
+    /* data-muted swaps the wave and mute-mark paths in the same SVG. */
+    .music-player__volume-muted,
+    .music-player__mute-button[data-muted="true"] .music-player__volume-waves {
+        display: none;
+    }
+
+    .music-player__mute-button[data-muted="true"] .music-player__volume-muted {
+        display: block;
+    }
+
+    .music-player__audio {
+        display: none;
+    }
+
+    /* Move by one copy plus the 2rem gap for a seamless loop. */
+    @keyframes music-player-ticker {
+        to {
+            transform: translateX(calc(-50% - 1rem));
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .music-player__player[data-playing="true"] .music-player__ticker-track {
+            animation: none;
+        }
+
+        .music-player__player[data-playing="true"]
+            .music-player__track-info--copy {
+            display: none;
+        }
+    }
+</style>
