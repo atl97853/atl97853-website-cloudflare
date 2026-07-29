@@ -8,100 +8,292 @@
  */
 
 :root {
-    --font-main: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*
+     * Font families.
+     */
+    --font-main:
+        Tahoma,
+        "MS UI Gothic",
+        "MS PGothic",
+        "ＭＳ Ｐゴシック",
+        Meiryo,
+        "Noto Sans JP",
+        Arial,
+        sans-serif;
 
-    --font-2xs: 0.75rem;    /* 12px */
-    --font-xs: 0.875rem;    /* 14px */
-    --font-sm: 0.9375rem;   /* 15px */
-    --font-md: 1rem;        /* 16px */
-    --font-lg: 1.125rem;    /* 18px */
-    --font-xl: 1.25rem;     /* 20px */
-    --font-2xl: 1.5rem;     /* 24px */
-    --font-3xl: 1.875rem;   /* 30px */
-    --font-4xl: 2.25rem;    /* 36px */
+    --font-mono:
+        "MS Gothic",
+        "ＭＳ ゴシック",
+        "Noto Sans Mono CJK JP",
+        "Courier New",
+        monospace;
 
+    /*
+     * Primitive font-size scale.
+     *
+     * These names are retained for compatibility with existing components.
+     * New component styles should prefer the semantic aliases below.
+     */
+    --font-2xs: 0.75rem;
+    /* 12px */
+    --font-xs: 0.875rem;
+    /* 14px */
+    --font-sm: 0.9375rem;
+    /* 15px */
+    --font-md: 1rem;
+    /* 16px */
+    --font-lg: 1.125rem;
+    /* 18px */
+    --font-xl: 1.25rem;
+    /* 20px */
+    --font-2xl: 1.5rem;
+    /* 24px */
+    --font-3xl: 1.875rem;
+    /* 30px */
+    --font-4xl: 2.25rem;
+    /* 36px */
+
+    /*
+     * Semantic font-size roles.
+     */
+    --font-size-meta: var(--font-2xs);
+    --font-size-caption: var(--font-xs);
+    --font-size-ui: var(--font-sm);
+    --font-size-body: var(--font-md);
+    --font-size-subheading: var(--font-lg);
+    --font-size-heading: var(--font-xl);
+    --font-size-title: var(--font-2xl);
+    --font-size-display: var(--font-3xl);
+    --font-size-hero: var(--font-4xl);
+
+    /*
+     * Primitive font-weight scale.
+     */
     --fw-normal: 400;
     --fw-medium: 500;
     --fw-semibold: 600;
     --fw-bold: 700;
 
+    /*
+     * Semantic font-weight roles.
+     */
+    --font-weight-body: var(--fw-normal);
+    --font-weight-ui: var(--fw-medium);
+    --font-weight-label: var(--fw-semibold);
+    --font-weight-heading: var(--fw-bold);
+    --font-weight-strong: var(--fw-bold);
+
+    /*
+     * Primitive spacing scale.
+     */
     --space-none: 0;
     --space-xs: 4px;
     --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 40px;
+    --space-md: 12px;
+    --space-lg: 18px;
+    --space-xl: 28px;
 
-    --shell-max-width: 900px;
-    --shell-padding: 24px;
-    --sidebar-width: 255px;
-    --layout-gap: 40px;
+    /*
+     * Semantic spacing roles.
+     */
+    --spacing-control-gap: var(--space-xs);
+    --spacing-item-gap: var(--space-sm);
+    --spacing-content-padding: var(--space-md);
+    --spacing-section-gap: var(--space-lg);
+    --spacing-page-gap: var(--space-xl);
 
-    --lh-panel-heading: 1.25;
+    /*
+     * Line-height roles.
+     */
+    --line-height-tight: 1.2;
+    --line-height-body: 1.45;
+    --line-height-reading: 1.55;
 
-    --reading-line-height: 1.55;
-    --reading-width: 66ch;
-    --gallery-width: 31rem;
+    /*
+     * Compatibility aliases currently consumed by existing components.
+     */
+    --lh-panel-heading: var(--line-height-tight);
+    --reading-line-height: var(--line-height-reading);
 
-    --radius: 7px;
-    
-    --page-bg: #0e1620;
-    --container-bg: #151e2a;
-    --card-bg: #1e2937;
+    /*
+     * Fixed desktop composition.
+     *
+     * The wider shell and compact navigation rail follow the proportions of
+     * early social-network layouts. The wider navigation rail gives secondary
+     * content enough room without taking priority away from the main column.
+     * Narrow viewports can still scroll horizontally instead of forcing the
+     * desktop layout to reflow.
+     */
+    --desktop-min-width: 780px;
+    --shell-max-width: 950px;
+    --shell-padding: 12px;
+    --sidebar-width: 240px;
+    --layout-gap: 12px;
 
-    --text-main: #ececf2;
-    --text-muted: #a2a7b5;
-    --text-strong: #f7fbff;
+    --reading-width: 68ch;
+    --gallery-width: 34rem;
 
-    --link-main: #68b8da;
-    --link-hover: #91d1e8;
-    --link-visited: #aaa4d4;
+    --radius: 0;
+    --border-width: 1px;
 
-    --border: #354454;
-    --border-strong: #4d6073;
-    --surface-soft: #263342;
-    --surface-hover: #2e3d4e;
-    --page-shell: #151e2a;
+    /*
+     * Shared layout measurements.
+     *
+     * These values are consumed by layout and primitive components so their
+     * scoped styles remain structural rather than carrying isolated numbers.
+     */
+    --desktop-stage-min-height: calc(100vh - 50px);
+    --site-viewport-min-height: 36rem;
+    --layer-skip-link: 100;
+    --skip-link-hidden-offset: -160%;
 
-    --selection-bg: #78bfdc;
-    --selection-text: #0d1b25;
+    /*
+     * Desktop wallpaper and website viewport.
+     */
+    --page-bg: #38485f;
+    --desktop-top: #52637c;
+    --theme-color: var(--page-bg);
 
-    --theme-active-bg: #68b8da;
-    --theme-active-text: #0e1821;
+    --page-shell: #171c25;
+    --container-bg: #1d232e;
+    --card-bg: #252c38;
 
-    --shadow: 0 1px 3px rgb(3 7 12 / 50%);
+    --text-main: #d8dde4;
+    --text-muted: #939ca8;
+    --text-strong: #f6f8fa;
+
+    --link-main: #aabddd;
+    --link-hover: #d3a0b2;
+    --link-visited: #ab9db9;
+
+    --link-hover-site-header: #d3a0b2;
+
+    --border: #4d5867;
+    --border-strong: #778392;
+
+    --surface-soft: #2c3441;
+    --surface-hover: #353e4c;
+
+    /*
+     * Shared native-style controls.
+     *
+     * These general aliases remain separate from the dedicated site-header
+     * tokens below because forms and document controls also consume them.
+     */
+    --control-face: #89919b;
+    --control-highlight: #d7dadd;
+    --control-shadow: #69717b;
+    --control-border: #252b32;
+    --control-text: #121519;
+
+    --field-bg: #e9eae7;
+    --field-text: #202328;
+
+    --selection-bg: #7b8fbd;
+    --selection-text: #ffffff;
+
+    --theme-active-bg: #cbd0d5;
+    --theme-active-text: #171a1e;
+
+    --shadow: 4px 4px 0 rgb(13 18 25 / 38%);
+
+    /*
+     * Site-header presentation.
+     *
+     * The blue-violet toolbar is intentionally stable across themes. Only its
+     * interactive accent follows --link-hover so the pink hover treatment
+     * remains consistent with links elsewhere on the page.
+     */
+    --site-toolbar-min-height: 3rem;
+    --site-toolbar-background:
+        linear-gradient(90deg,
+            #46528c 0%,
+            #535f97 55%,
+            #6571a4 100%);
+    --site-toolbar-border: #394572;
+    --site-toolbar-shadow:
+        inset 0 1px rgb(255 255 255 / 16%),
+        inset 0 -1px rgb(25 31 66 / 24%);
+    --site-toolbar-text: #f4f5fb;
+    --site-toolbar-text-hover: #ffffff;
+    --site-toolbar-icon-size: 1rem;
+
+    --theme-controls-gap: 2px;
+    --theme-controls-padding: 4px;
+    --theme-controls-radius: 5px;
+    --theme-controls-bg: rgb(20 27 59 / 22%);
+
+    --theme-control-size: 2rem;
+    --theme-control-radius: 4px;
+    --theme-control-border: 0;
+    --theme-control-bg: transparent;
+    --theme-control-shadow: none;
+    --theme-control-padding: var(--space-none);
+    --theme-control-line-height: 1;
+    --theme-control-text: #e5e8f4;
+    --theme-control-hover-bg:
+        color-mix(in srgb,
+            var(--link-hover) 18%,
+            transparent);
+    --theme-control-hover-text: var(--link-hover);
+    --theme-control-selected-bg: #e7e9f2;
+    --theme-control-selected-text: var(--site-toolbar-border);
+    --theme-control-selected-shadow:
+        inset 1px 1px 0 rgb(255 255 255 / 70%),
+        inset -1px -1px 0 rgb(25 31 66 / 35%);
+    --theme-control-focus: var(--link-hover);
+    --theme-control-focus-width: 2px;
+    --theme-control-focus-offset: 1px;
+
+    --site-banner-height: 145px;
+    --site-banner-compact-height: 115px;
 }
 
 :root[data-theme="light"] {
-    --page-bg: #cedde6;
-    --container-bg: #e0e7eb;
-    --card-bg: #fff7f3;
+    --page-bg: #8792a6;
+    --desktop-top: #a3acba;
+    --theme-color: var(--page-bg);
 
-    --text-main: #374047;
-    --text-muted: #687179;
-    --text-strong: #222a30;
+    --page-shell: #ecece7;
+    --container-bg: #f3f3ee;
+    --card-bg: #fbfbf7;
 
-    --link-main: #356c8a;
-    --link-hover: #ec94ad;
-    --link-visited: #5e5b8c;
+    --text-main: #30343a;
+    --text-muted: #6d747c;
+    --text-strong: #171a1e;
 
-    --border: #ccd6dc;
-    --border-strong: #aebdc6;
-    --surface-soft: #f1e6e8;
-    --surface-hover: #e8dadd;
-    --page-shell: #e0e7eb;
+    --link-main: #405e91;
+    --link-hover: #9e526b;
+    --link-visited: #6f617d;
 
-    --selection-bg: #e2a8b8;
-    --selection-text: #38252d;
+    --border: #a9afb4;
+    --border-strong: #747c84;
 
-    --theme-active-bg: #356c8a;
+    --surface-soft: #e2e3df;
+    --surface-hover: #d7d9d7;
+
+    --control-face: #b8bdc1;
+    --control-highlight: #f4f5f5;
+    --control-shadow: #8c9298;
+    --control-border: #3f454c;
+    --control-text: #171a1d;
+
+    --field-bg: #ffffff;
+    --field-text: #202327;
+
+    --selection-bg: #7288b8;
+    --selection-text: #ffffff;
+
+    --theme-active-bg: #4d6799;
     --theme-active-text: #ffffff;
 
-    --shadow: 0 1px 2px rgb(44 60 70 / 14%);
+    --shadow: 4px 4px 0 rgb(47 55 68 / 25%);
 }
 
 html {
+    min-width: var(--desktop-min-width);
     min-height: 100%;
+    overflow-x: auto;
     color-scheme: dark;
     scroll-behavior: smooth;
 }
@@ -119,44 +311,123 @@ html[data-theme="light"] {
 body,
 h1,
 h2,
+h3,
+h4,
+h5,
+h6,
 p,
 figure,
+blockquote,
 dl,
 dd {
     margin: 0;
 }
 
 body {
-    min-width: 320px;
+    min-width: var(--desktop-min-width);
     min-height: 100vh;
     padding:
-            clamp(0.5rem, 1vw, 0.75rem)
-            var(--space-md);
-    background: var(--page-bg);
+        var(--space-md) var(--space-lg) var(--space-xl);
+
+    /*
+     * Keep the solid color as a fallback beneath the decorative wallpaper.
+     */
+    background-color: var(--page-bg);
+    background-image:
+        linear-gradient(to bottom,
+            var(--desktop-top),
+            var(--page-bg) 65%);
+    background-attachment: fixed;
+
     color: var(--text-main);
     font-family: var(--font-main);
-    font-size: 16px;
-    line-height: 1.5;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    transition:
-        background-color 140ms ease,
-        color 140ms ease;
+    /*
+     * The default document size resolves to --font-md, which is exactly 1rem.
+     */
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-body);
+    line-height: var(--line-height-body);
+    overflow-wrap: break-word;
+
+    /*
+     * The gradient switches immediately with the theme because gradients
+     * cannot interpolate reliably through custom-property color changes.
+     */
+    transition: color 120ms ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--text-strong);
+    font-family: var(--font-main);
+    font-weight: var(--font-weight-heading);
+    line-height: var(--line-height-tight);
+}
+
+h1 {
+    font-size: var(--font-size-title);
+}
+
+h2 {
+    font-size: var(--font-size-heading);
+}
+
+h3 {
+    font-size: var(--font-size-subheading);
+}
+
+h4 {
+    font-size: var(--font-size-body);
+}
+
+h5 {
+    font-size: var(--font-size-ui);
+}
+
+h6 {
+    font-size: var(--font-size-caption);
+}
+
+p+p {
+    margin-top: 0.7em;
+}
+
+ul,
+ol {
+    margin-block: var(--spacing-item-gap);
+    padding-left: 1.3rem;
+}
+
+li+li {
+    margin-top: 2px;
 }
 
 img,
-svg {
+svg,
+video,
+canvas {
     display: block;
     max-width: 100%;
 }
 
-button,
-input {
-    font: inherit;
+img,
+video {
+    height: auto;
 }
+
+/*
+ * Borders, backgrounds, cropping, and aspect ratios belong to the BEM block
+ * that owns each image rather than leaking from the global stylesheet.
+ */
 
 a {
     color: var(--link-main);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.1em;
 }
 
 a:visited {
@@ -168,9 +439,146 @@ a:hover {
 }
 
 button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button,
+select {
+    border: var(--border-width) solid var(--control-border);
+    border-radius: var(--radius);
+
+    background: var(--control-face);
+    box-shadow:
+        1px 1px 0 var(--control-highlight) inset,
+        -1px -1px 0 var(--control-shadow) inset;
+
+    color: var(--control-text);
+}
+
+button {
+    min-height: 1.45rem;
+    padding: 1px var(--spacing-item-gap);
+
+    cursor: pointer;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+button:not(:disabled):hover {
+    background: var(--control-highlight);
+}
+
+button:not(:disabled):active {
+    box-shadow:
+        1px 1px 0 var(--control-border) inset,
+        -1px -1px 0 var(--control-highlight) inset;
+
+    transform: translate(1px, 1px);
+}
+
+input,
+textarea {
+    border: var(--border-width) solid var(--control-border);
+    border-radius: var(--radius);
+    background: var(--field-bg);
+    box-shadow:
+        1px 1px 0 var(--control-shadow) inset,
+        -1px -1px 0 var(--control-highlight) inset;
+    color: var(--field-text);
+}
+
+input,
+textarea,
+select {
+    min-width: 0;
+    max-width: 100%;
+    padding: 2px var(--spacing-control-gap);
+}
+
+textarea {
+    min-height: 7rem;
+    resize: both;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+button,
 a,
-input {
+input,
+textarea,
+select {
     -webkit-tap-highlight-color: transparent;
+}
+
+strong,
+b {
+    color: var(--text-strong);
+    font-weight: var(--font-weight-strong);
+}
+
+small {
+    color: var(--text-muted);
+    font-size: var(--font-size-caption);
+}
+
+code,
+pre,
+kbd,
+samp {
+    font-family: var(--font-mono);
+}
+
+code {
+    padding-inline: 0.2em;
+    border: var(--border-width) solid var(--border);
+    background: var(--surface-soft);
+    font-size: 0.92em;
+}
+
+pre {
+    max-width: 100%;
+    margin-block: var(--spacing-content-padding);
+    padding: var(--spacing-item-gap);
+    overflow: auto;
+
+    border: var(--border-width) solid var(--border-strong);
+    background: var(--card-bg);
+
+    font-size: var(--font-size-ui);
+    line-height: 1.4;
+}
+
+pre code {
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+hr {
+    height: 2px;
+    margin-block: var(--spacing-content-padding);
+
+    border: 0;
+    border-top: var(--border-width) solid var(--border-strong);
+    border-bottom: var(--border-width) solid var(--control-highlight);
+}
+
+blockquote {
+    margin-block: var(--spacing-content-padding);
+    padding:
+        var(--spacing-item-gap) var(--spacing-content-padding);
+
+    border: var(--border-width) solid var(--border);
+    background: var(--surface-soft);
 }
 
 :focus-visible {
@@ -183,15 +591,14 @@ input {
     color: var(--selection-text);
 }
 
+/*
+ * Tighten the desktop canvas before horizontal scrolling begins.
+ * The site intentionally keeps its fixed-width desktop composition.
+ */
 @media (max-width: 52rem) {
     body {
-        padding-top: var(--space-md);
-    }
-}
-
-@media (max-width: 38rem) {
-    body {
-        padding-inline: var(--space-sm);
+        padding:
+            var(--space-sm) var(--space-md) var(--space-lg);
     }
 }
 
@@ -206,5 +613,9 @@ input {
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+    }
+
+    button:active {
+        transform: none;
     }
 }
