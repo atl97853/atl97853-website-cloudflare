@@ -1,13 +1,13 @@
 ---
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
 import bannerImg from "@images/assets/banner_img.jpg";
 
 import ThemeControls from "./ThemeControls.astro";
 ---
 
 <header class="site-header">
-    <div class="site-toolbar">
-        <a class="site-identity" href="/">
+    <div class="site-header__toolbar">
+        <a class="site-header__identity" href="/">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <path
                     fill="currentColor"
@@ -17,15 +17,13 @@ import ThemeControls from "./ThemeControls.astro";
             <span>atl97853</span>
         </a>
 
-        {/* When you restore the wordmark, restore the three-column declaration as well. */}
-        {/* <span class="site-wordmark" aria-hidden="true"></span> */}
-
         <ThemeControls />
+        
     </div>
 
-    <div class="site-banner">
+    <div class="site-header__banner">
         <Image
-            class="site-banner__image"
+            class="site-header__banner-image"
             src={bannerImg}
             alt=""
             priority
@@ -34,82 +32,71 @@ import ThemeControls from "./ThemeControls.astro";
 </header>
 
 <style>
-    .site-header {
-        padding-top: var(--space-sm);
-    }
-
-    .site-toolbar {
+    .site-header__toolbar {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
-        min-height: 3rem;
+        min-height: var(--site-toolbar-min-height);
         align-items: center;
         gap: var(--space-md);
         margin-inline: calc(var(--site-gutter) * -1);
         margin-bottom: var(--space-lg);
         padding: var(--space-xs) var(--site-gutter);
-        border-bottom: 1px solid var(--border);
-        background: color-mix(
-            in srgb,
-            var(--container-bg) 96%,
-            var(--card-bg) 4%
-        );
+
+        /*
+         * The shared tokens preserve the reference gradient across themes.
+         * Only the controls' hover accent follows the active theme palette.
+         */
+        border-bottom: var(--border-width) solid var(--site-toolbar-border);
+        background: var(--site-toolbar-background);
+        box-shadow: var(--site-toolbar-shadow);
     }
 
-    .site-identity {
+    .site-header__identity {
         display: inline-flex;
         width: max-content;
         align-items: center;
         gap: var(--space-sm);
-        color: var(--text-muted);
-        font-size: var(--font-md);
-        font-weight: var(--fw-bold);
+        color: var(--site-toolbar-text);
+        font-size: var(--font-size-body);
+        font-weight: var(--font-weight-heading);
         text-decoration: none;
     }
 
-    .site-identity:hover {
-        color: var(--link-hover);
+    .site-header__identity:visited {
+        color: var(--site-toolbar-text);
     }
 
-    .site-identity svg {
-        width: 1rem;
-        height: 1rem;
+    .site-header__identity:hover {
+        color: var(--link-hover-site-header);
     }
 
-    /* .site-wordmark {
-        color: var(--link-main);
-        font-size: var(--font-xs);
-        font-weight: var(--fw-bold);
-        letter-spacing: 0.03em;
-        text-transform: lowercase;
-    } */
+    .site-header__identity svg {
+        width: var(--site-toolbar-icon-size);
+        height: var(--site-toolbar-icon-size);
+    }
 
-    .site-banner {
-        margin: 0 0 var(--space-lg);
+    .site-header__banner {
+        margin: var(--space-none) var(--space-none) var(--space-lg);
         overflow: hidden;
-        border: 1px solid var(--border);
+        border: var(--border-width) solid var(--border);
         border-radius: var(--radius);
         background: var(--card-bg);
         box-shadow: var(--shadow);
     }
 
-    .site-banner__image {
+    .site-header__banner-image {
         width: 100%;
-        height: 145px;
+        height: var(--site-banner-height);
         object-fit: cover;
     }
 
+    /*
+     * CSS custom properties cannot be used in media-query conditions, so the
+     * compact breakpoint remains explicit while its visual value is tokenized.
+     */
     @media (max-width: 38rem) {
-        /* redundant? */
-        /* .site-toolbar {
-            grid-template-columns: 1fr auto;
-        } */
-
-        .site-wordmark {
-            display: none;
-        }
-
-        .site-banner__image {
-            height: 115px;
+        .site-header__banner-image {
+            height: var(--site-banner-compact-height);
         }
     }
 </style>

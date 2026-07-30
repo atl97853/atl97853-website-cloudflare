@@ -92,9 +92,9 @@ const logs = logEntries
 <Panel as="section" class="recent-logs" title="Recent logs">
     {
         logs.length > 0 ? (
-            <ol class="recent-logs__ol">
+            <ol class="recent-logs__list">
                 {logs.map((log) => (
-                    <li class="recent-logs__li">
+                    <li class="recent-logs__item">
                         <time
                             class="recent-logs__timestamp"
                             datetime={log.datetime}
@@ -117,45 +117,43 @@ const logs = logEntries
 </Panel>
 
 <style>
-    /* Scoped Panel override */
+    /*
+     * Keep the shared Panel primitive generic while aligning this heading with
+     * the content padding used throughout the homepage.
+     */
     .recent-logs > :global(.panel__heading) {
-        padding: 0.82rem var(--space-md);
-        border-bottom: 1px solid var(--border);
+        padding: var(--spacing-content-padding);
+        border-bottom: var(--border-width) solid var(--border);
     }
-    /* Scoped Panel override */
-    .recent-logs__ol {
+
+    .recent-logs__list {
         display: grid;
         margin: 0;
-        padding: 0.18rem 0;
+        padding-block: var(--spacing-control-gap);
+        padding-inline: 0;
         list-style: none;
     }
 
-    .recent-logs__li {
+    .recent-logs__item {
         display: grid;
         grid-template-columns: minmax(0, 1fr) max-content;
         align-items: baseline;
-        column-gap: var(--space-xs);
-        padding: 0.2rem var(--space-md);
+        column-gap: var(--spacing-control-gap);
+        padding: var(--spacing-control-gap) var(--spacing-content-padding);
     }
 
-    .recent-logs__li + .recent-logs__li {
-        border-top: 1px dotted var(--border);
+    .recent-logs__item + .recent-logs__item {
+        border-top: var(--border-width) dotted var(--border);
     }
-
-    /* .recent-logs__li:hover {
-        background: var(--surface-hover);
-    } */
 
     .recent-logs__timestamp {
         grid-column: 2;
         grid-row: 1;
-        /* delete later */
-        /* display: block; */
         color: var(--link-main);
-        font-size: var(--font-sm);
-        font-weight: var(--fw-semibold);
+        font-size: var(--font-size-ui);
+        font-weight: var(--font-weight-label);
         font-variant-numeric: tabular-nums;
-        line-height: var(--reading-line-height);
+        line-height: var(--line-height-body);
         text-align: end;
         white-space: nowrap;
     }
@@ -165,25 +163,23 @@ const logs = logEntries
         grid-row: 1;
         margin: 0;
         color: var(--text-main);
-        font-size: var(--font-md);
-        line-height: 1.4;
+        font-size: var(--font-size-body);
+        line-height: var(--line-height-body);
         overflow-wrap: anywhere;
         text-wrap: pretty;
     }
 
     .recent-logs__empty {
         margin: 0;
-        padding: var(--space-md);
+        padding: var(--spacing-content-padding);
         color: var(--text-muted);
-        font-size: var(--font-sm);
-        line-height: var(--reading-line-height);
+        font-size: var(--font-size-ui);
+        line-height: var(--line-height-reading);
     }
 
     @media (max-width: 38rem) {
-        .recent-logs__li {
-            padding-inline: var(--space-sm);
-            /* if necessary, stack the date above the description only at very small widths */
-            /* grid-template-columns: minmax(0, 1fr) max-content; */
+        .recent-logs__item {
+            padding-inline: var(--spacing-item-gap);
         }
     }
 </style>

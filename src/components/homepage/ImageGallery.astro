@@ -25,6 +25,8 @@ interface GalleryImage {
 interface NormalizedGalleryImage {
     asset: ImageMetadata;
     expandedSrc: string;
+    expandedSrcset: string;
+    expandedSizes: string;
     expandedWidth: number;
     expandedHeight: number;
     alt: string;
@@ -38,7 +40,27 @@ interface ResolvedGalleryImage {
 }
 
 const IMAGE_LIMIT = 4;
-const EXPANDED_IMAGE_MAX_WIDTH = 1600;
+
+/*
+ * Thumbnail candidates cover the gallery's real desktop column width at common
+ * display densities. Astro ignores widths larger than an original asset, so
+ * this list improves sharpness without creating artificial upscales.
+ */
+const THUMBNAIL_WIDTHS = [240, 360, 480, 640, 720, 960, 1200];
+
+const THUMBNAIL_SIZES = ["(max-width: 25rem) calc(100vw - 1rem)", "17rem"].join(
+    ", ",
+);
+
+/*
+ * Expanded images receive a responsive source set rather than one fixed file.
+ * The maximum prevents very large originals from producing unnecessarily heavy
+ * dialog assets while still providing enough detail for high-density screens.
+ */
+const EXPANDED_IMAGE_WIDTHS = [720, 960, 1280, 1600, 1920, 2560];
+const EXPANDED_IMAGE_MAX_WIDTH = 2560;
+const EXPANDED_IMAGE_SIZES = "(max-width: 60rem) 92vw, 80rem";
+
 const imageEntries = recentImages satisfies GalleryImage[];
 
 /*
@@ -79,26 +101,44 @@ function resolveImage(image: GalleryImage): ResolvedGalleryImage | null {
 }
 
 /**
- * Imports one resolved local asset and prepares a bounded rendition for the
- * expanded dialog. Serving a dedicated rendition avoids decoding an
- * unnecessarily large original when a thumbnail is opened.
+ * Imports one local asset and creates responsive dialog renditions.
+ *
+ * Every requested width is bounded by the original file. This avoids stretching
+ * a small source beyond its real resolution while allowing large sources to
+ * remain sharp on high-density displays.
  */
 async function prepareImage(
     image: ResolvedGalleryImage,
 ): Promise<NormalizedGalleryImage> {
     const asset = (await image.loadAsset()).default;
+
     const expandedWidth = Math.min(asset.width, EXPANDED_IMAGE_MAX_WIDTH);
+
     const expandedHeight = Math.round(
         asset.height * (expandedWidth / asset.width),
     );
+
+    /*
+     * Always include the bounded fallback width. This guarantees at least one
+     * valid candidate even when the original is smaller than every preset.
+     */
+    const expandedWidths = [
+        ...EXPANDED_IMAGE_WIDTHS.filter((width) => width < expandedWidth),
+        expandedWidth,
+    ].filter((width, index, widths) => widths.indexOf(width) === index);
+
     const expandedImage = await getImage({
         src: asset,
-        width: expandedWidth,
+        widths: expandedWidths,
+        sizes: EXPANDED_IMAGE_SIZES,
+        quality: "max",
     });
 
     return {
         asset,
         expandedSrc: expandedImage.src,
+        expandedSrcset: expandedImage.srcSet.attribute,
+        expandedSizes: EXPANDED_IMAGE_SIZES,
         expandedWidth,
         expandedHeight,
         alt: image.alt,
@@ -114,8 +154,8 @@ const resolvedImages = imageEntries
     .slice(0, IMAGE_LIMIT);
 
 // Resolve only the selected asset modules. `ImageMetadata` supplies intrinsic
-// thumbnail dimensions, while `prepareImage` creates a separate, reasonably
-// sized asset for the dialog instead of serving the full original file.
+// thumbnail dimensions, while `prepareImage` creates a responsive source set
+// for the dialog instead of serving one undersized rendition everywhere.
 const images: NormalizedGalleryImage[] = await Promise.all(
     resolvedImages.map(prepareImage),
 );
@@ -132,60 +172,82 @@ const images: NormalizedGalleryImage[] = await Promise.all(
         images.length > 0 ? (
             <recent-images-gallery class="recent-images__gallery">
                 {/*
-                 * Each button carries the optimized expanded-image URL,
-                 * dimensions, and text needed to populate the shared dialog.
+                 * Each figure keeps its caption visible in the grid. Only the
+                 * image preview is interactive, so the description remains
+                 * ordinary readable text rather than part of a button label.
                  */}
                 <div
                     class="recent-images__grid"
                     data-image-count={images.length}
                 >
-                    {images.map((image) => (
-                        <button
-                            class="recent-images__item"
-                            type="button"
-                            data-gallery-open
-                            data-image-src={image.expandedSrc}
-                            data-image-width={image.expandedWidth}
-                            data-image-height={image.expandedHeight}
-                            data-image-alt={image.alt}
-                            data-image-description={image.description}
-                            aria-label={`Expand image: ${image.alt}`}
-                            aria-haspopup="dialog"
-                        >
-                            {/*
-                             * Astro generates responsive thumbnails and emits
-                             * width/height attributes before the page loads.
-                             */}
-                            <Image
-                                class="recent-images__thumbnail"
-                                src={image.asset}
-                                alt={image.alt}
-                                widths={[240, 360, 480, 720]}
-                                sizes="(max-width: 25rem) calc(100vw - 2rem), 15rem"
-                                loading="eager"
-                                decoding="async"
-                            />
+                    {images.map((image, index) => {
+                        const descriptionId = `recent-image-description-${index + 1}`;
 
-                            <span class="recent-images__description">
-                                {image.description}
-                            </span>
-                        </button>
-                    ))}
+                        return (
+                            <figure class="recent-images__item">
+                                <button
+                                    class="recent-images__trigger"
+                                    type="button"
+                                    data-gallery-open
+                                    data-image-src={image.expandedSrc}
+                                    data-image-srcset={image.expandedSrcset}
+                                    data-image-sizes={image.expandedSizes}
+                                    data-image-width={image.expandedWidth}
+                                    data-image-height={image.expandedHeight}
+                                    data-image-alt={image.alt}
+                                    data-image-description={image.description}
+                                    aria-label={`Expand image: ${image.alt}`}
+                                    aria-describedby={descriptionId}
+                                    aria-haspopup="dialog"
+                                >
+                                    {/*
+                                     * The source set covers the rendered
+                                     * column at common display densities. The
+                                     * intrinsic ratio keeps the masonry layout
+                                     * stable before the image finishes loading.
+                                     */}
+                                    <Image
+                                        class="recent-images__thumbnail"
+                                        src={image.asset}
+                                        alt={image.alt}
+                                        widths={THUMBNAIL_WIDTHS}
+                                        sizes={THUMBNAIL_SIZES}
+                                        quality="max"
+                                        loading="eager"
+                                        decoding="async"
+                                    />
+                                </button>
+
+                                <figcaption
+                                    class="recent-images__description"
+                                    id={descriptionId}
+                                >
+                                    {image.description}
+                                </figcaption>
+                            </figure>
+                        );
+                    })}
                 </div>
 
                 {/*
                  * A single dialog is reused for every thumbnail. The script
-                 * decodes its local, build-generated image before opening the
-                 * modal so the visible frame never starts out empty.
+                 * decodes the browser-selected responsive candidate before
+                 * opening the modal so the visible frame never starts empty.
                  */}
-                <dialog class="recent-images__dialog" data-gallery-dialog>
+                <dialog
+                    class="recent-images__dialog"
+                    data-gallery-dialog
+                    aria-label="Expanded gallery image"
+                >
                     <button
                         class="recent-images__close"
                         type="button"
                         data-gallery-close
                         aria-label="Close expanded image"
                     >
-                        ×
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+                        </svg>
                     </button>
 
                     <figure class="recent-images__figure">
@@ -193,6 +255,7 @@ const images: NormalizedGalleryImage[] = await Promise.all(
                             class="recent-images__expanded-image"
                             data-expanded-image
                             alt=""
+                            decoding="async"
                         />
                         <figcaption
                             class="recent-images__expanded-description"
@@ -210,6 +273,8 @@ const images: NormalizedGalleryImage[] = await Promise.all(
 <script>
     interface ExpandedImageData {
         src: string;
+        srcset: string;
+        sizes: string;
         alt: string;
         description: string;
         width: number;
@@ -229,14 +294,16 @@ const images: NormalizedGalleryImage[] = await Promise.all(
         private openRequest = 0;
 
         /**
-         * Reads and validates the expanded-image values embedded in a gallery
-         * button. Returning `null` keeps malformed markup from opening a
-         * partially populated dialog.
+         * Reads and validates the responsive expanded-image values embedded in
+         * a gallery button. Returning `null` prevents malformed markup from
+         * opening a partially configured dialog.
          */
         private readImageData(
             openButton: HTMLButtonElement,
         ): ExpandedImageData | null {
             const src = openButton.dataset.imageSrc;
+            const srcset = openButton.dataset.imageSrcset;
+            const sizes = openButton.dataset.imageSizes;
             const alt = openButton.dataset.imageAlt;
             const description = openButton.dataset.imageDescription;
             const width = Number(openButton.dataset.imageWidth);
@@ -244,6 +311,8 @@ const images: NormalizedGalleryImage[] = await Promise.all(
 
             if (
                 !src ||
+                !srcset ||
+                !sizes ||
                 !alt ||
                 !description ||
                 !Number.isFinite(width) ||
@@ -254,27 +323,47 @@ const images: NormalizedGalleryImage[] = await Promise.all(
                 return null;
             }
 
-            return { src, alt, description, width, height };
+            return {
+                src,
+                srcset,
+                sizes,
+                alt,
+                description,
+                width,
+                height,
+            };
         }
 
         /**
-         * Loads and decodes an expanded rendition before it becomes visible.
-         * Promises are cached by URL to prevent duplicate work; failed loads
-         * are removed from the cache so a later click can retry.
+         * Loads and decodes the same responsive candidate that the visible
+         * dialog will use. The complete source configuration forms the cache
+         * key so different candidate sets cannot share stale decode work.
          */
-        private preloadImage(src: string): Promise<void> {
-            const cachedLoad = this.imageLoads.get(src);
+        private preloadImage(imageData: ExpandedImageData): Promise<void> {
+            const cacheKey = [
+                imageData.src,
+                imageData.srcset,
+                imageData.sizes,
+            ].join("|");
+
+            const cachedLoad = this.imageLoads.get(cacheKey);
 
             if (cachedLoad) return cachedLoad;
 
             const preloader = new window.Image();
+
             preloader.decoding = "async";
-            preloader.src = src;
+            preloader.sizes = imageData.sizes;
+            preloader.srcset = imageData.srcset;
+            preloader.src = imageData.src;
 
             const imageLoad = preloader.decode();
 
-            this.imageLoads.set(src, imageLoad);
-            void imageLoad.catch(() => this.imageLoads.delete(src));
+            this.imageLoads.set(cacheKey, imageLoad);
+
+            void imageLoad.catch(() => {
+                this.imageLoads.delete(cacheKey);
+            });
 
             return imageLoad;
         }
@@ -303,17 +392,30 @@ const images: NormalizedGalleryImage[] = await Promise.all(
             openButton.setAttribute("aria-busy", "true");
 
             try {
-                await this.preloadImage(imageData.src);
+                await this.preloadImage(imageData);
 
                 if (request !== this.openRequest || !this.isConnected) return;
 
-                // Set dimensions before `src` so the dialog has a stable
-                // intrinsic aspect ratio even before its first paint.
+                /*
+                 * Assign responsive descriptors before `src`. This lets the
+                 * browser select a sufficiently dense candidate for the first
+                 * visible paint. Width and height preserve the aspect ratio.
+                 */
                 expandedImage.width = imageData.width;
                 expandedImage.height = imageData.height;
                 expandedImage.alt = imageData.alt;
+                expandedImage.sizes = imageData.sizes;
+                expandedImage.srcset = imageData.srcset;
                 expandedImage.src = imageData.src;
+
                 expandedDescription.textContent = imageData.description;
+
+                /*
+                 * The dialog is its own scroll container. Reset its position
+                 * before every open so a previously viewed long caption cannot
+                 * leave the next image above the visible area.
+                 */
+                dialog.scrollTop = 0;
 
                 if (!dialog.open && dialog.isConnected) dialog.showModal();
             } catch (error) {
@@ -358,7 +460,12 @@ const images: NormalizedGalleryImage[] = await Promise.all(
                 return;
             }
 
-            if (dialog.open && !target.closest("[data-expanded-image]")) {
+            /*
+             * Native dialog backdrop clicks target the dialog itself. Limiting
+             * dismissal to that case keeps the visible caption and close
+             * control interactive inside the enlarged figure.
+             */
+            if (dialog.open && target === dialog) {
                 dialog.close();
             }
         };
@@ -410,16 +517,23 @@ const images: NormalizedGalleryImage[] = await Promise.all(
 </script>
 
 <style>
-    /* Scoped Panel override */
+    /*
+     * Keep the shared Panel primitive generic while aligning this heading with
+     * the content padding used throughout the homepage.
+     */
     .recent-images > :global(.panel__heading) {
-        padding: 0.82rem var(--space-md);
-        border-bottom: 1px solid var(--border);
+        padding: var(--spacing-content-padding);
+        border-bottom: var(--border-width) solid var(--border);
     }
-    /* Scoped Panel override */
-    /* The custom element is the padded body beneath Panel's heading. */
+
+    /*
+     * The gallery deliberately stays narrower than the main column. Combined
+     * with two masonry columns, --gallery-width produces cards close to the
+     * requested 255px scale without stretching every image to fill the panel.
+     */
     .recent-images__gallery {
         display: block;
-        padding: var(--space-md);
+        padding: var(--spacing-content-padding);
     }
 
     /*
@@ -428,156 +542,220 @@ const images: NormalizedGalleryImage[] = await Promise.all(
      * thumbnail's space before its optimized file finishes loading.
      */
     .recent-images__grid {
+        width: min(100%, var(--gallery-width));
+        margin-inline: auto;
         column-count: 2;
-        column-gap: var(--space-sm);
+        column-gap: var(--spacing-item-gap);
     }
 
     .recent-images__grid[data-image-count="1"] {
+        width: min(
+            100%,
+            calc((var(--gallery-width) - var(--spacing-item-gap)) / 2)
+        );
         column-count: 1;
     }
 
-    /* Each button groups one thumbnail with its visible description. */
+    /*
+     * A figure owns the visual card and its caption. `inline-block` and
+     * `break-inside` keep each pair together in the masonry flow.
+     */
     .recent-images__item {
-        position: relative;
-        display: block;
+        display: inline-block;
         width: 100%;
-        margin: 0 0 var(--space-sm);
-        padding: 0;
+        margin: 0 0 var(--spacing-item-gap);
         overflow: hidden;
         break-inside: avoid;
-        border: 1px solid var(--border-strong);
+        border: var(--border-width) solid var(--border);
         border-radius: var(--radius);
         background: var(--card-bg);
+        vertical-align: top;
+    }
+
+    .recent-images__item:hover,
+    .recent-images__item:focus-within {
+        border-color: var(--link-hover);
+    }
+
+    /*
+     * Reset the shared button presentation because the trigger is an image
+     * surface, not a native-style text control.
+     */
+    .recent-images__trigger {
+        display: block;
+        width: 100%;
+        min-height: 0;
+        padding: 0;
+        overflow: hidden;
+        border: 0;
+        border-radius: 0;
+        background: var(--surface-soft);
+        box-shadow: none;
+        color: inherit;
         cursor: zoom-in;
-        font: inherit;
-        text-align: start;
+        line-height: 0;
+        white-space: normal;
     }
 
-    .recent-images__item:hover {
-        border-color: var(--link-main);
+    .recent-images__trigger:not(:disabled):hover,
+    .recent-images__trigger:not(:disabled):active {
+        background: var(--surface-soft);
+        box-shadow: none;
+        transform: none;
     }
 
-    /* Preserve the card's appearance while signaling a pending decode. */
-    .recent-images__item[aria-busy="true"] {
+    .recent-images__trigger[aria-busy="true"] {
         cursor: progress;
     }
 
     .recent-images__thumbnail {
         display: block;
-        width: 100%;
+
+        /*
+     * Large sources shrink to the column, while a source narrower than the
+     * column keeps its intrinsic width instead of being enlarged and blurred.
+     */
+        width: auto;
+        max-width: 100%;
         height: auto;
+        margin-inline: auto;
         background: var(--surface-soft);
+        image-rendering: auto;
     }
 
     .recent-images__description {
         display: block;
-        padding: 0.42rem 0.55rem;
-        border-top: 1px solid var(--border);
+        padding: var(--spacing-item-gap) var(--spacing-content-padding);
+        border-top: var(--border-width) solid var(--border);
+        background: var(--card-bg);
         color: var(--text-muted);
-        font-size: var(--font-xs);
-        line-height: 1.2;
+        font-size: var(--font-size-caption);
+        line-height: var(--line-height-body);
+        overflow-wrap: anywhere;
+        text-wrap: pretty;
     }
 
-    .recent-images__item:focus-visible {
-        z-index: 1;
-        border-color: var(--link-main);
-        outline: 2px solid var(--link-main);
+    .recent-images__trigger:focus-visible {
+        outline: 2px solid var(--link-hover);
         outline-offset: -2px;
     }
 
     /*
      * The dialog is transparent so the figure supplies the visible frame.
      * The script provides intrinsic dimensions before opening, while these
-     * viewport limits keep portrait and landscape images fully accessible.
+     * viewport limits and internal scrolling keep both the image and an
+     * arbitrarily long caption reachable without leaving the viewport.
      */
     .recent-images__dialog {
         width: fit-content;
         max-width: 94vw;
         max-height: 92vh;
+        max-height: 92dvh;
+        margin: auto;
         padding: 0;
-        overflow: visible;
+        overflow: auto;
+        overscroll-behavior: contain;
         border: 0;
         background: transparent;
+        color: var(--text-main);
     }
 
     .recent-images__dialog::backdrop {
-        background: rgb(0 0 0 / 88%);
+        background: color-mix(in srgb, var(--page-bg) 88%, transparent);
     }
 
     .recent-images__figure {
         display: grid;
         margin: 0;
         overflow: hidden;
-        border: 1px solid rgb(255 255 255 / 18%);
+        border: var(--border-width) solid var(--border-strong);
         border-radius: var(--radius);
-        background: #000;
-        box-shadow: 0 1rem 4rem rgb(0 0 0 / 55%);
+        background: var(--page-shell);
+        box-shadow: var(--shadow);
     }
 
     .recent-images__expanded-image {
         display: block;
+
+        /*
+         * The inline-size cap leaves room for a high-density source candidate
+         * while `width: auto` prevents a small original from being enlarged
+         * beyond its intrinsic dimensions.
+         */
         width: auto;
-        max-width: 92vw;
+        max-width: min(92vw, var(--shell-max-width));
         height: auto;
-        max-height: 82vh;
+        max-height: 80vh;
+        max-height: 80dvh;
+
+        object-fit: contain;
+        image-rendering: auto;
+        justify-self: center;
     }
 
     .recent-images__expanded-description {
-        padding: var(--space-sm) var(--space-md);
-        border-top: 1px solid rgb(255 255 255 / 14%);
-        background: #111;
-        color: #ddd;
-        font-size: var(--font-xs);
-        line-height: 1.35;
+        padding: var(--spacing-item-gap) var(--spacing-content-padding);
+        border-top: var(--border-width) solid var(--border);
+        background: var(--card-bg);
+        color: var(--text-main);
+        font-size: var(--font-size-caption);
+        line-height: var(--line-height-body);
+        overflow-wrap: anywhere;
+        text-wrap: pretty;
     }
 
     .recent-images__close {
         position: fixed;
         z-index: 1;
-        inset-block-start: var(--space-md);
-        inset-inline-end: var(--space-md);
+        inset-block-start: var(--spacing-content-padding);
+        inset-inline-end: var(--spacing-content-padding);
         display: grid;
-        width: 2.25rem;
-        height: 2.25rem;
+        width: calc(var(--spacing-page-gap) + var(--spacing-item-gap));
+        height: calc(var(--spacing-page-gap) + var(--spacing-item-gap));
         place-items: center;
-        border: 1px solid rgb(255 255 255 / 28%);
+        padding: 0;
+        border: var(--border-width) solid var(--border-strong);
         border-radius: 50%;
-        background: rgb(0 0 0 / 55%);
-        color: white;
-        font: inherit;
-        font-size: var(--font-xl);
+        background: color-mix(in srgb, var(--page-shell) 78%, transparent);
+        box-shadow: none;
+        color: var(--text-strong);
+        font-size: var(--font-size-heading);
         line-height: 1;
         cursor: pointer;
     }
 
     .recent-images__close:hover,
     .recent-images__close:focus-visible {
-        border-color: white;
-        background: rgb(0 0 0 / 78%);
+        border-color: var(--link-hover);
+        background: var(--surface-hover);
+        color: var(--link-hover);
     }
 
     .recent-images__close:focus-visible {
-        outline: 2px solid white;
+        outline: 2px solid var(--link-hover);
         outline-offset: 2px;
     }
 
     .recent-images__empty {
         margin: 0;
-        padding: var(--space-md);
+        padding: var(--spacing-content-padding);
         color: var(--text-muted);
-        font-size: var(--font-sm);
+        font-size: var(--font-size-ui);
+        line-height: var(--line-height-body);
     }
 
     /* Tighten the panel body before collapsing the gallery to one column. */
     @media (max-width: 38rem) {
         .recent-images__gallery {
-            padding: var(--space-sm);
+            padding: var(--spacing-item-gap);
         }
     }
 
     /* Very narrow screens display a single full-width preview column. */
     @media (max-width: 25rem) {
-        .recent-images__grid {
+        .recent-images__grid,
+        .recent-images__grid[data-image-count="1"] {
+            width: 100%;
             column-count: 1;
         }
     }

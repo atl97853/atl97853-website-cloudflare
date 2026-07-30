@@ -34,7 +34,7 @@ const playlist = [
         type: "audio/mpeg",
     },
     {
-        title: " The Forsaken Waltz",
+        title: "The Forsaken Waltz",
         artist: "Joshua Kyan Aalampour",
         src: "/audio/03-the-forsaken-waltz-joshua-kyan.mp3",
         type: "audio/mpeg",
@@ -72,46 +72,52 @@ const firstTrack = playlist[0];
         data-playing="false"
     >
         <header class="music-player__header">
-            <span class="music-player__eyebrow">
-                <span data-status>Now playing</span>
-                <span aria-hidden="true"> · </span>
-                <span data-track-position>1/{playlist.length}</span>
-            </span>
+            <div class="music-player__title-bar">
+                <p class="music-player__window-title">Music player</p>
 
-            <span class="music-player__ticker">
-                {
-                    /**
-                     * The second copy makes the ticker loop without a visible
-                     * jump. It is hidden whenever playback is paused.
-                     */
-                }
-                <span class="music-player__ticker-track">
-                    <span class="music-player__track-info">
-                        <strong
-                            class="music-player__track-title"
-                            data-track-title
-                        >
-                            {firstTrack.title}
-                        </strong>
-                        <span aria-hidden="true"> - </span>
-                        <span data-track-artist>{firstTrack.artist}</span>
-                    </span>
+                <span class="music-player__status">
+                    <span data-status>Now playing</span>
+                    <span aria-hidden="true"> · </span>
+                    <span data-track-position>1/{playlist.length}</span>
+                </span>
+            </div>
 
-                    <span
-                        class="music-player__track-info music-player__track-info--copy"
-                        aria-hidden="true"
-                    >
-                        <strong
-                            class="music-player__track-title"
-                            data-track-title
+            <div class="music-player__display">
+                <span class="music-player__ticker">
+                    {
+                        /**
+                         * The second copy makes the ticker loop without a
+                         * visible jump. It is hidden whenever playback pauses.
+                         */
+                    }
+                    <span class="music-player__ticker-track">
+                        <span class="music-player__track-info">
+                            <strong
+                                class="music-player__track-title"
+                                data-track-title
+                            >
+                                {firstTrack.title}
+                            </strong>
+                            <span aria-hidden="true"> — </span>
+                            <span data-track-artist>{firstTrack.artist}</span>
+                        </span>
+
+                        <span
+                            class="music-player__track-info music-player__track-info--copy"
+                            aria-hidden="true"
                         >
-                            {firstTrack.title}
-                        </strong>
-                        <span> - </span>
-                        <span data-track-artist>{firstTrack.artist}</span>
+                            <strong
+                                class="music-player__track-title"
+                                data-track-title
+                            >
+                                {firstTrack.title}
+                            </strong>
+                            <span> — </span>
+                            <span data-track-artist>{firstTrack.artist}</span>
+                        </span>
                     </span>
                 </span>
-            </span>
+            </div>
         </header>
 
         <div class="music-player__controls">
@@ -753,50 +759,203 @@ const firstTrack = playlist[0];
 </script>
 
 <style>
-    /* Scoped Panel override */
+    /*
+     * The player borrows the reference's compact indigo hardware shell while
+     * deriving every color from the site's existing blue-violet palette.
+     * Local role aliases keep the decorative treatment isolated from behavior.
+     */
     .music-player {
-        border-top: 2px solid var(--link-main);
+        --music-player-max-width: 26rem;
+        --music-player-radius: 0.55rem;
+        --music-player-inner-radius: 0.3rem;
+
+        --music-player-frame: color-mix(
+            in srgb,
+            var(--site-toolbar-border) 84%,
+            var(--container-bg)
+        );
+        --music-player-frame-edge: color-mix(
+            in srgb,
+            var(--site-toolbar-border) 72%,
+            var(--control-border)
+        );
+        --music-player-frame-highlight: color-mix(
+            in srgb,
+            var(--link-main) 44%,
+            var(--control-highlight)
+        );
+        --music-player-face-top: color-mix(
+            in srgb,
+            var(--link-main) 34%,
+            var(--site-toolbar-border)
+        );
+        --music-player-face-bottom: color-mix(
+            in srgb,
+            var(--site-toolbar-border) 76%,
+            var(--surface-soft)
+        );
+
+        --music-player-title-background: var(--site-toolbar-background);
+        --music-player-title-text: var(--site-toolbar-text);
+        /*
+     * Keep the compact display legible in both site themes. This fixed
+     * foreground/background pair has a 13.06:1 contrast ratio.
+     */
+        /* --music-player-well: #20294f; */
+        --music-player-well-text: #f4f6ff;
+        --music-player-well-shadow: color-mix(
+            in srgb,
+            var(--control-border) 72%,
+            transparent
+        );
+
+        --music-player-control-top: color-mix(
+            in srgb,
+            var(--link-main) 54%,
+            var(--control-highlight)
+        );
+        --music-player-control-bottom: color-mix(
+            in srgb,
+            var(--site-toolbar-border) 78%,
+            var(--control-face)
+        );
+        --music-player-control-border: color-mix(
+            in srgb,
+            var(--site-toolbar-border) 70%,
+            var(--control-border)
+        );
+        --music-player-control-text: var(--site-toolbar-text);
+        --music-player-accent: var(--link-main);
+        --music-player-accent-hover: var(--link-hover);
+        --music-player-focus: var(--link-hover);
+
+        --music-player-disabled-opacity: 0.45;
+        --music-player-control-size: 1.875rem;
+        --music-player-play-size: 2rem;
+        --music-player-icon-size: 0.875rem;
+        --music-player-range-height: 0.875rem;
+        --music-player-range-track-height: 0.35rem;
+        --music-player-range-thumb-width: 0.875rem;
+        --music-player-range-thumb-height: 0.75rem;
+
+        width: min(100%, var(--music-player-max-width));
+        margin-inline: auto;
+        overflow: hidden;
+        border: 2px solid var(--music-player-frame-edge);
+        border-radius: var(--music-player-radius);
+        background: var(--music-player-frame);
+        box-shadow:
+            inset 1px 1px 0 var(--music-player-frame-highlight),
+            inset -1px -1px 0 var(--music-player-well-shadow),
+            var(--shadow);
     }
-    /* Scoped Panel override */
+
     .music-player__player {
         display: grid;
-        background: var(--card-bg);
+        margin: 2px;
+        overflow: hidden;
+        border: var(--border-width) solid var(--music-player-frame-edge);
+        border-radius: var(--music-player-inner-radius);
+        background: linear-gradient(
+            to bottom,
+            var(--music-player-face-top),
+            var(--music-player-face-bottom)
+        );
+        box-shadow:
+            inset 1px 1px 0 var(--music-player-frame-highlight),
+            inset -1px -1px 0 var(--music-player-well-shadow);
     }
 
     .music-player__header {
         min-width: 0;
-        padding: 0.65rem var(--space-sm) 0.55rem;
-        border-bottom: 1px solid var(--border);
-        background: var(--surface-soft);
+        padding: var(--space-xs);
+        border-bottom: var(--border-width) solid var(--music-player-frame-edge);
     }
 
-    .music-player__eyebrow {
+    /*
+     * The embossed title strip echoes the reference player. The existing live
+     * status occupies the space used by mode controls in the original skin.
+     */
+    .music-player__title-bar {
         display: flex;
-        gap: 0.25rem;
         align-items: center;
-        margin-bottom: 0.35rem;
-        color: var(--text-muted);
-        font-size: var(--font-2xs);
-        font-weight: var(--fw-bold);
-        letter-spacing: 0.08em;
-        line-height: 1;
-        /* text-transform: uppercase; */
+        justify-content: space-between;
+        gap: var(--spacing-item-gap);
+        min-width: 0;
+        min-height: 1.75rem;
+        margin-bottom: var(--space-xs);
+        padding: 0.2rem var(--space-sm);
+        border: var(--border-width) solid var(--music-player-frame-edge);
+        border-radius: var(--music-player-inner-radius);
+        background: var(--music-player-title-background);
+        box-shadow:
+            inset 1px 1px 0
+                color-mix(in srgb, var(--site-toolbar-text) 24%, transparent),
+            inset -1px -1px 0 var(--music-player-well-shadow);
+        color: var(--music-player-title-text);
+    }
+
+    .music-player__window-title {
+        margin: var(--space-none);
+        overflow: hidden;
+        font-size: var(--font-size-caption);
+        font-weight: var(--font-weight-heading);
+        line-height: var(--line-height-tight);
+        text-shadow: 1px 1px 0 var(--music-player-well-shadow);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .music-player__status {
+        flex: none;
+        padding: 0.1rem var(--space-xs);
+        border: var(--border-width) solid
+            color-mix(in srgb, var(--music-player-title-text) 24%, transparent);
+        border-radius: 0.2rem;
+        background: color-mix(
+            in srgb,
+            var(--music-player-frame) 42%,
+            transparent
+        );
+        color: var(--music-player-title-text);
+        font-size: var(--font-size-meta);
+        font-weight: var(--font-weight-label);
+        line-height: var(--line-height-tight);
+        white-space: nowrap;
+    }
+
+    .music-player__display {
+        min-width: 0;
+        padding: 0.35rem var(--space-sm);
+        overflow: hidden;
+        border: var(--border-width) solid var(--music-player-control-border);
+        border-radius: 0.15rem;
+        background: var(--music-player-well);
+        box-shadow:
+            inset 1px 1px 1px var(--music-player-well-shadow),
+            inset -1px -1px 0
+                color-mix(
+                    in srgb,
+                    var(--music-player-frame-highlight) 44%,
+                    transparent
+                );
     }
 
     .music-player__ticker {
         display: block;
         min-width: 0;
         overflow: hidden;
-        color: var(--text-muted);
-        font-size: var(--font-xs);
-        line-height: 1.2;
+        color: var(--music-player-well-text);
+        font-size: var(--font-size-caption);
+        line-height: var(--line-height-tight);
+        text-shadow: 1px 1px 0 var(--music-player-well-shadow);
         white-space: nowrap;
     }
 
     .music-player__ticker-track {
         display: flex;
         width: max-content;
-        gap: 2rem;
+        gap: var(--space-xl);
     }
 
     .music-player__track-info {
@@ -805,8 +964,8 @@ const firstTrack = playlist[0];
     }
 
     .music-player__track-title {
-        color: var(--text-strong);
-        font-weight: var(--fw-semibold);
+        color: inherit;
+        font-weight: var(--font-weight-label);
     }
 
     .music-player__track-info--copy {
@@ -824,10 +983,12 @@ const firstTrack = playlist[0];
 
     .music-player__seeking-row {
         display: grid;
-        gap: 0.35rem;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: var(--spacing-item-gap);
+        align-items: center;
         min-width: 0;
-        padding: 0.45rem var(--space-sm) 0.6rem;
-        border-top: 1px solid var(--border);
+        padding: var(--space-xs) var(--space-sm) var(--space-sm);
+        border-top: var(--border-width) solid var(--music-player-frame-edge);
     }
 
     /*
@@ -840,81 +1001,112 @@ const firstTrack = playlist[0];
         appearance: none;
         width: 100%;
         min-width: 0;
-        height: 0.85rem;
-        margin: 0;
+        height: var(--music-player-range-height);
+        margin: var(--space-none);
         background: transparent;
-        accent-color: var(--link-main);
+        accent-color: var(--music-player-accent);
         cursor: pointer;
     }
 
     .music-player__seeking::-webkit-slider-runnable-track,
     .music-player__volume-input::-webkit-slider-runnable-track {
-        height: 2px;
-        border-radius: 999px;
+        height: var(--music-player-range-track-height);
+        border: var(--border-width) solid var(--music-player-control-border);
+        border-radius: 0.15rem;
+        background-color: var(--music-player-well);
         background: linear-gradient(
             to right,
-            var(--link-main) 0 var(--range-position, 0%),
-            var(--border-strong) var(--range-position, 0%) 100%
+            var(--music-player-accent) 0 var(--range-position, 0%),
+            var(--music-player-well) var(--range-position, 0%) 100%
         );
+        box-shadow: inset 1px 1px 1px var(--music-player-well-shadow);
     }
 
     .music-player__seeking::-webkit-slider-thumb,
     .music-player__volume-input::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 0.55rem;
-        height: 0.55rem;
-        margin-top: -0.21rem;
-        border: 1px solid var(--card-bg);
-        border-radius: 50%;
-        background: var(--link-main);
-        box-shadow: 0 0 0 1px var(--border-strong);
+        width: var(--music-player-range-thumb-width);
+        height: var(--music-player-range-thumb-height);
+        margin-top: calc(
+            (
+                    var(--music-player-range-track-height) -
+                        var(--music-player-range-thumb-height)
+                ) /
+                2 - var(--border-width)
+        );
+        border: var(--border-width) solid var(--music-player-control-border);
+        border-radius: 0.15rem;
+        background: linear-gradient(
+            to right,
+            var(--music-player-control-bottom),
+            var(--music-player-control-top),
+            var(--music-player-control-bottom)
+        );
+        box-shadow:
+            inset 1px 1px 0 var(--music-player-frame-highlight),
+            inset -1px -1px 0 var(--music-player-well-shadow);
     }
 
     .music-player__seeking::-moz-range-track,
     .music-player__volume-input::-moz-range-track {
-        height: 2px;
-        border-radius: 999px;
-        background: var(--border-strong);
+        height: var(--music-player-range-track-height);
+        border: var(--border-width) solid var(--music-player-control-border);
+        border-radius: 0.15rem;
+        background: var(--music-player-well);
+        box-shadow: inset 1px 1px 1px var(--music-player-well-shadow);
     }
 
     .music-player__seeking::-moz-range-progress,
     .music-player__volume-input::-moz-range-progress {
-        height: 2px;
-        border-radius: 999px;
-        background: var(--link-main);
+        height: var(--music-player-range-track-height);
+        border-radius: 0.15rem;
+        /* background: var(--music-player-accent); */
     }
 
     .music-player__seeking::-moz-range-thumb,
     .music-player__volume-input::-moz-range-thumb {
-        width: 0.55rem;
-        height: 0.55rem;
-        border: 1px solid var(--card-bg);
-        border-radius: 50%;
-        background: var(--link-main);
-        box-shadow: 0 0 0 1px var(--border-strong);
+        width: var(--music-player-range-thumb-width);
+        height: var(--music-player-range-thumb-height);
+        border: var(--border-width) solid var(--music-player-control-border);
+        border-radius: 0.15rem;
+        background: linear-gradient(
+            to right,
+            var(--music-player-control-bottom),
+            var(--music-player-control-top),
+            var(--music-player-control-bottom)
+        );
+        box-shadow:
+            inset 1px 1px 0 var(--music-player-frame-highlight),
+            inset -1px -1px 0 var(--music-player-well-shadow);
     }
 
     .music-player__seeking:disabled,
     .music-player__volume-input:disabled {
         cursor: not-allowed;
-        opacity: 0.5;
+        opacity: var(--music-player-disabled-opacity);
     }
 
     .music-player__time {
-        color: var(--text-muted);
-        font-size: var(--font-2xs);
+        padding: 0.15rem var(--space-xs);
+        border: var(--border-width) solid var(--music-player-control-border);
+        border-radius: 0.15rem;
+        background: var(--music-player-well);
+        box-shadow: inset 1px 1px 1px var(--music-player-well-shadow);
+        color: var(--music-player-well-text);
+        font-size: var(--font-size-meta);
         font-variant-numeric: tabular-nums;
-        line-height: 1;
+        line-height: var(--line-height-tight);
+        text-shadow: 1px 1px 0 var(--music-player-well-shadow);
         white-space: nowrap;
     }
 
     .music-player__controls {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
-        gap: var(--space-sm);
         align-items: center;
-        padding: 0.55rem var(--space-sm);
+        gap: var(--spacing-item-gap);
+        padding: var(--space-sm);
     }
 
     .music-player__transport,
@@ -925,51 +1117,73 @@ const firstTrack = playlist[0];
 
     .music-player__transport {
         grid-column: 2;
-        gap: 0.3rem;
+        gap: var(--spacing-control-gap);
     }
 
     .music-player__volume {
         grid-column: 3;
         justify-self: end;
-        width: 4.5rem;
+        width: 4.25rem;
         min-width: 0;
-        gap: 0.3rem;
+        gap: var(--spacing-control-gap);
     }
 
     .music-player__volume-input {
         flex: 1;
     }
 
-    /* Borderless media controls preserve the compact embedded-player look. */
+    /*
+     * Circular, beveled controls are the reference skin's strongest motif.
+     * Their hover and keyboard states still use the site's pink link accent.
+     */
     .music-player__transport-button,
     .music-player__mute-button {
         display: inline-grid;
         flex: none;
-        padding: 0;
-        border: 0;
         place-items: center;
-        background: transparent;
-        color: var(--text-muted);
+        padding: var(--space-none);
+        border: var(--border-width) solid var(--music-player-control-border);
+        border-radius: 50%;
+        background:
+            radial-gradient(
+                circle at 35% 28%,
+                var(--music-player-frame-highlight),
+                transparent 32%
+            ),
+            linear-gradient(
+                to bottom,
+                var(--music-player-control-top),
+                var(--music-player-control-bottom)
+            );
+        box-shadow:
+            inset 1px 1px 0 var(--music-player-frame-highlight),
+            inset -1px -1px 0 var(--music-player-well-shadow),
+            0 1px 0 var(--music-player-well-shadow);
+        color: var(--music-player-control-text);
         cursor: pointer;
+        text-shadow: 1px 1px 0 var(--music-player-well-shadow);
     }
 
     .music-player__transport-button {
-        width: 1.75rem;
-        height: 1.75rem;
+        width: var(--music-player-control-size);
+        height: var(--music-player-control-size);
     }
 
     .music-player__transport-button--play {
-        color: var(--link-main);
+        width: var(--music-player-play-size);
+        height: var(--music-player-play-size);
+        border-color: var(--music-player-frame-edge);
+        color: var(--music-player-title-text);
     }
 
     .music-player__transport-icon {
-        width: 1.2rem;
-        height: 1.2rem;
+        width: var(--music-player-icon-size);
+        height: var(--music-player-icon-size);
     }
 
     .music-player__transport-button--play .music-player__transport-icon {
-        width: 1rem;
-        height: 1rem;
+        width: var(--music-player-icon-size);
+        height: var(--music-player-icon-size);
     }
 
     .music-player__transport-icon--pause {
@@ -988,29 +1202,60 @@ const firstTrack = playlist[0];
     }
 
     .music-player__mute-button {
-        width: 1.3rem;
-        height: 1.3rem;
+        width: var(--music-player-control-size);
+        height: var(--music-player-control-size);
     }
 
     .music-player__transport-button:not(:disabled):hover,
     .music-player__mute-button:not(:disabled):hover {
-        color: var(--link-hover);
+        border-color: var(--music-player-accent-hover);
+        color: var(--music-player-accent-hover);
+        background:
+            radial-gradient(
+                circle at 35% 28%,
+                color-mix(
+                    in srgb,
+                    var(--music-player-accent-hover) 54%,
+                    var(--music-player-frame-highlight)
+                ),
+                transparent 32%
+            ),
+            linear-gradient(
+                to bottom,
+                color-mix(
+                    in srgb,
+                    var(--music-player-accent-hover) 38%,
+                    var(--music-player-control-top)
+                ),
+                var(--music-player-control-bottom)
+            );
+    }
+
+    .music-player__transport-button:not(:disabled):active,
+    .music-player__mute-button:not(:disabled):active {
+        box-shadow:
+            inset 1px 1px 1px var(--music-player-well-shadow),
+            inset -1px -1px 0 var(--music-player-frame-highlight);
+        transform: translateY(var(--border-width));
     }
 
     .music-player__transport-button:focus-visible,
-    .music-player__mute-button:focus-visible {
-        outline-offset: 1px;
+    .music-player__mute-button:focus-visible,
+    .music-player__seeking:focus-visible,
+    .music-player__volume-input:focus-visible {
+        outline: 2px solid var(--music-player-focus);
+        outline-offset: 2px;
     }
 
     .music-player__transport-button:disabled,
     .music-player__mute-button:disabled {
         cursor: not-allowed;
-        opacity: 0.4;
+        opacity: var(--music-player-disabled-opacity);
     }
 
     .music-player__volume-icon {
-        width: 1.1rem;
-        height: 1.1rem;
+        width: var(--music-player-icon-size);
+        height: var(--music-player-icon-size);
     }
 
     /* data-muted swaps the wave and mute-mark paths in the same SVG. */
@@ -1027,10 +1272,10 @@ const firstTrack = playlist[0];
         display: none;
     }
 
-    /* Move by one copy plus the 2rem gap for a seamless loop. */
+    /* Move by one copy plus half of the shared gap for a seamless loop. */
     @keyframes music-player-ticker {
         to {
-            transform: translateX(calc(-50% - 1rem));
+            transform: translateX(calc(-50% - (var(--space-xl) / 2)));
         }
     }
 
