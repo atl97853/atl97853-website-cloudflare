@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import avatar from "@images/assets/avatar_image.jpg";
+import avatar from "@images/assets/02_avatar_image.jpg";
 
 import Panel from "@components/primitives/Panel.astro";
 
@@ -33,41 +33,52 @@ const title = "Welcome to my website!";
 </Panel>
 
 <style>
-    /* Scoped Panel override */
-    .home-intro > :global(.panel__heading) {
-        padding: 0.82rem var(--space-md);
-        border-bottom: 1px solid var(--border);
+    /*
+     * This component-specific measurement mirrors the intrinsic Image
+     * dimensions above and keeps the repeated CSS dimensions synchronized.
+     */
+    .home-intro {
+        --home-intro-avatar-size: 6.25rem;
     }
-    /* Scoped Panel override */
+
+    /*
+     * Keep the shared Panel primitive generic while aligning this heading with
+     * the content padding used throughout the homepage.
+     */
+    .home-intro > :global(.panel__heading) {
+        padding: var(--spacing-content-padding);
+        border-bottom: var(--border-width) solid var(--border);
+    }
 
     .home-intro__layout {
         display: grid;
         grid-template-columns: auto minmax(0, 1fr);
         align-items: center;
-        gap: var(--space-lg);
-        padding: var(--space-md);
+        gap: var(--spacing-section-gap);
+        padding: var(--spacing-content-padding);
     }
 
     .home-intro__avatar {
-        width: 100px;
-        height: 100px;
-        border: 3px solid var(--card-bg);
-        border-radius: 11px;
-        outline: 1px solid var(--border-strong);
+        width: var(--home-intro-avatar-size);
+        height: var(--home-intro-avatar-size);
+        border: var(--border-width) solid var(--border-strong);
+        border-radius: var(--radius);
+        background: var(--surface-soft);
         object-fit: cover;
     }
 
     .home-intro__description {
         max-width: var(--reading-width);
-        line-height: 1.4;
-        font-size: var(--font-md);
+        font-size: var(--font-size-body);
+        line-height: var(--line-height-body);
         overflow-wrap: anywhere;
+        text-wrap: pretty;
     }
 
     @media (max-width: 38rem) {
         .home-intro__layout {
             grid-template-columns: 1fr;
-            gap: var(--space-md);
+            gap: var(--spacing-content-padding);
         }
 
         .home-intro__avatar {
