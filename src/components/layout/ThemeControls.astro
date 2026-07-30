@@ -7,11 +7,8 @@
         aria-label="Open GitHub profile"
         title="GitHub"
     >
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path
-                fill="currentColor"
-                d="M12 .7A11.3 11.3 0 0 0 8.43 22.72c.57.1.78-.24.78-.55v-2.14c-3.18.7-3.85-1.35-3.85-1.35-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.33.96.1-.74.4-1.25.73-1.54-2.54-.29-5.21-1.27-5.21-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.45.11-3.03 0 0 .96-.31 3.11 1.17A10.8 10.8 0 0 1 12 6.03c.96 0 1.91.13 2.81.38 2.15-1.48 3.11-1.17 3.11-1.17.62 1.58.23 2.74.11 3.03.74.8 1.18 1.82 1.18 3.07 0 4.4-2.68 5.36-5.23 5.65.41.36.78 1.06.78 2.14v3.04c0 .31.2.66.79.55A11.3 11.3 0 0 0 12 .7Z"
-            />
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
         </svg>
     </a>
 
@@ -49,9 +46,9 @@
 </theme-controls>
 
 {/*
- * BaseLayout sets the initial theme before the page renders, using the saved
- * preference or the system setting. ThemeControls then lets the user change
- * the theme, saves the new preference, and keeps the buttons synchronized.
+ * BaseLayout applies the saved or system theme before the first paint.
+ * This component handles theme changes, persists the selection, and
+ * synchronizes the buttons' aria-pressed states when it initializes.
  */}
 <script>
     const STORAGE_KEY = "site-theme";
@@ -122,14 +119,6 @@
     }
 </script>
 
-{/*
-BaseLayout sets data-theme before the page renders, so CSS can
-immediately style the active theme button.
-
-ThemeControls then synchronizes aria-pressed after hydration.
-This prevents button flicker without hiding the component or
-causing layout shift.
-*/}
 <style>
     .theme-controls {
         display: flex;
@@ -138,11 +127,7 @@ causing layout shift.
         gap: 2px;
         padding: 4px;
         border-radius: 5px;
-        background: color-mix(
-            in srgb,
-            var(--link-main) 13%,
-            transparent
-        );
+        background: rgb(20 27 59 / 22%);
     }
 
     .theme-control {
@@ -153,7 +138,7 @@ causing layout shift.
         border: 0;
         border-radius: 4px;
         background: transparent;
-        color: var(--text-muted);
+        color: #e5e8f4;
         cursor: pointer;
         text-decoration: none;
     }
@@ -163,17 +148,33 @@ causing layout shift.
         height: 1rem;
     }
 
-    .theme-control:hover {
-        background: var(--surface-soft);
-        color: var(--link-hover);
+    /*
+    * Apply hover feedback only to controls that are not currently selected.
+    */
+    .theme-control:not([aria-pressed="true"]):hover {
+        background: rgb(255 255 255 / 16%);
+        color: #ffffff;
+    }
+
+    :global(html[data-theme="dark"]) .theme-control[data-theme-value="dark"],
+    :global(html[data-theme="light"]) .theme-control[data-theme-value="light"] {
+        background: #e7e9f2;
+        color: #394572;
+        box-shadow:
+            inset 1px 1px 0 rgb(255 255 255 / 70%),
+            inset -1px -1px 0 rgb(25 31 66 / 35%);
     }
 
     :global(html[data-theme="dark"])
-        .theme-control[data-theme-value="dark"],
+        .theme-control[data-theme-value="dark"]:hover,
     :global(html[data-theme="light"])
-        .theme-control[data-theme-value="light"] {
-        background: var(--theme-active-bg);
-        color: var(--theme-active-text);
-        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 10%);
+        .theme-control[data-theme-value="light"]:hover {
+        background: #e7e9f2;
+        color: #394572;
+    }
+
+    .theme-control:focus-visible {
+        outline: 2px solid #ffffff;
+        outline-offset: 1px;
     }
 </style>
