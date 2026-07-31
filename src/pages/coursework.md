@@ -15,6 +15,6 @@ description: "Notes about my coursework and academic studies."
 
 *Fall 2026*
 - *SICP JS edition* *(extra)*
-- *The Missing Semester of Your CS Education* *(extra)*
+- [*The Missing Semester of Your CS Education* *(extra)*](https://missing.csail.mit.edu/)
 ---
-I'm currently in the process of transitioning between universities and organizing my credits, so there's nothing available here at the moment.
+I am currently in the process of transitioning between universities and organizing my credits, so there's nothing available here at the moment.
