@@ -141,7 +141,8 @@ const hasSidebar = Astro.slots.has("sidebar");
  * `page-grid` provides the default one-column layout.
  *
  * When a sidebar slot exists, `class:list` also applies
- * `page-grid--with-sidebar`, which creates the fixed desktop sidebar column.
+ * `page-grid--with-sidebar`, which creates the desktop sidebar column and
+ * collapses to one column at the tablet breakpoint.
  *
  * `--site-gutter` represents the shell's horizontal inner spacing. Child
  * components inherit it so header elements and page content share one edge.
@@ -172,20 +173,21 @@ const hasSidebar = Astro.slots.has("sidebar");
     .desktop-stage {
         display: grid;
         width: 100%;
+        min-width: 0;
         min-height: var(--desktop-stage-min-height);
         place-items: start center;
     }
 
     /*
-     * The body owns the site's minimum desktop width. The shell only needs its
-     * fluid width and maximum-width constraint.
+     * The shell is fluid until it reaches the original desktop width. Keeping
+     * min-width at zero allows it to shrink inside narrow viewports.
      */
     .site-shell {
         --site-gutter: var(--shell-padding);
 
         width: 100%;
+        min-width: 0;
         max-width: var(--shell-max-width);
-
         border: var(--border-width) solid var(--border-strong);
         background: var(--page-shell);
         box-shadow: var(--shadow);
@@ -195,7 +197,9 @@ const hasSidebar = Astro.slots.has("sidebar");
      * The inner canvas owns the shared gutter used by the header and page grid.
      */
     .site-viewport {
-        min-height: var(--site-viewport-min-height);
+        width: 100%;
+        min-width: 0;
+        min-height: 0;
 
         padding: var(--space-none) var(--site-gutter) var(--space-md);
 
@@ -219,7 +223,7 @@ const hasSidebar = Astro.slots.has("sidebar");
     }
 
     /*
-     * The fixed left rail leaves the remaining width to the main content.
+     * The responsive desktop rail leaves the remaining width to the main content.
      */
     .page-grid--with-sidebar {
         grid-template-columns:
@@ -241,12 +245,41 @@ const hasSidebar = Astro.slots.has("sidebar");
     }
 
     /*
-     * Preserve the desktop composition and allow the document to scroll
-     * horizontally on a viewport narrower than the configured minimum width.
+     * Stack the sidebar and main content before either column becomes cramped.
+     * The sidebar remains first because it contains the primary site navigation.
      */
     @media (max-width: 52rem) {
         .desktop-stage {
-            justify-content: start;
+            min-height: 0;
+            place-items: start stretch;
+        }
+
+        .page-grid--with-sidebar {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .page-grid--with-sidebar .page-sidebar,
+        .page-grid--with-sidebar .page-main {
+            grid-column: 1;
+            grid-row: auto;
+        }
+
+        .page-grid--with-sidebar .page-sidebar {
+            position: static;
+        }
+    }
+
+    /*
+     * On small phones, remove the decorative shadow and reduce the final
+     * vertical gap without changing the site's bordered, nostalgic shell.
+     */
+    @media (max-width: 38rem) {
+        .site-shell {
+            box-shadow: none;
+        }
+
+        .page-grid {
+            padding-bottom: var(--space-lg);
         }
     }
 </style>

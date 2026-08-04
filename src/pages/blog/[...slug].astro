@@ -96,6 +96,7 @@ const publishedDateLabel = formatDate(pubDate);
     .blog-post {
         width: 100%;
         min-width: 0;
+        max-width: 100%;
     }
     /* Scoped Panel override */
 
@@ -136,7 +137,9 @@ const publishedDateLabel = formatDate(pubDate);
      * to this article.
      */
     .blog-post__content {
+        width: 100%;
         min-width: 0;
+        max-width: 100%;
         /* padding: var(--space-sm); */
         padding: 0.82rem var(--space-md);
         color: var(--text-main);
@@ -284,8 +287,28 @@ const publishedDateLabel = formatDate(pubDate);
         line-height: var(--reading-line-height);
     }
 
+    /*
+     * Responsive embeds use their available column width. The aspect ratio
+     * gives iframe-based media a stable height when the source omits one.
+     */
+    .blog-post__content :global(iframe),
+    .blog-post__content :global(video),
+    .blog-post__content :global(embed),
+    .blog-post__content :global(object) {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .blog-post__content :global(iframe) {
+        aspect-ratio: 16 / 9;
+        height: auto;
+    }
+
+    /* Inline code receives a compact visual treatment within prose. */
     .blog-post__content :global(code) {
         padding: 0.1rem 0.3rem;
+        overflow-wrap: anywhere;
+        word-break: break-word;
         color: var(--text-strong);
         background: var(--surface-hover);
         border: 1px solid var(--border);
@@ -323,6 +346,10 @@ const publishedDateLabel = formatDate(pubDate);
         -webkit-overflow-scrolling: touch;
     }
 
+    /*
+     * Reset the inline-code appearance when code is nested inside a fenced
+     * block. The surrounding <pre> owns the block surface.
+     */
     .blog-post__content :global(pre code) {
         display: block;
         min-width: max-content;
@@ -333,6 +360,8 @@ const publishedDateLabel = formatDate(pubDate);
         border-radius: 0;
         font-size: var(--font-sm);
         line-height: 1.6;
+        overflow-wrap: normal;
+        word-break: normal;
         white-space: inherit;
     }
 
@@ -379,6 +408,11 @@ const publishedDateLabel = formatDate(pubDate);
     }
 
     @media (max-width: 38rem) {
+        .blog-post__header,
+        .blog-post__content {
+            padding-inline: var(--space-sm);
+        }
+
         .blog-post__content :global(ul),
         .blog-post__content :global(ol) {
             padding-inline-start: 1.1rem;
@@ -386,6 +420,11 @@ const publishedDateLabel = formatDate(pubDate);
 
         .blog-post__content :global(pre) {
             padding: var(--space-sm);
+        }
+
+        .blog-post__content :global(th),
+        .blog-post__content :global(td) {
+            padding: var(--space-xs);
         }
     }
 

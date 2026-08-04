@@ -71,7 +71,9 @@ const {
     /* Scoped Panel override */
     .nested-markdown-layout {
         /* Prevent wide Markdown content from expanding the layout column. */
+        width: 100%;
         min-width: 0;
+        max-width: 100%;
     }
 
     .nested-markdown-layout > :global(.panel__heading) {
@@ -84,9 +86,12 @@ const {
      * Markdown is rendered as slotted HTML, so its elements do not receive
      * this component's Astro scope attribute. Bounded :global() selectors
      * allow us to style them without affecting Markdown elsewhere.
+     * Constrain the outer panel and content.
      */
     .nested-markdown-layout__content {
+        width: 100%;
         min-width: 0;
+        max-width: 100%;
         padding: 0.82rem var(--space-md);
         color: var(--text-main);
         font-size: var(--font-md);
@@ -240,9 +245,28 @@ const {
         line-height: var(--reading-line-height);
     }
 
+    /*
+     * Responsive embeds use their available column width. The aspect ratio
+     * gives iframe-based media a stable height when the source omits one.
+     */
+    .nested-markdown-layout__content :global(iframe),
+    .nested-markdown-layout__content :global(video),
+    .nested-markdown-layout__content :global(embed),
+    .nested-markdown-layout__content :global(object) {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .nested-markdown-layout__content :global(iframe) {
+        aspect-ratio: 16 / 9;
+        height: auto;
+    }
+
     /* Inline code receives a compact visual treatment within prose. */
     .nested-markdown-layout__content :global(code) {
         padding: 0.1rem 0.3rem;
+        overflow-wrap: anywhere;
+        word-break: break-word;
         color: var(--text-strong);
         background: var(--surface-hover);
         border: 1px solid var(--border);
@@ -294,6 +318,8 @@ const {
         border-radius: 0;
         font-size: var(--font-sm);
         line-height: 1.6;
+        overflow-wrap: normal;
+        word-break: normal;
         white-space: inherit;
     }
 
@@ -333,6 +359,16 @@ const {
         border-top: 1px solid var(--border);
     }
 
+    .nested-markdown-layout__content :global(.katex-display),
+    .nested-markdown-layout__content :global(.math-display),
+    .nested-markdown-layout__content :global(mjx-container[display="true"]) {
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-block: var(--space-xs);
+        -webkit-overflow-scrolling: touch;
+    }
+
     /* Reduce indentation and block padding on narrow screens. */
     @media (max-width: 38rem) {
         .nested-markdown-layout > :global(.panel__heading),
@@ -347,6 +383,11 @@ const {
 
         .nested-markdown-layout__content :global(pre) {
             padding: var(--space-sm);
+        }
+
+        .nested-markdown-layout__content :global(th),
+        .nested-markdown-layout__content :global(td) {
+            padding: var(--space-xs);
         }
     }
 </style>

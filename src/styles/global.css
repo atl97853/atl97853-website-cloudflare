@@ -116,22 +116,18 @@
     --reading-line-height: var(--line-height-reading);
 
     /*
-     * Fixed desktop composition.
-     *
-     * The wider shell and compact navigation rail follow the proportions of
-     * early social-network layouts. The wider navigation rail gives secondary
-     * content enough room without taking priority away from the main column.
-     * Narrow viewports can still scroll horizontally instead of forcing the
-     * desktop layout to reflow.
-     */
-    --desktop-min-width: 780px;
+    * Responsive site composition.
+    *
+    * The shell keeps the original 950px desktop proportion, while its inner
+    * spacing and sidebar width scale down before the layout becomes stacked.
+    */
     --shell-max-width: 950px;
-    --shell-padding: 12px;
-    --sidebar-width: 240px;
-    --layout-gap: 12px;
+    --shell-padding: clamp(8px, 2vw, 12px);
+    --sidebar-width: clamp(12rem, 26vw, 15rem);
+    --layout-gap: clamp(8px, 1.5vw, 12px);
 
-    --reading-width: 68ch;
-    --gallery-width: 34rem;
+    --reading-width: min(68ch, 100%);
+    --gallery-width: min(34rem, 100%);
 
     --radius: 0;
     --border-width: 1px;
@@ -143,7 +139,6 @@
      * scoped styles remain structural rather than carrying isolated numbers.
      */
     --desktop-stage-min-height: calc(100vh - 50px);
-    --site-viewport-min-height: 36rem;
     --layer-skip-link: 100;
     --skip-link-hidden-offset: -160%;
 
@@ -291,9 +286,7 @@
 }
 
 html {
-    min-width: var(--desktop-min-width);
     min-height: 100%;
-    overflow-x: auto;
     color-scheme: dark;
     scroll-behavior: smooth;
 }
@@ -324,11 +317,14 @@ dd {
 }
 
 body {
-    min-width: var(--desktop-min-width);
+    width: 100%;
+    min-width: 0;
     min-height: 100vh;
+    min-height: 100svh;
     padding:
-        var(--space-md) var(--space-lg) var(--space-xl);
-
+        var(--space-md)
+        var(--space-lg)
+        var(--space-xl);
     /*
      * Keep the solid color as a fallback beneath the decorative wallpaper.
      */
@@ -459,12 +455,13 @@ select {
 }
 
 button {
+    max-width: 100%;
     min-height: 1.45rem;
     padding: 1px var(--spacing-item-gap);
 
     cursor: pointer;
     line-height: 1.1;
-    white-space: nowrap;
+    overflow-wrap: break-word;
 }
 
 button:not(:disabled):hover {
@@ -501,6 +498,14 @@ select {
 textarea {
     min-height: 7rem;
     resize: both;
+}
+
+/*
+ * Allow fieldsets to shrink inside flexible grid and flex containers instead
+ * of preserving the intrinsic width of their contents.
+ */
+fieldset {
+    min-width: 0;
 }
 
 button:disabled,
@@ -592,13 +597,42 @@ blockquote {
 }
 
 /*
- * Tighten the desktop canvas before horizontal scrolling begins.
- * The site intentionally keeps its fixed-width desktop composition.
+ * Tablet and phone adjustments.
+ *
+ * Component-level layouts still own their own reflow. These rules only reduce
+ * the document gutter and avoid fixed-background repainting on touch devices.
  */
 @media (max-width: 52rem) {
     body {
         padding:
             var(--space-sm) var(--space-md) var(--space-lg);
+        background-attachment: scroll;
+    }
+}
+
+@media (max-width: 38rem) {
+    :root {
+        --site-banner-height: var(--site-banner-compact-height);
+    }
+
+    body {
+        padding:
+            var(--space-xs) var(--space-xs) var(--space-md);
+    }
+
+    textarea {
+        resize: vertical;
+    }
+}
+
+/*
+ * pointer: coarse means the user's main input tool has limited accuracy, 
+ * like a finger on a touch screen. 
+ */
+@media (pointer: coarse) {
+    select,
+    input:not([type="checkbox"]):not([type="radio"]) {
+        min-height: var(--theme-control-size);
     }
 }
 
