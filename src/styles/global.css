@@ -1,6 +1,6 @@
 /*
  * Global foundations only:
- * design tokens, themes, reset rules, base element styles,
+ * design tokens, theme values, reset rules, base element styles,
  * document-level accessibility, and global user preferences.
  *
  * Layout and component-specific styles remain scoped inside
@@ -10,6 +10,9 @@
 :root {
     /*
      * Font families.
+     *
+     * The primary stack preserves the compact desktop-web appearance while
+     * providing appropriate Japanese and general-purpose fallbacks.
      */
     --font-main:
         Tahoma,
@@ -34,24 +37,15 @@
      * These names are retained for compatibility with existing components.
      * New component styles should prefer the semantic aliases below.
      */
-    --font-2xs: 0.75rem;
-    /* 12px */
-    --font-xs: 0.875rem;
-    /* 14px */
-    --font-sm: 0.9375rem;
-    /* 15px */
-    --font-md: 1rem;
-    /* 16px */
-    --font-lg: 1.125rem;
-    /* 18px */
-    --font-xl: 1.25rem;
-    /* 20px */
-    --font-2xl: 1.5rem;
-    /* 24px */
-    --font-3xl: 1.875rem;
-    /* 30px */
-    --font-4xl: 2.25rem;
-    /* 36px */
+    --font-2xs: 0.75rem;   /* 12px */
+    --font-xs: 0.875rem;   /* 14px */
+    --font-sm: 0.9375rem;  /* 15px */
+    --font-md: 1rem;       /* 16px */
+    --font-lg: 1.125rem;   /* 18px */
+    --font-xl: 1.25rem;    /* 20px */
+    --font-2xl: 1.5rem;    /* 24px */
+    --font-3xl: 1.875rem;  /* 30px */
+    --font-4xl: 2.25rem;   /* 36px */
 
     /*
      * Semantic font-size roles.
@@ -116,11 +110,11 @@
     --reading-line-height: var(--line-height-reading);
 
     /*
-    * Responsive site composition.
-    *
-    * The shell keeps the original 950px desktop proportion, while its inner
-    * spacing and sidebar width scale down before the layout becomes stacked.
-    */
+     * Responsive site composition.
+     *
+     * The shell keeps the original 950px desktop proportion, while its inner
+     * spacing and sidebar width scale down before the layout becomes stacked.
+     */
     --shell-max-width: 950px;
     --shell-padding: clamp(8px, 2vw, 12px);
     --sidebar-width: clamp(12rem, 26vw, 15rem);
@@ -143,7 +137,7 @@
     --skip-link-hidden-offset: -160%;
 
     /*
-     * Desktop wallpaper and website viewport.
+     * Dark-theme desktop and content surfaces.
      */
     --page-bg: #38485f;
     --desktop-top: #52637c;
@@ -161,7 +155,12 @@
     --link-hover: #d3a0b2;
     --link-visited: #ab9db9;
 
-    --link-hover-site-header: #d3a0b2;
+    /*
+     * Keep the header interaction color synchronized with the active theme.
+     * Defining this as an alias also prevents the light theme from inheriting
+     * the dark theme's hard-coded hover color.
+     */
+    --link-hover-site-header: var(--link-hover);
 
     --border: #4d5867;
     --border-strong: #778392;
@@ -172,8 +171,8 @@
     /*
      * Shared native-style controls.
      *
-     * These general aliases remain separate from the dedicated site-header
-     * tokens below because forms and document controls also consume them.
+     * These aliases remain separate from the dedicated site-header tokens
+     * because forms and document controls also consume them.
      */
     --control-face: #89919b;
     --control-highlight: #d7dadd;
@@ -195,16 +194,18 @@
     /*
      * Site-header presentation.
      *
-     * The blue-violet toolbar is intentionally stable across themes. Only its
-     * interactive accent follows --link-hover so the pink hover treatment
-     * remains consistent with links elsewhere on the page.
+     * The blue-violet toolbar remains stable across themes. Interactive
+     * accents resolve through --link-hover so each theme controls its own
+     * hover treatment.
      */
     --site-toolbar-min-height: 3rem;
     --site-toolbar-background:
-        linear-gradient(90deg,
+        linear-gradient(
+            90deg,
             #46528c 0%,
             #535f97 55%,
-            #6571a4 100%);
+            #6571a4 100%
+        );
     --site-toolbar-border: #394572;
     --site-toolbar-shadow:
         inset 0 1px rgb(255 255 255 / 16%),
@@ -227,9 +228,11 @@
     --theme-control-line-height: 1;
     --theme-control-text: #e5e8f4;
     --theme-control-hover-bg:
-        color-mix(in srgb,
+        color-mix(
+            in srgb,
             var(--link-hover) 18%,
-            transparent);
+            transparent
+        );
     --theme-control-hover-text: var(--link-hover);
     --theme-control-selected-bg: #e7e9f2;
     --theme-control-selected-text: var(--site-toolbar-border);
@@ -244,6 +247,12 @@
     --site-banner-compact-height: 115px;
 }
 
+/*
+ * Light-theme overrides.
+ *
+ * Only color values change here; structural tokens remain shared so switching
+ * themes cannot alter layout geometry.
+ */
 :root[data-theme="light"] {
     --page-bg: #8792a6;
     --desktop-top: #a3acba;
@@ -289,6 +298,7 @@ html {
     min-height: 100%;
     color-scheme: dark;
     scroll-behavior: smooth;
+    text-size-adjust: 100%;
 }
 
 html[data-theme="light"] {
@@ -325,29 +335,29 @@ body {
         var(--space-md)
         var(--space-lg)
         var(--space-xl);
+
     /*
-     * Keep the solid color as a fallback beneath the decorative wallpaper.
+     * Keep the solid color beneath the decorative gradient as a fallback.
      */
     background-color: var(--page-bg);
     background-image:
-        linear-gradient(to bottom,
+        linear-gradient(
+            to bottom,
             var(--desktop-top),
-            var(--page-bg) 65%);
+            var(--page-bg) 65%
+        );
     background-attachment: fixed;
 
     color: var(--text-main);
     font-family: var(--font-main);
-    /*
-     * The default document size resolves to --font-md, which is exactly 1rem.
-     */
     font-size: var(--font-size-body);
     font-weight: var(--font-weight-body);
     line-height: var(--line-height-body);
     overflow-wrap: break-word;
 
     /*
-     * The gradient switches immediately with the theme because gradients
-     * cannot interpolate reliably through custom-property color changes.
+     * Only text color transitions globally. Gradient custom properties switch
+     * immediately because gradients do not interpolate consistently.
      */
     transition: color 120ms ease;
 }
@@ -388,7 +398,7 @@ h6 {
     font-size: var(--font-size-caption);
 }
 
-p+p {
+p + p {
     margin-top: 0.7em;
 }
 
@@ -398,7 +408,7 @@ ol {
     padding-left: 1.3rem;
 }
 
-li+li {
+li + li {
     margin-top: 2px;
 }
 
@@ -445,12 +455,10 @@ button,
 select {
     border: var(--border-width) solid var(--control-border);
     border-radius: var(--radius);
-
     background: var(--control-face);
     box-shadow:
         1px 1px 0 var(--control-highlight) inset,
         -1px -1px 0 var(--control-shadow) inset;
-
     color: var(--control-text);
 }
 
@@ -473,7 +481,11 @@ button:not(:disabled):active {
         1px 1px 0 var(--control-border) inset,
         -1px -1px 0 var(--control-highlight) inset;
 
-    transform: translate(1px, 1px);
+    /*
+     * Move only on the block axis so pressed controls do not create a subtle
+     * horizontal shift or contribute to overflow in narrow containers.
+     */
+    transform: translateY(1px);
 }
 
 input,
@@ -497,7 +509,12 @@ select {
 
 textarea {
     min-height: 7rem;
-    resize: both;
+
+    /*
+     * Horizontal resizing can force a textarea outside responsive grid and
+     * flex containers. Vertical resizing preserves user control safely.
+     */
+    resize: vertical;
 }
 
 /*
@@ -506,6 +523,7 @@ textarea {
  */
 fieldset {
     min-width: 0;
+    max-width: 100%;
 }
 
 button:disabled,
@@ -547,6 +565,7 @@ code {
     border: var(--border-width) solid var(--border);
     background: var(--surface-soft);
     font-size: 0.92em;
+    overflow-wrap: anywhere;
 }
 
 pre {
@@ -560,12 +579,14 @@ pre {
 
     font-size: var(--font-size-ui);
     line-height: 1.4;
+    tab-size: 4;
 }
 
 pre code {
     padding: 0;
     border: 0;
     background: transparent;
+    overflow-wrap: normal;
 }
 
 hr {
@@ -580,7 +601,8 @@ hr {
 blockquote {
     margin-block: var(--spacing-content-padding);
     padding:
-        var(--spacing-item-gap) var(--spacing-content-padding);
+        var(--spacing-item-gap)
+        var(--spacing-content-padding);
 
     border: var(--border-width) solid var(--border);
     background: var(--surface-soft);
@@ -600,12 +622,14 @@ blockquote {
  * Tablet and phone adjustments.
  *
  * Component-level layouts still own their own reflow. These rules only reduce
- * the document gutter and avoid fixed-background repainting on touch devices.
+ * the document gutter and avoid fixed-background repainting on smaller screens.
  */
 @media (max-width: 52rem) {
     body {
         padding:
-            var(--space-sm) var(--space-md) var(--space-lg);
+            var(--space-sm)
+            var(--space-md)
+            var(--space-lg);
         background-attachment: scroll;
     }
 }
@@ -617,19 +641,18 @@ blockquote {
 
     body {
         padding:
-            var(--space-xs) var(--space-xs) var(--space-md);
-    }
-
-    textarea {
-        resize: vertical;
+            var(--space-xs)
+            var(--space-xs)
+            var(--space-md);
     }
 }
 
 /*
- * pointer: coarse means the user's main input tool has limited accuracy, 
- * like a finger on a touch screen. 
+ * Coarse pointers need larger targets than mouse-driven interfaces. Textareas
+ * already exceed this minimum through their dedicated height rule.
  */
 @media (pointer: coarse) {
+    button,
     select,
     input:not([type="checkbox"]):not([type="radio"]) {
         min-height: var(--theme-control-size);
