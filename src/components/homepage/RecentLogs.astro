@@ -122,14 +122,14 @@ const logs = logEntries
      * the content padding used throughout the homepage.
      */
     .recent-logs > :global(.panel__heading) {
-        padding: var(--spacing-content-padding);
+        padding: var(--space-md);
         border-bottom: var(--border-width) solid var(--border);
     }
 
     .recent-logs__list {
         display: grid;
         margin: 0;
-        padding-block: var(--spacing-control-gap);
+        padding-block: var(--space-xs);
         padding-inline: 0;
         list-style: none;
     }
@@ -138,8 +138,8 @@ const logs = logEntries
         display: grid;
         grid-template-columns: minmax(0, 1fr) max-content;
         align-items: baseline;
-        column-gap: var(--spacing-control-gap);
-        padding: var(--spacing-control-gap) var(--spacing-content-padding);
+        column-gap: var(--space-xs);
+        padding: var(--space-xs) var(--space-md);
     }
 
     .recent-logs__item + .recent-logs__item {
@@ -171,7 +171,7 @@ const logs = logEntries
 
     .recent-logs__empty {
         margin: 0;
-        padding: var(--spacing-content-padding);
+        padding: var(--space-md);
         color: var(--text-muted);
         font-size: var(--font-sm);
         line-height: var(--line-height-reading);
@@ -179,7 +179,7 @@ const logs = logEntries
 
     @media (max-width: 38rem) {
         .recent-logs__item {
-            padding-inline: var(--spacing-item-gap);
+            padding-inline: var(--space-sm);
         }
     }
 </style>

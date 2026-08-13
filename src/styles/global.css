@@ -66,15 +66,6 @@
     --space-xl: 28px;
 
     /*
-     * Semantic spacing roles.
-     */
-    --spacing-control-gap: var(--space-xs);
-    --spacing-item-gap: var(--space-sm);
-    --spacing-content-padding: var(--space-md);
-    --spacing-section-gap: var(--space-lg);
-    --spacing-page-gap: var(--space-xl);
-
-    /*
      * Line-height roles.
      */
     --line-height-tight: 1.2;
@@ -382,7 +373,7 @@ p + p {
 
 ul,
 ol {
-    margin-block: var(--spacing-item-gap);
+    margin-block: var(--space-sm);
     padding-left: 1.3rem;
 }
 
@@ -443,7 +434,7 @@ select {
 button {
     max-width: 100%;
     min-height: 1.45rem;
-    padding: 1px var(--spacing-item-gap);
+    padding: 1px var(--space-sm);
 
     cursor: pointer;
     line-height: 1.1;
@@ -482,7 +473,7 @@ textarea,
 select {
     min-width: 0;
     max-width: 100%;
-    padding: 2px var(--spacing-control-gap);
+    padding: 2px var(--space-xs);
 }
 
 textarea {
@@ -548,8 +539,8 @@ code {
 
 pre {
     max-width: 100%;
-    margin-block: var(--spacing-content-padding);
-    padding: var(--spacing-item-gap);
+    margin-block: var(--space-md);
+    padding: var(--space-sm);
     overflow: auto;
 
     border: var(--border-width) solid var(--border-strong);
@@ -569,7 +560,7 @@ pre code {
 
 hr {
     height: 2px;
-    margin-block: var(--spacing-content-padding);
+    margin-block: var(--space-md);
 
     border: 0;
     border-top: var(--border-width) solid var(--border-strong);
@@ -577,10 +568,10 @@ hr {
 }
 
 blockquote {
-    margin-block: var(--spacing-content-padding);
+    margin-block: var(--space-md);
     padding:
-        var(--spacing-item-gap)
-        var(--spacing-content-padding);
+        var(--space-sm)
+        var(--space-md);
 
     border: var(--border-width) solid var(--border);
     background: var(--surface-soft);
