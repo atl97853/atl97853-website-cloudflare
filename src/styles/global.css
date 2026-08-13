@@ -68,15 +68,7 @@
     /*
      * Line-height roles.
      */
-    --line-height-tight: 1.2;
-    --line-height-body: 1.45;
     --line-height-reading: 1.55;
-
-    /*
-     * Compatibility aliases currently consumed by existing components.
-     */
-    --lh-panel-heading: var(--line-height-tight);
-    --reading-line-height: var(--line-height-reading);
 
     /*
      * Responsive site composition.
@@ -321,7 +313,7 @@ body {
     font-family: var(--font-main);
     font-size: var(--font-md);
     font-weight: var(--fw-normal);
-    line-height: var(--line-height-body);
+    line-height: 1.45;
     overflow-wrap: break-word;
 
     /*
@@ -340,7 +332,7 @@ h6 {
     color: var(--text-strong);
     font-family: var(--font-main);
     font-weight: var(--fw-bold);
-    line-height: var(--line-height-tight);
+    line-height: 1.2;
 }
 
 h1 {
