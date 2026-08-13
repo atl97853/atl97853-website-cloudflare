@@ -122,14 +122,14 @@ const logs = logEntries
      * the content padding used throughout the homepage.
      */
     .recent-logs > :global(.panel__heading) {
-        padding: var(--spacing-content-padding);
+        padding: var(--space-md);
         border-bottom: var(--border-width) solid var(--border);
     }
 
     .recent-logs__list {
         display: grid;
         margin: 0;
-        padding-block: var(--spacing-control-gap);
+        padding-block: var(--space-xs);
         padding-inline: 0;
         list-style: none;
     }
@@ -138,8 +138,8 @@ const logs = logEntries
         display: grid;
         grid-template-columns: minmax(0, 1fr) max-content;
         align-items: baseline;
-        column-gap: var(--spacing-control-gap);
-        padding: var(--spacing-control-gap) var(--spacing-content-padding);
+        column-gap: var(--space-xs);
+        padding: var(--space-xs) var(--space-md);
     }
 
     .recent-logs__item + .recent-logs__item {
@@ -150,10 +150,10 @@ const logs = logEntries
         grid-column: 2;
         grid-row: 1;
         color: var(--link-main);
-        font-size: var(--font-size-ui);
-        font-weight: var(--font-weight-label);
+        font-size: var(--font-sm);
+        font-weight: var(--fw-semibold);
         font-variant-numeric: tabular-nums;
-        line-height: var(--line-height-body);
+        line-height: 1.45;
         text-align: end;
         white-space: nowrap;
     }
@@ -163,23 +163,23 @@ const logs = logEntries
         grid-row: 1;
         margin: 0;
         color: var(--text-main);
-        font-size: var(--font-size-body);
-        line-height: var(--line-height-body);
+        font-size: var(--font-md);
+        line-height: 1.45;
         overflow-wrap: anywhere;
         text-wrap: pretty;
     }
 
     .recent-logs__empty {
         margin: 0;
-        padding: var(--spacing-content-padding);
+        padding: var(--space-md);
         color: var(--text-muted);
-        font-size: var(--font-size-ui);
+        font-size: var(--font-sm);
         line-height: var(--line-height-reading);
     }
 
     @media (max-width: 38rem) {
         .recent-logs__item {
-            padding-inline: var(--spacing-item-gap);
+            padding-inline: var(--space-sm);
         }
     }
 </style>

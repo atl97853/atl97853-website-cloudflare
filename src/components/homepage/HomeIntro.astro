@@ -46,7 +46,7 @@ const title = "Welcome to my website!";
      * the content padding used throughout the homepage.
      */
     .home-intro > :global(.panel__heading) {
-        padding: var(--spacing-content-padding);
+        padding: var(--space-md);
         border-bottom: var(--border-width) solid var(--border);
     }
 
@@ -54,8 +54,8 @@ const title = "Welcome to my website!";
         display: grid;
         grid-template-columns: auto minmax(0, 1fr);
         align-items: center;
-        gap: var(--spacing-section-gap);
-        padding: var(--spacing-content-padding);
+        gap: var(--space-lg);
+        padding: var(--space-md);
     }
 
     .home-intro__avatar {
@@ -69,8 +69,8 @@ const title = "Welcome to my website!";
 
     .home-intro__description {
         max-width: var(--reading-width);
-        font-size: var(--font-size-body);
-        line-height: var(--line-height-body);
+        font-size: var(--font-md);
+        line-height: 1.45;
         overflow-wrap: anywhere;
         text-wrap: pretty;
     }
@@ -78,7 +78,7 @@ const title = "Welcome to my website!";
     @media (max-width: 38rem) {
         .home-intro__layout {
             grid-template-columns: 1fr;
-            gap: var(--spacing-content-padding);
+            gap: var(--space-md);
         }
 
         .home-intro__avatar {

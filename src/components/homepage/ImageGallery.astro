@@ -522,7 +522,7 @@ const images: NormalizedGalleryImage[] = await Promise.all(
      * the content padding used throughout the homepage.
      */
     .recent-images > :global(.panel__heading) {
-        padding: var(--spacing-content-padding);
+        padding: var(--space-md);
         border-bottom: var(--border-width) solid var(--border);
     }
 
@@ -533,7 +533,7 @@ const images: NormalizedGalleryImage[] = await Promise.all(
      */
     .recent-images__gallery {
         display: block;
-        padding: var(--spacing-content-padding);
+        padding: var(--space-md);
     }
 
     /*
@@ -545,13 +545,13 @@ const images: NormalizedGalleryImage[] = await Promise.all(
         width: min(100%, var(--gallery-width));
         margin-inline: auto;
         column-count: 2;
-        column-gap: var(--spacing-item-gap);
+        column-gap: var(--space-sm);
     }
 
     .recent-images__grid[data-image-count="1"] {
         width: min(
             100%,
-            calc((var(--gallery-width) - var(--spacing-item-gap)) / 2)
+            calc((var(--gallery-width) - var(--space-sm)) / 2)
         );
         column-count: 1;
     }
@@ -563,7 +563,7 @@ const images: NormalizedGalleryImage[] = await Promise.all(
     .recent-images__item {
         display: inline-block;
         width: 100%;
-        margin: 0 0 var(--spacing-item-gap);
+        margin: 0 0 var(--space-sm);
         overflow: hidden;
         break-inside: avoid;
         border: var(--border-width) solid var(--border);
@@ -625,12 +625,12 @@ const images: NormalizedGalleryImage[] = await Promise.all(
 
     .recent-images__description {
         display: block;
-        padding: var(--spacing-item-gap) var(--spacing-content-padding);
+        padding: var(--space-sm) var(--space-md);
         border-top: var(--border-width) solid var(--border);
         background: var(--card-bg);
         color: var(--text-muted);
-        font-size: var(--font-size-caption);
-        line-height: var(--line-height-body);
+        font-size: var(--font-xs);
+        line-height: 1.45;
         overflow-wrap: anywhere;
         text-wrap: pretty;
     }
@@ -694,12 +694,12 @@ const images: NormalizedGalleryImage[] = await Promise.all(
     }
 
     .recent-images__expanded-description {
-        padding: var(--spacing-item-gap) var(--spacing-content-padding);
+        padding: var(--space-sm) var(--space-md);
         border-top: var(--border-width) solid var(--border);
         background: var(--card-bg);
         color: var(--text-main);
-        font-size: var(--font-size-caption);
-        line-height: var(--line-height-body);
+        font-size: var(--font-xs);
+        line-height: 1.45;
         overflow-wrap: anywhere;
         text-wrap: pretty;
     }
@@ -707,11 +707,11 @@ const images: NormalizedGalleryImage[] = await Promise.all(
     .recent-images__close {
         position: fixed;
         z-index: 1;
-        inset-block-start: var(--spacing-content-padding);
-        inset-inline-end: var(--spacing-content-padding);
+        inset-block-start: var(--space-md);
+        inset-inline-end: var(--space-md);
         display: grid;
-        width: calc(var(--spacing-page-gap) + var(--spacing-item-gap));
-        height: calc(var(--spacing-page-gap) + var(--spacing-item-gap));
+        width: calc(var(--space-xl) + var(--space-sm));
+        height: calc(var(--space-xl) + var(--space-sm));
         place-items: center;
         padding: 0;
         border: var(--border-width) solid var(--border-strong);
@@ -719,7 +719,7 @@ const images: NormalizedGalleryImage[] = await Promise.all(
         background: color-mix(in srgb, var(--page-shell) 78%, transparent);
         box-shadow: none;
         color: var(--text-strong);
-        font-size: var(--font-size-heading);
+        font-size: var(--font-xl);
         line-height: 1;
         cursor: pointer;
     }
@@ -738,16 +738,16 @@ const images: NormalizedGalleryImage[] = await Promise.all(
 
     .recent-images__empty {
         margin: 0;
-        padding: var(--spacing-content-padding);
+        padding: var(--space-md);
         color: var(--text-muted);
-        font-size: var(--font-size-ui);
-        line-height: var(--line-height-body);
+        font-size: var(--font-sm);
+        line-height: 1.45;
     }
 
     /* Tighten the panel body before collapsing the gallery to one column. */
     @media (max-width: 38rem) {
         .recent-images__gallery {
-            padding: var(--spacing-item-gap);
+            padding: var(--space-sm);
         }
     }
 
