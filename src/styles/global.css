@@ -56,15 +56,6 @@
     --fw-bold: 700;
 
     /*
-     * Semantic font-weight roles.
-     */
-    --font-weight-body: var(--fw-normal);
-    --font-weight-ui: var(--fw-medium);
-    --font-weight-label: var(--fw-semibold);
-    --font-weight-heading: var(--fw-bold);
-    --font-weight-strong: var(--fw-bold);
-
-    /*
      * Primitive spacing scale.
      */
     --space-none: 0;
@@ -338,7 +329,7 @@ body {
     color: var(--text-main);
     font-family: var(--font-main);
     font-size: var(--font-md);
-    font-weight: var(--font-weight-body);
+    font-weight: var(--fw-normal);
     line-height: var(--line-height-body);
     overflow-wrap: break-word;
 
@@ -357,7 +348,7 @@ h5,
 h6 {
     color: var(--text-strong);
     font-family: var(--font-main);
-    font-weight: var(--font-weight-heading);
+    font-weight: var(--fw-bold);
     line-height: var(--line-height-tight);
 }
 
@@ -532,7 +523,7 @@ select {
 strong,
 b {
     color: var(--text-strong);
-    font-weight: var(--font-weight-strong);
+    font-weight: var(--fw-bold);
 }
 
 small {
