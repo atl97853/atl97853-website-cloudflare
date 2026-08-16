@@ -3,16 +3,25 @@ pubDate: 2026-08-11
 title: "Pursuing two degrees at the same time?"
 slug: pursuing-two-degrees-at-the-same-time
 ---
->**I plan to keep updating this post as I progress through my studies.**
 
-## First log (Aug 11, 2026).
+## Aug 11, 2026
 
-I am going to study two degrees at the same time, [Computer Systems Engineering at TecNM ITA](https://cloud.aguascalientes.tecnm.mx/sistemas), and [Web Systems Development at UDG](https://www.cucei.udg.mx/carreras/desarrolloweb/ruta-de-formacion). This semester, I will be taking 12 classes, and I am scared.
+I was accepted into two universities and I don't know what to do.
 
-I want to give it a try, at least for this semester. I see it as an experiment. After that, I may decide to reduce my course load, or perhaps I will find that I can continue with it as it is; although I am not sure whether I should take fewer classes this semester, that is one possible option. Still, I would rather not do that, because I want to experience a full semester in both programmes before deciding whether this workload is sustainable. It is one of the things I need to figure out this week.
+## Aug 15, 2026
 
-The story of why I am doing this starts in 2023, when I decided that I wanted to study Computer Science. In my country, Computer Systems Engineering is roughly equivalent to a Computer Science degree. Because of my personal circumstances, [I live in the middle of nowhere](https://upload.wikimedia.org/wikipedia/commons/2/28/Vista_del_Nevado_de_Toluca.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original), my options were quite limited, so in 2024 I enrolled at a private university.
+I used to study at a private, for-profit university, but I never really felt comfortable there. Earlier this year, I decided to apply to several universities and ended up getting accepted into two of them, although for different degrees.
 
-After my third term, I came across the term "for-profit university", and it made me reconsider a lot of things about my experience there. It had been very frustrating, and for a while I lost much of my motivation to continue studying.
+One is Computer Science and the other is Web Development. For a while, I was trying to decide between them, and then I started thinking about studying both.
 
-Every time I searched online, asked about my university on forums such as Reddit, or shared my experience with other people, the response was negative, and everyone seemed to agree with what I had already suspected. I even came across some terrible comments about my university and the quality of its education. I will not go into more detail, as I feel it would be in poor taste to do so. At the end of the day, I believe that students have their own individual value beyond the institution they attend, and we all come from different backgrounds and circumstances. I only mention this to provide some context.
+Most of my doubts came from things like cohort sizes, university rankings, and all the different opinions online about whether getting a degree for a career in tech is even worth it. I am still not sure how much any of that matters.
+
+I also do not know what area I eventually want to specialise in. Web development, data science, systems programming, cybersecurity, embedded systems, there are quite a few things I would like to learn more about. I do know that I want to pursue a master's degree in the future, so that is something I want to keep in mind.
+
+For now, I have decided to study both degrees. I do not want to leave Web Development because I am curious about the programme, but I will probably take fewer classes there and accept that it may take me longer to finish. Computer Science will be my main priority while I figure out what area interests me the most.
+
+I used to study mathematics and enjoyed the parts I studied on my own, so I am also curious to see where that background might take me.
+
+For now, I want to finish reading SICP, try a small systems programming project, and keep exploring. Backend development is also something I can see myself doing, but I do not need to decide that yet.
+
+So, that is the plan for now: Computer Science first, Web Development at a slower pace, and some time to figure out what I actually want to specialise in while working on projects along the way.
