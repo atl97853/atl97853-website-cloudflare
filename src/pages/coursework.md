@@ -14,7 +14,11 @@ description: "Notes about my coursework and academic studies."
 ---
 
 *Fall 2026*
+- Fundamentals of the Internet (web dev)
+- Web Design Principles (web dev)
+- Systematic View of Technologies (web dev)
+- Project I (web dev)
+---
 - *SICP JS edition* *(extra)*
 - [*The Missing Semester of Your CS Education* *(extra)*](https://missing.csail.mit.edu/)
 ---
-I am currently in the process of transitioning between universities and organizing my credits, so there's nothing available here at the moment.
