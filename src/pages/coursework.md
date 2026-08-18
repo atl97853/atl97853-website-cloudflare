@@ -19,6 +19,6 @@ description: "Notes about my coursework and academic studies."
 - Systematic View of Technologies (web dev)
 - Project I (web dev)
 ---
-- *SICP JS edition* *(extra)*
+- [*SICP JS edition* *(extra)*](https://about.sourceacademy.org/learner/README.html)
 - [*The Missing Semester of Your CS Education* *(extra)*](https://missing.csail.mit.edu/)
 ---
