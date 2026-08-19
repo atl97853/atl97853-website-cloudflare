@@ -21,40 +21,22 @@ interface AudioTrack {
 // removed here. The tuple constraint also prevents an empty playlist, which
 // guarantees that the initial <source> always has a valid track.
 const playlist = [
-    {
-        title: "La fille aux cheveux de lin",
-        artist: "Claude Debussy · Fujiko Hemming",
-        src: "/audio/01-la-fille-aux-cheveux-de-lin--fujiko-hemming.mp3",
+    { 
+        title: "Bluebird",
+        artist: "Still & Bense",
+        src: "/audio/07-bluebird-still-and-bense.mp3",
         type: "audio/mpeg",
     },
-    {
-        title: "Nachteule",
-        artist: "Eva Tiedemann",
-        src: "/audio/02-nachteule-eva-tiedemann.mp3",
+    { 
+        title: "Crave you",
+        artist: "Flight Facilities feat. Giselle",
+        src: "/audio/08_crave_you_flight_facilities_feat_giselle.mp3",
         type: "audio/mpeg",
     },
-    {
-        title: "The Forsaken Waltz",
-        artist: "Joshua Kyan Aalampour",
-        src: "/audio/03-the-forsaken-waltz-joshua-kyan.mp3",
-        type: "audio/mpeg",
-    },
-    {
-        title: "Gnossienne No. 1",
-        artist: "Erik Satie · Alena Cherny",
-        src: "/audio/04-gnossienne-no-1-erik-s-alena-c.mp3",
-        type: "audio/mpeg",
-    },
-    {
-        title: "鮭とイクラと893と娘",
-        artist: "Yoshiki Nakajima (Hinamatsuri)",
-        src: "/audio/05-sake-to-ikura-to-893-to-musume.mp3",
-        type: "audio/mpeg",
-    },
-    {
-        title: "インキャインパルス",
-        artist: "Asobi Asobase",
-        src: "/audio/06-inkya-impulse-asobi-asobase.mp3",
+    { 
+        title: "Space Feeling",
+        artist: "The Bird Day",
+        src: "/audio/09_space_feeling_the_bird_day.mp3",
         type: "audio/mpeg",
     },
 ] as const satisfies readonly [AudioTrack, ...AudioTrack[]];
@@ -62,9 +44,10 @@ const playlist = [
 const firstTrack = playlist[0];
 ---
 
-<Panel 
-    as="aside" 
+<Panel
+    as="aside"
     class="music-player"
+    aria-label="Music player"
 >
     <site-audio-player
         class="music-player__player"
@@ -75,7 +58,7 @@ const firstTrack = playlist[0];
             <div class="music-player__title-bar">
                 <p class="music-player__window-title">Music player</p>
 
-                <span class="music-player__status">
+                <span class="music-player__status" aria-live="polite">
                     <span data-status>Now playing</span>
                     <span aria-hidden="true"> · </span>
                     <span data-track-position>1/{playlist.length}</span>
@@ -192,7 +175,7 @@ const firstTrack = playlist[0];
                     type="range"
                     min="0"
                     max="1"
-                    value="0.8"
+                    value="0.42"
                     step="0.01"
                     data-volume
                     aria-label="Volume"
@@ -265,13 +248,11 @@ const firstTrack = playlist[0];
 
 <script>
     /**
-     * The custom element owns one player instance without a UI framework.
-     * `data-*` attributes are its private behavior API; BEM classes are kept
-     * exclusively for styling so visual refactors do not break the script.
+     * Framework-free audio player with session persistence and a subtle
+     * Web Audio chorus. State is scoped to the current tab so navigating away
+     * from the homepage does not lose the listener's place.
      */
 
-    // Astro frontmatter and browser scripts are compiled separately, so the
-    // small runtime representation of a track is declared again here.
     type AudioMimeType = "audio/mpeg" | "audio/ogg" | "audio/wav";
 
     interface AudioTrack {
@@ -281,14 +262,33 @@ const firstTrack = playlist[0];
         type: AudioMimeType;
     }
 
+    interface PlayerState {
+        trackSrc: string;
+        currentTime: number;
+        volume: number;
+        muted: boolean;
+        wasPlaying: boolean;
+    }
+
+    const PLAYER_STATE_KEY = "atl97853:music-player:v1";
+    const DEFAULT_VOLUME = 0.42;
+
+    // A very light chorus: mostly dry signal, shallow modulation, and a little
+    // output headroom so the effect adds width without sounding obviously
+    // processed or making loud masters uncomfortable.
+    const CHORUS_DELAY_SECONDS = 0.018;
+    const CHORUS_DEPTH_SECONDS = 0.002;
+    const CHORUS_RATE_HZ = 0.45;
+    const CHORUS_DRY_GAIN = 0.92;
+    const CHORUS_WET_GAIN = 0.08;
+    const CHORUS_OUTPUT_GAIN = 0.9;
+
     const SUPPORTED_AUDIO_TYPES = new Set<AudioMimeType>([
         "audio/mpeg",
         "audio/ogg",
         "audio/wav",
     ]);
 
-    // Markup and behavior live together, so a missing control is a developer
-    // error. Failing loudly makes accidental selector changes easier to find.
     function getRequiredElement<T extends Element>(
         root: ParentNode,
         selector: string,
@@ -306,10 +306,8 @@ const firstTrack = playlist[0];
         if (!value || typeof value !== "object") return false;
 
         const track = value as Record<string, unknown>;
-
         const hasText = (property: "title" | "artist" | "src") => {
             const content = track[property];
-
             return typeof content === "string" && content.trim().length > 0;
         };
 
@@ -325,10 +323,50 @@ const firstTrack = playlist[0];
     function parsePlaylist(value: string | undefined): AudioTrack[] {
         try {
             const parsed: unknown = JSON.parse(value ?? "[]");
-
             return Array.isArray(parsed) ? parsed.filter(isAudioTrack) : [];
         } catch {
             return [];
+        }
+    }
+
+    function isPlayerState(value: unknown): value is PlayerState {
+        if (!value || typeof value !== "object") return false;
+
+        const state = value as Record<string, unknown>;
+
+        return (
+            typeof state.trackSrc === "string" &&
+            state.trackSrc.length > 0 &&
+            typeof state.currentTime === "number" &&
+            Number.isFinite(state.currentTime) &&
+            state.currentTime >= 0 &&
+            typeof state.volume === "number" &&
+            Number.isFinite(state.volume) &&
+            state.volume >= 0 &&
+            state.volume <= 1 &&
+            typeof state.muted === "boolean" &&
+            typeof state.wasPlaying === "boolean"
+        );
+    }
+
+    function readPlayerState(): PlayerState | null {
+        try {
+            const stored = sessionStorage.getItem(PLAYER_STATE_KEY);
+            if (!stored) return null;
+
+            const parsed: unknown = JSON.parse(stored);
+            return isPlayerState(parsed) ? parsed : null;
+        } catch {
+            // Storage can be unavailable in restrictive/private contexts.
+            return null;
+        }
+    }
+
+    function writePlayerState(state: PlayerState) {
+        try {
+            sessionStorage.setItem(PLAYER_STATE_KEY, JSON.stringify(state));
+        } catch {
+            // Persistence is optional; playback must still work without it.
         }
     }
 
@@ -349,27 +387,153 @@ const firstTrack = playlist[0];
         }
     }
 
+    function clamp(value: number, minimum: number, maximum: number) {
+        return Math.min(maximum, Math.max(minimum, value));
+    }
+
     function updateRangeFill(
         input: HTMLInputElement,
         value: number,
         maximum: number,
     ) {
         const percentage =
-            maximum > 0
-                ? Math.min(100, Math.max(0, (value / maximum) * 100))
-                : 0;
-
+            maximum > 0 ? clamp((value / maximum) * 100, 0, 100) : 0;
         input.style.setProperty("--range-position", `${percentage}%`);
     }
 
     class SiteAudioPlayer extends HTMLElement {
         private abortController: AbortController | null = null;
         private audio: HTMLAudioElement | null = null;
+        private persistState: (() => void) | null = null;
+        private audioContext: AudioContext | null = null;
+        private chorusCleanup: (() => void) | null = null;
+
+        /**
+         * Attach a gentle modulated-delay chorus. The graph is created lazily
+         * on playback so browsers can apply their normal user-gesture policy.
+         * If Web Audio cannot start, the media element is left untouched and
+         * continues with ordinary dry playback.
+         */
+        private async ensureChorusEffect(audio: HTMLAudioElement) {
+            if (this.audioContext) {
+                if (this.audioContext.state === "suspended") {
+                    try {
+                        await this.audioContext.resume();
+                    } catch {
+                        // The next user-initiated Play can try again.
+                    }
+                }
+
+                return;
+            }
+
+            if (typeof AudioContext === "undefined") return;
+
+            const context = new AudioContext();
+
+            try {
+                if (context.state === "suspended") {
+                    await context.resume();
+                }
+
+                // Do not take ownership of the media element unless the
+                // context can actually render audio.
+                if (context.state !== "running") {
+                    await context.close();
+                    return;
+                }
+
+                const dryGain = context.createGain();
+                const delay = context.createDelay(0.05);
+                const wetGain = context.createGain();
+                const outputGain = context.createGain();
+                const oscillator = context.createOscillator();
+                const modulationGain = context.createGain();
+
+                dryGain.gain.value = CHORUS_DRY_GAIN;
+                delay.delayTime.value = CHORUS_DELAY_SECONDS;
+                wetGain.gain.value = CHORUS_WET_GAIN;
+                outputGain.gain.value = CHORUS_OUTPUT_GAIN;
+                oscillator.frequency.value = CHORUS_RATE_HZ;
+                modulationGain.gain.value = CHORUS_DEPTH_SECONDS;
+
+                // Build everything downstream before redirecting the <audio>.
+                dryGain.connect(outputGain);
+                delay.connect(wetGain);
+                wetGain.connect(outputGain);
+                oscillator.connect(modulationGain);
+                modulationGain.connect(delay.delayTime);
+                outputGain.connect(context.destination);
+
+                const source = context.createMediaElementSource(audio);
+
+                // Keep a direct path until the chorus graph is fully live. If
+                // any subsequent connection fails, playback remains audible.
+                source.connect(context.destination);
+
+                try {
+                    source.connect(dryGain);
+                    source.connect(delay);
+                    oscillator.start();
+                    source.disconnect(context.destination);
+                } catch {
+                    try {
+                        oscillator.stop();
+                    } catch {
+                        // oscillator.start() may not have completed.
+                    }
+
+                    try {
+                        source.disconnect(dryGain);
+                    } catch {
+                        // The connection may not have been created.
+                    }
+
+                    try {
+                        source.disconnect(delay);
+                    } catch {
+                        // The connection may not have been created.
+                    }
+
+                    this.audioContext = context;
+                    this.chorusCleanup = () => {
+                        source.disconnect();
+                        dryGain.disconnect();
+                        delay.disconnect();
+                        wetGain.disconnect();
+                        outputGain.disconnect();
+                        oscillator.disconnect();
+                        modulationGain.disconnect();
+                        void context.close();
+                    };
+                    return;
+                }
+
+                this.audioContext = context;
+                this.chorusCleanup = () => {
+                    try {
+                        oscillator.stop();
+                    } catch {
+                        // It may already be stopped during document teardown.
+                    }
+
+                    oscillator.disconnect();
+                    modulationGain.disconnect();
+                    source.disconnect();
+                    dryGain.disconnect();
+                    delay.disconnect();
+                    wetGain.disconnect();
+                    outputGain.disconnect();
+                    void context.close();
+                };
+            } catch {
+                if (context.state !== "closed") {
+                    void context.close();
+                }
+            }
+        }
 
         connectedCallback() {
-            // A connected custom element can be observed more than once.
-            // Reuse the existing instance instead of registering listeners
-            // again and causing each control action to fire multiple times.
             if (this.abortController) return;
 
             const get = <T extends Element>(selector: string) =>
@@ -391,9 +555,8 @@ const firstTrack = playlist[0];
             const trackPosition = get<HTMLElement>("[data-track-position]");
             const trackTitles =
                 this.querySelectorAll<HTMLElement>("[data-track-title]");
-            const trackArtists = this.querySelectorAll<HTMLElement>(
-                "[data-track-artist]",
-            );
+            const trackArtists =
+                this.querySelectorAll<HTMLElement>("[data-track-artist]");
             const playlist = parsePlaylist(this.dataset.playlist);
 
             if (playlist.length === 0) {
@@ -419,23 +582,71 @@ const firstTrack = playlist[0];
             this.abortController = abortController;
             this.audio = audio;
 
-            // If Astro reconnects the same element, recover the active index
-            // from the media source instead of incorrectly returning to item 1.
+            const savedState = readPlayerState();
             const activeSource = audio.currentSrc || audioSource.src;
             const activeTrackIndex = playlist.findIndex(
                 (track) => resolveTrackUrl(track.src) === activeSource,
             );
+            const savedTrackIndex = savedState
+                ? playlist.findIndex(
+                      (track) =>
+                          resolveTrackUrl(track.src) ===
+                          resolveTrackUrl(savedState.trackSrc),
+                  )
+                : -1;
+            const canRestoreTrack = savedTrackIndex >= 0;
 
-            // These values describe interaction state that the media element
-            // does not expose directly.
-            let currentTrackIndex = Math.max(0, activeTrackIndex);
+            let currentTrackIndex = canRestoreTrack
+                ? savedTrackIndex
+                : Math.max(0, activeTrackIndex);
             let hasAudioError = false;
             let isLoading = false;
             let isSeeking = false;
-            let lastAudibleVolume = volume.valueAsNumber || 0.8;
-            // Invalidates a rejected play() promise when another source was
-            // selected before that asynchronous request settled.
+            let isChangingTrack = false;
+            let isRestoringState = canRestoreTrack;
+            let pendingRestoreTime = canRestoreTrack
+                ? savedState!.currentTime
+                : null;
+            let shouldResumeAfterRestore =
+                canRestoreTrack && savedState!.wasPlaying;
+            let lastPersistedSecond = -1;
             let sourceRevision = 0;
+
+            // Volume/mute preference remains useful even if a previously saved
+            // track was later removed from the playlist.
+            const restoredVolume = savedState?.volume ?? DEFAULT_VOLUME;
+            audio.volume = clamp(restoredVolume, 0, 1);
+            audio.muted = savedState?.muted ?? false;
+
+            let lastAudibleVolume =
+                audio.volume > 0 ? audio.volume : DEFAULT_VOLUME;
+
+            const persistPlaybackState = (force = false) => {
+                // Never replace the saved timestamp with 0 while metadata for
+                // the saved track is still being restored.
+                if (isRestoringState || isChangingTrack) return;
+
+                if (!force) {
+                    const second = Math.floor(audio.currentTime);
+                    if (second === lastPersistedSecond) return;
+                    lastPersistedSecond = second;
+                }
+
+                const track = playlist[currentTrackIndex];
+                if (!track) return;
+
+                writePlayerState({
+                    trackSrc: track.src,
+                    currentTime: Number.isFinite(audio.currentTime)
+                        ? Math.max(0, audio.currentTime)
+                        : 0,
+                    volume: audio.volume,
+                    muted: audio.muted,
+                    wasPlaying: !audio.paused && !audio.ended,
+                });
+            };
+
+            this.persistState = () => persistPlaybackState(true);
 
             const updatePlaybackState = () => {
                 const isPlaying = !audio.paused && !audio.ended;
@@ -489,26 +700,37 @@ const firstTrack = playlist[0];
             };
 
             const updateTime = () => {
-                if (!isSeeking) {
-                    seeking.value = String(audio.currentTime);
-                    currentTime.textContent = formatTime(audio.currentTime);
-                    updateRangeFill(seeking, audio.currentTime, audio.duration);
-                }
+                if (isSeeking) return;
+
+                seeking.value = String(audio.currentTime);
+                currentTime.textContent = formatTime(audio.currentTime);
+                updateRangeFill(seeking, audio.currentTime, audio.duration);
             };
 
-            const playAudio = async () => {
+            const playAudio = async (restoring = false) => {
                 const requestedRevision = sourceRevision;
 
                 try {
-                    await audio.play();
+                    // Start both from the same call stack. This gives browsers
+                    // the best chance to associate them with the Play gesture.
+                    const chorusPromise = this.ensureChorusEffect(audio);
+                    const playbackPromise = audio.play();
+
+                    await playbackPromise;
+                    await chorusPromise;
                 } catch {
-                    // Switching tracks rejects the previous play promise. Do
-                    // not report that expected rejection on the new track.
                     if (requestedRevision !== sourceRevision) return;
 
                     isLoading = false;
                     updatePlaybackState();
-                    status.textContent = "Unable to play";
+                    status.textContent = restoring ? "Paused" : "Unable to play";
+
+                    // If autoplay is blocked while restoring, keep the saved
+                    // "was playing" state intact. The restored track/time are
+                    // already correct, so the next Play continues from there.
+                    if (!restoring) {
+                        persistPlaybackState(true);
+                    }
                 }
             };
 
@@ -522,15 +744,47 @@ const firstTrack = playlist[0];
                 trackPosition.textContent = `${currentTrackIndex + 1}/${playlist.length}`;
             };
 
+            const restoreSavedPlayback = () => {
+                if (!isRestoringState || pendingRestoreTime === null) return;
+                if (!Number.isFinite(audio.duration) || audio.duration <= 0) {
+                    return;
+                }
+
+                // Avoid restoring exactly on the media endpoint, which would
+                // immediately trigger ended on some browsers.
+                const maximumTime = Math.max(0, audio.duration - 0.1);
+                audio.currentTime = clamp(pendingRestoreTime, 0, maximumTime);
+                pendingRestoreTime = null;
+                isRestoringState = false;
+                lastPersistedSecond = Math.floor(audio.currentTime);
+
+                updateSeekingRange();
+                updateTime();
+                updatePlaybackState();
+
+                if (shouldResumeAfterRestore) {
+                    shouldResumeAfterRestore = false;
+                    void playAudio(true);
+                } else {
+                    persistPlaybackState(true);
+                }
+            };
+
             const loadTrack = (index: number, autoplay = false) => {
-                currentTrackIndex = (index + playlist.length) % playlist.length;
+                isChangingTrack = true;
+                isRestoringState = false;
+                pendingRestoreTime = null;
+                shouldResumeAfterRestore = false;
+
+                audio.pause();
+                currentTrackIndex =
+                    (index + playlist.length) % playlist.length;
 
                 const track = playlist[currentTrackIndex]!;
 
                 sourceRevision += 1;
                 hasAudioError = false;
                 isLoading = true;
-                audio.pause();
                 audioSource.src = track.src;
                 audioSource.type = track.type;
                 updateTrackMetadata(track);
@@ -543,7 +797,10 @@ const firstTrack = playlist[0];
                 playButton.disabled = false;
 
                 audio.load();
+                isChangingTrack = false;
+                lastPersistedSecond = -1;
                 updatePlaybackState();
+                persistPlaybackState(true);
 
                 if (autoplay) {
                     void playAudio();
@@ -564,17 +821,13 @@ const firstTrack = playlist[0];
 
             previousButton.addEventListener(
                 "click",
-                () => {
-                    loadTrack(currentTrackIndex - 1, true);
-                },
+                () => loadTrack(currentTrackIndex - 1, true),
                 listenerOptions,
             );
 
             nextButton.addEventListener(
                 "click",
-                () => {
-                    loadTrack(currentTrackIndex + 1, true);
-                },
+                () => loadTrack(currentTrackIndex + 1, true),
                 listenerOptions,
             );
 
@@ -587,7 +840,6 @@ const firstTrack = playlist[0];
                         if (audio.volume === 0) {
                             audio.volume = lastAudibleVolume;
                         }
-
                         audio.muted = false;
                     } else {
                         audio.muted = true;
@@ -596,8 +848,6 @@ const firstTrack = playlist[0];
                 listenerOptions,
             );
 
-            // Ignore timeupdate events while the pointer owns the seeking bar;
-            // otherwise playback updates can pull the thumb away from the user.
             seeking.addEventListener(
                 "pointerdown",
                 () => {
@@ -610,7 +860,6 @@ const firstTrack = playlist[0];
                 "input",
                 () => {
                     const requestedTime = seeking.valueAsNumber;
-
                     if (!Number.isFinite(requestedTime)) return;
 
                     audio.currentTime = requestedTime;
@@ -621,43 +870,38 @@ const firstTrack = playlist[0];
             );
 
             const finishSeeking = () => {
+                if (!isSeeking) return;
+
                 isSeeking = false;
                 updateTime();
+                persistPlaybackState(true);
             };
 
-            seeking.addEventListener(
-                "pointerup",
-                finishSeeking,
-                listenerOptions,
-            );
+            seeking.addEventListener("pointerup", finishSeeking, listenerOptions);
             seeking.addEventListener(
                 "pointercancel",
                 finishSeeking,
                 listenerOptions,
             );
             seeking.addEventListener("change", finishSeeking, listenerOptions);
-            // The pointer may be released outside the range input. Listening
-            // at window level prevents the seeking lock from getting stuck.
-            window.addEventListener(
-                "pointerup",
-                finishSeeking,
-                listenerOptions,
-            );
+            window.addEventListener("pointerup", finishSeeking, listenerOptions);
 
             volume.addEventListener(
                 "input",
                 () => {
                     const requestedVolume = volume.valueAsNumber;
-
                     if (!Number.isFinite(requestedVolume)) return;
 
-                    if (requestedVolume > 0) {
-                        lastAudibleVolume = requestedVolume;
+                    const nextVolume = clamp(requestedVolume, 0, 1);
+
+                    if (nextVolume > 0) {
+                        lastAudibleVolume = nextVolume;
                     }
 
-                    audio.volume = requestedVolume;
-                    audio.muted = requestedVolume === 0;
-                    updateRangeFill(volume, requestedVolume, 1);
+                    audio.volume = nextVolume;
+                    audio.muted = nextVolume === 0;
+                    updateRangeFill(volume, nextVolume, 1);
+                    persistPlaybackState(true);
                 },
                 listenerOptions,
             );
@@ -667,32 +911,50 @@ const firstTrack = playlist[0];
                 () => {
                     isLoading = false;
                     updateSeekingRange();
+                    restoreSavedPlayback();
                     updatePlaybackState();
                 },
                 listenerOptions,
             );
             audio.addEventListener(
                 "durationchange",
-                updateSeekingRange,
+                () => {
+                    updateSeekingRange();
+                    restoreSavedPlayback();
+                },
                 listenerOptions,
             );
-            audio.addEventListener("timeupdate", updateTime, listenerOptions);
+            audio.addEventListener(
+                "timeupdate",
+                () => {
+                    updateTime();
+                    persistPlaybackState();
+                },
+                listenerOptions,
+            );
             audio.addEventListener(
                 "play",
                 () => {
                     isLoading = false;
                     updatePlaybackState();
+                    persistPlaybackState(true);
                 },
                 listenerOptions,
             );
             audio.addEventListener(
                 "pause",
-                updatePlaybackState,
+                () => {
+                    updatePlaybackState();
+                    persistPlaybackState(true);
+                },
                 listenerOptions,
             );
             audio.addEventListener(
                 "volumechange",
-                updateMuteState,
+                () => {
+                    updateMuteState();
+                    persistPlaybackState(true);
+                },
                 listenerOptions,
             );
             audio.addEventListener(
@@ -702,6 +964,7 @@ const firstTrack = playlist[0];
                         loadTrack(currentTrackIndex + 1, true);
                     } else {
                         updatePlaybackState();
+                        persistPlaybackState(true);
                     }
                 },
                 listenerOptions,
@@ -714,49 +977,78 @@ const firstTrack = playlist[0];
                     playButton.disabled = true;
                     seeking.disabled = true;
                     updatePlaybackState();
+                    persistPlaybackState(true);
                 },
                 listenerOptions,
             );
 
+            // pagehide covers full-page navigation; disconnectedCallback
+            // covers Astro client-side navigation/removal of the homepage.
+            window.addEventListener(
+                "pagehide",
+                () => persistPlaybackState(true),
+                listenerOptions,
+            );
+
             const hasMultipleTracks = playlist.length > 1;
+            const initialTrack = playlist[currentTrackIndex]!;
+            const sourceNeedsChange =
+                resolveTrackUrl(initialTrack.src) !== activeSource;
 
             previousButton.disabled = !hasMultipleTracks;
             nextButton.disabled = !hasMultipleTracks;
-            audio.volume = volume.valueAsNumber;
+            audioSource.src = initialTrack.src;
+            audioSource.type = initialTrack.type;
 
-            // As with metadata, a cached source can fail before listeners are
-            // attached. Reflect that existing state during initialization.
+            updateTrackMetadata(initialTrack);
+            updateMuteState();
+            updateRangeFill(volume, audio.volume, 1);
+
+            if (sourceNeedsChange || isRestoringState) {
+                sourceRevision += 1;
+                isLoading = true;
+                audio.load();
+            }
+
             if (audio.error) {
                 hasAudioError = true;
                 playButton.disabled = true;
                 seeking.disabled = true;
             }
 
-            // Metadata may already be cached before the listeners are attached.
-            updateTrackMetadata(playlist[currentTrackIndex]!);
             updateSeekingRange();
             updateTime();
             updatePlaybackState();
-            updateMuteState();
+
+            // Metadata can be cached before listeners are attached.
+            restoreSavedPlayback();
         }
 
         disconnectedCallback() {
-            // Astro can remove this element during client-side navigation.
-            // Abort all listeners and stop playback so detached players do
-            // not continue consuming resources or producing audio.
+            // Persist before pausing, otherwise navigation would incorrectly
+            // overwrite a playing session with wasPlaying=false.
+            this.persistState?.();
+            this.persistState = null;
+
             this.abortController?.abort();
             this.abortController = null;
+
             this.audio?.pause();
             this.audio = null;
+
+            this.chorusCleanup?.();
+            this.chorusCleanup = null;
+            this.audioContext = null;
+
             this.dataset.playing = "false";
         }
     }
 
-    // Astro may evaluate this script again during client-side navigation.
     if (!customElements.get("site-audio-player")) {
         customElements.define("site-audio-player", SiteAudioPlayer);
     }
 </script>
+
 
 <style>
     /*
@@ -801,7 +1093,7 @@ const firstTrack = playlist[0];
      * Keep the compact display legible in both site themes. This fixed
      * foreground/background pair has a 13.06:1 contrast ratio.
      */
-        /* --music-player-well: #20294f; */
+        --music-player-well: #20294f;
         --music-player-well-text: #f4f6ff;
         --music-player-well-shadow: color-mix(
             in srgb,
@@ -833,10 +1125,10 @@ const firstTrack = playlist[0];
         --music-player-control-size: 1.875rem;
         --music-player-play-size: 2rem;
         --music-player-icon-size: 0.875rem;
-        --music-player-range-height: 0.875rem;
-        --music-player-range-track-height: 0.35rem;
-        --music-player-range-thumb-width: 0.875rem;
-        --music-player-range-thumb-height: 0.75rem;
+        --music-player-range-height: 1.25rem;
+        --music-player-range-track-height: 0.4rem;
+        --music-player-range-thumb-width: 1rem;
+        --music-player-range-thumb-height: 1rem;
 
         width: min(100%, var(--music-player-max-width));
         margin-inline: auto;
@@ -930,7 +1222,6 @@ const firstTrack = playlist[0];
         overflow: hidden;
         border: var(--border-width) solid var(--music-player-control-border);
         border-radius: 0.15rem;
-        background: var(--music-player-well);
         box-shadow:
             inset 1px 1px 1px var(--music-player-well-shadow),
             inset -1px -1px 0
@@ -1061,7 +1352,7 @@ const firstTrack = playlist[0];
     .music-player__volume-input::-moz-range-progress {
         height: var(--music-player-range-track-height);
         border-radius: 0.15rem;
-        /* background: var(--music-player-accent); */
+        background: var(--music-player-accent);
     }
 
     .music-player__seeking::-moz-range-thumb,
@@ -1123,13 +1414,14 @@ const firstTrack = playlist[0];
     .music-player__volume {
         grid-column: 3;
         justify-self: end;
-        width: 4.25rem;
-        min-width: 0;
+        width: 7.5rem;
+        min-width: 6.5rem;
         gap: var(--space-xs);
     }
 
     .music-player__volume-input {
         flex: 1;
+        min-width: 5rem;
     }
 
     /*
