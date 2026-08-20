@@ -1130,7 +1130,9 @@ const firstTrack = playlist[0];
         --music-player-range-thumb-width: 1rem;
         --music-player-range-thumb-height: 1rem;
 
-        width: min(100%, var(--music-player-max-width));
+        box-sizing: border-box;
+        width: 100%;
+        max-width: var(--music-player-max-width);
         margin-inline: auto;
         overflow: hidden;
         border: 2px solid var(--music-player-frame-edge);
@@ -1394,9 +1396,10 @@ const firstTrack = playlist[0];
 
     .music-player__controls {
         display: grid;
-        grid-template-columns: 1fr auto 1fr;
+        grid-template-columns: auto minmax(0, 1fr);
         align-items: center;
         gap: var(--space-sm);
+        min-width: 0;
         padding: var(--space-sm);
     }
 
@@ -1404,24 +1407,26 @@ const firstTrack = playlist[0];
     .music-player__volume {
         display: flex;
         align-items: center;
+        min-width: 0;
     }
 
     .music-player__transport {
-        grid-column: 2;
+        grid-column: 1;
         gap: var(--space-xs);
     }
 
     .music-player__volume {
-        grid-column: 3;
-        justify-self: end;
-        width: 7.5rem;
-        min-width: 6.5rem;
+        grid-column: 2;
+        justify-self: stretch;
+        width: auto;
+        min-width: 0;
         gap: var(--space-xs);
     }
 
     .music-player__volume-input {
-        flex: 1;
-        min-width: 5rem;
+        flex: 1 1 auto;
+        width: 100%;
+        min-width: 0;
     }
 
     /*
