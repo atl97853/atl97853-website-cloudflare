@@ -14,11 +14,13 @@ description: "Notes about my coursework and academic studies."
 ---
 
 *Fall 2026*
-- Fundamentals of the Internet (web dev)
-- Web Design Principles (web dev)
-- Systematic View of Technologies (web dev)
-- Project I (web dev)
+- Differential Calculus - [*Calculus Made Easy* *(extra)*](https://www.calculusmadeeasy.org/)
+- Programming Fundamentals - [*SICP JS edition* *(extra)*](https://about.sourceacademy.org/learner/README.html)
+- Discrete Mathematics - [*CS70* *(extra)*](https://www.eecs70.org/)
+- Ethnics Workshop
+- Management Workshop
+- Fundamentals of Research
+- English
 ---
-- [*SICP JS edition* *(extra)*](https://about.sourceacademy.org/learner/README.html)
 - [*The Missing Semester of Your CS Education* *(extra)*](https://missing.csail.mit.edu/)
 ---
